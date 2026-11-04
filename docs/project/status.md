@@ -32,3 +32,7 @@ Updated: 2026-11-04.
 以上层级是本次约束下的规划建议，不代表已量化证明人口分析性价比低。评估需比较决策价值、资料/许可、一次性接入、持续更新、计算费用、等待时间、核实成本与不确定性；没有明确使用者或收益时保持停用。
 不为人口分析单独引入 JVM/R5py、全国数据更新或额外基础设施。R5py 技术选型保留为条件备选，仅有独立且有价值的公交分析需求时重新评估。
 不做人口分析不阻塞地址、周边设施、企业地点发现、基础交通与地理比较。已选择范围内的非人口分析可以完整完成；显式请求了人口却未取得时报告未启用/部分结果，不填零，也不冒称全主题完整。
+
+## P02 stacked implementation PR (unmerged)
+
+P02 is implemented on `feat/p02-capability-configuration`, based on the P01 PR head `4abcd0c9d9ac0dbb4fdf786a5b18f2ab71b92eae`; neither PR is merged or released. Offline profile/template resolution, policy ceilings, capability preflight, immutable model shapes and five JSON schemas are covered by synthetic tests. Locally, 28 tests pass and the wheel/sdist build succeeds. Provider adapters, analysis execution, geometry, real-source permissions and live quality remain pending; a registered port does not imply a working external service.

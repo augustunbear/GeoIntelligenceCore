@@ -1,5 +1,6 @@
 """Manual location confirmation request and operation context."""
 from pydantic import Field, model_validator
+from typing import Literal
 
 from .common import FrozenModel
 from .location import Address, Candidate, Confirmation, Entrance, Point
@@ -39,3 +40,17 @@ class RequestContext(FrozenModel):
     template_ref: str | None = None
     method_version: str = "manual-v1"
     scope_token: str | None = None
+
+
+class SearchRequest(FrozenModel):
+    text: str = Field(min_length=1)
+    language: Literal['de', 'zh-CN', 'en'] = 'de'
+    country_codes: tuple[str, ...] = ()
+    bbox: tuple[float, float, float, float] | None = None
+    near: Point | None = None
+    limit: int = Field(default=10, ge=1)
+
+
+class ReverseRequest(FrozenModel):
+    point: Point
+    language: Literal['de', 'zh-CN', 'en'] = 'de'

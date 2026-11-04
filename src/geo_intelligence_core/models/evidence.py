@@ -26,6 +26,12 @@ class Rights(FrozenModel):
     checked_at: datetime | None = None
     permitted_purpose: str | None = None
 
+    def allows(self, action: str, purpose: str) -> bool:
+        """Unknown permission or mismatched purpose does not grant use."""
+        if action not in ('use', 'retain', 'cache', 'display', 'export', 'redistribute'):
+            raise ValueError('unknown permission')
+        return getattr(self, action) == Permission.allowed and bool(purpose) and self.permitted_purpose == purpose
+
     @field_validator("checked_at")
     @classmethod
     def utc_checked_at(cls, value):
@@ -63,3 +69,5 @@ class Evidence(FrozenModel):
     @classmethod
     def utc_retrieved_at(cls, value):
         return utc(value)
+
+

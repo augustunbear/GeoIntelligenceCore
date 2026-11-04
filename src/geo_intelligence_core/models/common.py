@@ -1,5 +1,6 @@
 """Public result envelope and validation diagnostics."""
 from enum import StrEnum
+import math
 from typing import Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -14,6 +15,8 @@ class FrozenDict(dict):
 
 
 def _freeze(value):
+    if isinstance(value, float) and not math.isfinite(value):
+        raise ValueError('non-finite number')
     if isinstance(value, dict):
         return FrozenDict({key: _freeze(item) for key, item in value.items()})
     if isinstance(value, (list, tuple)):

@@ -1,0 +1,225 @@
+{
+  "$defs": {
+    "Address": {
+      "additionalProperties": false,
+      "properties": {
+        "country_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Country Code"
+        },
+        "house_number": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "House Number"
+        },
+        "locality": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Locality"
+        },
+        "native_names": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Native Names",
+          "type": "object"
+        },
+        "postcode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Postcode"
+        },
+        "street": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Street"
+        }
+      },
+      "title": "Address",
+      "type": "object"
+    },
+    "Confirmation": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "method": {
+          "enum": [
+            "manual",
+            "candidate"
+          ],
+          "title": "Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "method",
+        "at",
+        "evidence_ids"
+      ],
+      "title": "Confirmation",
+      "type": "object"
+    },
+    "Entrance": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "modes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Modes",
+          "type": "array"
+        },
+        "point": {
+          "$ref": "#/$defs/Point"
+        },
+        "role": {
+          "minLength": 1,
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "point",
+        "role"
+      ],
+      "title": "Entrance",
+      "type": "object"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "properties": {
+        "latitude": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "ge": -90,
+          "le": 90,
+          "title": "Latitude"
+        },
+        "longitude": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "ge": -180,
+          "le": 180,
+          "title": "Longitude"
+        }
+      },
+      "required": [
+        "longitude",
+        "latitude"
+      ],
+      "title": "Point",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "address": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Address"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "confirmation": {
+      "$ref": "#/$defs/Confirmation"
+    },
+    "entrances": {
+      "items": {
+        "$ref": "#/$defs/Entrance"
+      },
+      "title": "Entrances",
+      "type": "array"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "point": {
+      "$ref": "#/$defs/Point"
+    },
+    "version": {
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "point",
+    "confirmation"
+  ],
+  "title": "Location",
+  "type": "object"
+}
