@@ -11,8 +11,9 @@ requires-python = ">=3.12,<4"
 dependencies = ["pydantic>=2.14,<3"]
 
 [project.optional-dependencies]
-test = ["pytest>=9,<10"]
+geometry = ["shapely==2.2.0", "pyproj==3.8.0"]
 providers = ["httpx==0.28.1"]
+test = ["pytest>=9,<10"]
 build = ["build==1.6.1", "hatchling==1.29.0"]
 
 [tool.hatch.build.targets.wheel]

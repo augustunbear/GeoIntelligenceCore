@@ -4,11 +4,11 @@ Updated: 2026-11-04.
 
 - **Decision confirmed**: independent shared private repository `augustunbear/GeoIntelligenceCore`, separate from RestaurantTrafficDiagnosis.
 - **Delivered**: initial documentation-only foundation: README, contributor instructions, architecture, ADR, open-source inventory, provider/data handling policy, draft contract, roadmap.
-- **Implementation under review**: P01 contains an installable offline Python package, manual location confirmation, CI and synthetic tests in unmerged PR #3; P02 contains configuration preflight, model contracts and schemas in a stacked unmerged PR. No release, runtime GIS providers, hosted infrastructure or consumer wiring has been delivered.
+- **Implementation under review**: P01 contains an installable offline Python package, manual location confirmation, CI and synthetic tests in unmerged PR #3; P02 contains configuration preflight, model contracts and schemas in stacked unmerged PR #4. P03 adds optional local geometry in draft PR #5; P04 adds bounded HTTP access, budget and cache in draft PR #6. The integration branch combines their independent changes. No release, live provider adapter, hosted infrastructure or consumer wiring has been delivered.
 - **Known risks**: German address match and POI coverage unverified; public OSM API operational restrictions; commercial geodata redistribution; PostGIS availability in target Neon not checked; census grids are historical.
 - **Design baseline merged in main (PR #1)**: complete functional design F-01–F-13, shared rules G-01–G-10, food-service templates T-01–T-03, cross-industry scenarios V-01–V-08, ADR-0002 and planning handoff. This describes intended behavior, not implemented functionality.
 - **Planning delivered in this change**: [step-by-step plan](../superpowers/plans/2026-11-04-core-implementation.md), [traceability](../plans/REQUIREMENTS_TRACEABILITY.md), reconciled roadmap and target V1 contract, based on main `99bce3d90186acf8a431896341ab95fc66708ac7`.
-- **Next executable task after P02 review**: P03 local geometry, subject to the P01/P02 PR dependencies. P03–P13, E and POP work items remain unimplemented.
+- **Next executable task after integration review**: P05 location provider adapter, subject to the stacked P01–P04 dependencies. P05–P13, E and POP work items remain unimplemented.
 - **Consumer boundary**: RestaurantTrafficDiagnosis retains consultant UI, case isolation, domain-specific reasons and evidence approval. GeoIntelligenceCore provides geospatial facts only.
 
 ## Open-source selection research (2026-11-04, merged in main)
@@ -36,3 +36,11 @@ Updated: 2026-11-04.
 ## P02 stacked implementation PR (unmerged)
 
 P02 is implemented on `feat/p02-capability-configuration`, based on the P01 PR head `4abcd0c9d9ac0dbb4fdf786a5b18f2ab71b92eae`; neither PR is merged or released. Offline profile/template resolution, policy ceilings, capability preflight, immutable model shapes and five JSON schemas are covered by synthetic tests. Locally, 28 tests pass and the wheel/sdist build succeeds. Provider adapters, analysis execution, geometry, real-source permissions and live quality remain pending; a registered port does not imply a working external service.
+
+## P03 stacked local geometry (unmerged)
+
+P03 is based on P02 head `904bc3405169d94ef464193d39f575b60ba35d24`. Offline distance, local circle and polygon overlay have synthetic acceptance tests. Geometry requires the optional Shapely/pyproj extra and explicit area/vertex limits; latitude beyond 80°, antimeridian crossings, road access and live boundary acquisition are outside this step. No provider, release or deployment is claimed.
+
+## P03/P04 integration (unmerged)
+
+P04 head `3a2ee379b729f06334025dbc1d8fe48dd3ba1b5f` and P03 head `76a3cd415d24f1704e1159285a82bebc50183d71` independently build on P02. This branch places the complete P03 geometry change on P04, preserving both optional extras and hashed Python 3.12 locks. CI installs all lock sets and runs the combined offline test suite. The HTTP gateway remains a guarded infrastructure primitive; Photon, Overpass and ORS adapters have not been delivered.

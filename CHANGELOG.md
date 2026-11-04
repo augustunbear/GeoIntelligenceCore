@@ -14,3 +14,14 @@ This pre-release does not include search, provider adapters, geometry operations
 - Resolve explicit/profile/template precedence with allowed overrides and policy ceilings; preflight selected and required capabilities without I/O.
 - Enforce purpose-specific rights checks and reject nested non-finite public model values.
 - No provider adapter, analysis execution, live-data validation, release, or schema migration is claimed.
+
+## P03 stacked change — unreleased
+
+- Add optional Shapely/pyproj geodesic distance and bounded local circle/region overlay with explicit boundary semantics.
+- Return explicit invalid/unsupported/unavailable statuses for malformed, out-of-scope and unavailable geometry operations; add synthetic offline tests and a hashed geometry dependency lock.
+- No road reachability, live boundaries, provider access, release or schema migration is claimed.
+
+## P03/P04 integration — unreleased
+
+- Combine P03 geometry with P04 bounded HTTP, budget and cache on the P04 branch; retain both optional extras and hashed lock sets.
+- Run both suites in CI. No live provider adapter, release or schema migration is claimed.
