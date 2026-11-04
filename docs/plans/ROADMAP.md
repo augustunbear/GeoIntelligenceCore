@@ -1,41 +1,22 @@
-# Milestones, implementation order and acceptance
+# 实施路线图（2026-11-04）
 
-**No software milestones below are implemented as of 2026-11-04.** This plan does not authorize production deployment or binding API spend.
+基于main `99bce3d90186acf8a431896341ab95fc66708ac7`；取代早期M0—M5草案中的强制人口阶段。
+**当前仅设计、选型与实施计划；没有软件里程碑已实现。**
 
-> Planning update (2026-11-04): this is the earlier staged outline. Next, generate a detailed plan from [the functional baseline](../design/FUNCTIONAL_DESIGN.md) and [planning handoff](IMPLEMENTATION_PLANNING_HANDOFF.md), including optional industry profiles, separate use-case templates and cross-industry acceptance. Reconcile scope explicitly; do not treat all target capabilities as first-release commitments or this outline as complete.
+- [完整分步骤计划](../superpowers/plans/2026-11-04-core-implementation.md)：13个首批步骤、7个后续工作项、3个人口条件项。
+- [需求追踪](REQUIREMENTS_TRACEABILITY.md)：F/G/T/V/A全部有交付或延期归属。
+- [目标契约](../contracts/V1_CONTRACT.md)：实施目标，不是现有API。
 
-## M0 — research/architecture baseline
-- [x] Independent repository selected
-- [x] Source candidate inventory, provider/data policy, architecture/contract proposal and contributor workflow documented
-- [ ] Review current dependency releases, licenses and German pilot coverage with recorded evidence
-- [ ] Confirm first consumer integration point and packaging distribution method
+| 顺序 | 步骤 | 完成后获得 | 主要门 |
+|---|---|---|---|
+| 1 | P01—P04 | 离线地点确认、契约与配置、几何、受控网络 | A01/A03/A09/A11 |
+| 2 | P05—P08 | 地址候选、设施/企业地点、路线矩阵、路网范围 | A02/A04/A05 |
+| 3 | P09—P11 | 餐饮三模板、证据修正、三语导出、同口径比较 | A09/A10 |
+| 4 | P12—P13 | 安装包、消费者示例、启用验证与真实限制 | A01—A05/A09—A11 |
+| 后续 | E01—E07 | 时间实测、历史、输入扩展、资料深化、批量、公交、真实消费者 | 依实际能力启用 |
+| 条件扩展 | POP-01/02/03 | 行政引用/网格统计/公交网格人口 | A06/A08条件适用 |
 
-## M1 — installable core and address candidate resolution
-- [ ] `pyproject.toml`, typed Python objects, error/status/provenance contracts, documentation and offline tests
-- [ ] Photon provider adapter with bounded HTTP requests, resilient errors and English/German/Chinese locale fallback documented
-- [ ] Manual coordinate/location confirmation; no implicit selection of ambiguous candidate
-- [ ] Publish pre-release Git tag; consume by pinned git commit/tag or private package index
-**Accept when:** package installs without API keys; tests run offline; Germany fixtures and failure modes pass; one consumer validates candidate/manual workflow.
-
-## M2 — OSM POI and transport
-- [ ] Category taxonomy and OSM tags mapping, bounded geographic search, upstream rate protection, provenance and duplicate handling
-- [ ] Basic road and transit access evidence, not claims of actual passengers
-**Accept when:** nearby restaurant/bus/parking/school queries can be audited, missing/partial is explicit, provider failure leaves manual path.
-
-## M3 — pedestrian catchments
-- [ ] Remote routing API adapter; 5/10/15 min geometries with travel mode and data vintage
-- [ ] Straight-line baseline separated from road-based isochrones; cache policy
-**Accept when:** spatial boundary around barriers verified using sample fixture, behavior at no routing coverage documented.
-
-## M4 — German population
-- [ ] Audited Zensus grid import process and offline fixtures
-- [ ] Document centroid vs proportional area aggregation; suppressed data and uncertainty
-**Accept when:** reproducible totals, reference year, missing-cell treatment and no false present-day precision.
-
-## M5 — consumer integration and scale evaluation
-- [ ] RestaurantTrafficDiagnosis area_research integrates package and stores generic evidence with case-level permissions; no root cause auto-approval
-- [ ] Another consumer pilots same package release before extracting service layer
-- [ ] Only then assess hosted geocoder, PostGIS, paid POI or dedicated routing and HTTP facade with ADR/cost envelope
-
-## Test and security gates
-Unit/contract tests; selected live provider opt-in smoke; license/redistribution review; API keys and PII handling; simulated timeouts and 429s; documented data attribution; semver changelog; reviewer signoff. Avoid CI depending on public geocoding endpoints.
+首批不以人口、R5py/JVM、全国数据管线、数据库或HTTP服务为前置。
+无来源配置仍可安装、确认地点和本地计算；来源线上启用必须有条款、预算和质量证据。
+用户实际用量/SLO未给出时不编数字，P04设计显式硬上限，P13在真实启用前填证据。
+先从P01开始逐步验收，不批量创建空模块。每步功能分支/PR/独立审查，合并发布部署须另有明确授权。

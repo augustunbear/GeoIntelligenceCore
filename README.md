@@ -1,6 +1,6 @@
 # GeoIntelligenceCore
 
-Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: architecture and research baseline only (2026-11-04); no functional library, API, deployment or provider integration has yet been delivered.**
+Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: design, research and implementation plan only (2026-11-04); no functional library, API, deployment or provider integration has yet been delivered.**
 
 ## Mission / 定位
 
@@ -14,7 +14,9 @@ Keep the core industry-neutral; industry selection is optional. Industry profile
 
 - [完整功能设计](docs/design/FUNCTIONAL_DESIGN.md) — numbered capabilities, shared rules, templates and acceptance scenarios
 - [ADR-0002](docs/architecture/adr/ADR-0002-generic-core-industry-profiles.md) — confirmed direction and review clarifications
-- [实施规划交接](docs/plans/IMPLEMENTATION_PLANNING_HANDOFF.md) — inputs and completion criteria for the next step-by-step plan
+- [分步骤实施计划](docs/superpowers/plans/2026-11-04-core-implementation.md) — 13 first-release steps, 7 follow-up work items and 3 conditional population items
+- [需求追踪表](docs/plans/REQUIREMENTS_TRACEABILITY.md) — F/G/T/V/A coverage and deferred scope
+- [实施规划交接](docs/plans/IMPLEMENTATION_PLANNING_HANDOFF.md) — retained planning requirements
 
 ## Open-source selection baseline
 
@@ -30,7 +32,7 @@ Keep the core industry-neutral; industry selection is optional. Industry profile
 - [ADR-0001](docs/architecture/adr/ADR-0001-independent-shared-repository.md) — confirmed independent repository decision
 - [Open-source candidates](docs/research/OPEN_SOURCE_LANDSCAPE.md) — libraries, use/avoid decisions, license and operational caveats
 - [Provider strategy](docs/architecture/PROVIDERS_AND_DATA.md) — German data sources and commercial restrictions
-- [Data and API contract](docs/contracts/V1_CONTRACT.md) — initial proposed JSON contract and endpoints
+- [Data and API contract](docs/contracts/V1_CONTRACT.md) — implementation-target models, Python ports and completion semantics; not implemented
 - [Roadmap / acceptance criteria](docs/plans/ROADMAP.md) — staged delivery and tests
 - [Project status](docs/project/status.md) — completed, pending, next step
 
@@ -44,10 +46,10 @@ Keep the core industry-neutral; industry selection is optional. Industry profile
 6. No personal data or keys in repository, logs or sample payloads. Cross-tenant isolation enforced by the consumer or a future authenticated service.
 7. German/Chinese/English consumer-facing UI and documentation where exposed; provider-neutral API property names remain English.
 
-## Suggested delivery (earlier outline; reconcile in next planning step)
+## Delivery plan / 实施顺序
 
-Next task: generate a traceable step-by-step implementation plan from the functional baseline and planning handoff before starting implementation. The outline below is historical planning input, not the complete scope.
+Start with P01–P04: installable offline core, location confirmation, contracts, geometry and bounded provider access. P05–P08 add Photon, Overpass and ORS adapters. P09–P11 deliver food-service templates, evidence/export and neutral comparison. P12–P13 verify packaging, consumer contracts and permitted real-source activation.
 
-Initial milestone: installable Python package and tests; geocode/search interface (Photon candidate), validated location contract and a manually selectable map location. Next: OSM POI and transportation evidence with deduplication and source quality, walking isochrones, Zensus spatial statistics. Validate all third-party licenses, cost, and coverage before enabling a provider in paid consultation products.
+Population remains optional: administrative references only when useful and inexpensive; grid aggregation is low priority; transit population is lowest priority and excluded from the first release. No JVM/R5py solely for population. Current live endpoint terms, actual budgets and quality still require verification.
 
-**No claim of production readiness or validated operational integration is made here.**
+Next executable task: **P01 — installable core and manual location confirmation**. No code, tests, released package or production integration exists yet.
