@@ -14,3 +14,7 @@ This pre-release does not include search, provider adapters, geometry operations
 - Resolve explicit/profile/template precedence with allowed overrides and policy ceilings; preflight selected and required capabilities without I/O.
 - Enforce purpose-specific rights checks and reject nested non-finite public model values.
 - No provider adapter, analysis execution, live-data validation, release, or schema migration is claimed.
+# Unreleased P05
+
+- Added the configurable Photon API v1 forward/reverse candidate resolver with bounded query and language semantics, conservative precision, hard geographic filtering and explicit failure status.
+
