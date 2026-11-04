@@ -164,3 +164,15 @@ def test_same_origin_redirect_explicit_only():
     no_redirect = FakeTransport([httpx.Response(302, headers={'Location': '/next'})])
     assert run(gateway(no_redirect).request('p', 'GET', '/start', {}, context())).status == Status.unavailable
     assert no_redirect.calls == 1
+
+
+def test_deadline_covers_dns_before_network():
+    async def slow_dns(host):
+        await asyncio.sleep(0.05)
+        return ['93.184.215.14']
+    transport = FakeTransport([httpx.Response(200, json={})])
+    limits = policy(deadline=0.001)
+    g = gateway(transport, limits=limits)
+    g.resolver = slow_dns
+    result = run(g.request('p', 'GET', '/x', {}, context()))
+    assert result.status == Status.unavailable and transport.calls == 0

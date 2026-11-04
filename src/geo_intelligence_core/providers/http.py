@@ -81,6 +81,20 @@ class HttpGateway:
 
     async def request(self, provider_id: str, method: str, path: str,
                       params: dict, context: RequestContext) -> Result[dict]:
+        """Bound the entire operation, including DNS, queue wait and retries."""
+        deadline = self.policy.deadline_s
+        try:
+            if deadline is None:
+                return await self._request_impl(provider_id, method, path, params, context)
+            return await asyncio.wait_for(self._request_impl(provider_id, method, path, params, context),
+                                          timeout=deadline)
+        except TimeoutError:
+            return Result[dict](status=Status.unavailable, data=None,
+                                issues=[Issue(code='deadline', message_key='provider.deadline')],
+                                context=context)
+
+    async def _request_impl(self, provider_id: str, method: str, path: str,
+                            params: dict, context: RequestContext) -> Result[dict]:
         def fail(status, code):
             return Result[dict](status=status, data=None,
                                 issues=[Issue(code=code, message_key=f'provider.{code}')], context=context)
