@@ -4,11 +4,11 @@ Updated: 2026-11-04.
 
 - **Decision confirmed**: independent shared private repository `augustunbear/GeoIntelligenceCore`, separate from RestaurantTrafficDiagnosis.
 - **Delivered**: initial documentation-only foundation: README, contributor instructions, architecture, ADR, open-source inventory, provider/data handling policy, draft contract, roadmap.
-- **Not delivered**: Python package, source code integrations, runtime GIS APIs, CI, tests, releases, hosted infrastructure or consumer wiring. Do not claim otherwise.
+- **Implementation under review**: P01 contains an installable offline Python package, manual location confirmation, CI and synthetic tests in unmerged PR #3; P02 contains configuration preflight, model contracts and schemas in a stacked unmerged PR. No release, runtime GIS providers, hosted infrastructure or consumer wiring has been delivered.
 - **Known risks**: German address match and POI coverage unverified; public OSM API operational restrictions; commercial geodata redistribution; PostGIS availability in target Neon not checked; census grids are historical.
 - **Design baseline merged in main (PR #1)**: complete functional design F-01–F-13, shared rules G-01–G-10, food-service templates T-01–T-03, cross-industry scenarios V-01–V-08, ADR-0002 and planning handoff. This describes intended behavior, not implemented functionality.
 - **Planning delivered in this change**: [step-by-step plan](../superpowers/plans/2026-11-04-core-implementation.md), [traceability](../plans/REQUIREMENTS_TRACEABILITY.md), reconciled roadmap and target V1 contract, based on main `99bce3d90186acf8a431896341ab95fc66708ac7`.
-- **Next executable task**: P01 installable core and manual location confirmation, after instruction to implement. All P/E/POP work items remain unimplemented; no tests or dependencies were executed for this documentation change.
+- **Next executable task after P02 review**: P03 local geometry, subject to the P01/P02 PR dependencies. P03–P13, E and POP work items remain unimplemented.
 - **Consumer boundary**: RestaurantTrafficDiagnosis retains consultant UI, case isolation, domain-specific reasons and evidence approval. GeoIntelligenceCore provides geospatial facts only.
 
 ## Open-source selection research (2026-11-04, merged in main)
