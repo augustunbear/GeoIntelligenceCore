@@ -10,9 +10,9 @@ class ConfirmRequest(FrozenModel):
     candidate: Candidate | None = None
     point: Point | None = None
     address: Address | None = None
-    entrances: list[Entrance] = Field(default_factory=list)
+    entrances: tuple[Entrance, ...] = Field(default_factory=list)
     confirmation: Confirmation
-    evidence: list[Evidence] = Field(min_length=1)
+    evidence: tuple[Evidence, ...] = Field(min_length=1)
     location_id: str | None = None
     request_id: str | None = None
 

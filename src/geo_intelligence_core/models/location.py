@@ -36,13 +36,13 @@ class Entrance(FrozenModel):
     id: str = Field(min_length=1)
     point: Point
     role: str = Field(min_length=1)
-    modes: list[str] = Field(default_factory=list)
+    modes: tuple[str, ...] = Field(default_factory=list)
 
 
 class Confirmation(FrozenModel):
     method: Literal["manual", "candidate"]
     at: datetime
-    evidence_ids: list[str] = Field(min_length=1)
+    evidence_ids: tuple[str, ...] = Field(min_length=1)
 
     @field_validator("at")
     @classmethod
@@ -61,5 +61,5 @@ class Location(FrozenModel):
     version: StrictInt = Field(ge=1)
     point: Point
     address: Address | None = None
-    entrances: list[Entrance] = Field(default_factory=list)
+    entrances: tuple[Entrance, ...] = Field(default_factory=list)
     confirmation: Confirmation

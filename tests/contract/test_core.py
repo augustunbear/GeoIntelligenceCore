@@ -32,3 +32,30 @@ assert r.status == "ok" and r.data.version == 1
 '''
     completed = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, env={"PATH": "/usr/bin:/bin", "PYTHONPATH": "src"})
     assert completed.returncode == 0, completed.stderr
+
+
+def test_nested_collections_cannot_change_prior_result(manual_request):
+    result = confirm_location(manual_request)
+    original = result.model_dump_json()
+    import pytest
+    from pydantic import ValidationError
+    with pytest.raises((AttributeError, TypeError)):
+        result.data.entrances.append("later")
+    with pytest.raises((AttributeError, TypeError)):
+        result.data.confirmation.evidence_ids.append("later")
+    with pytest.raises((AttributeError, TypeError)):
+        result.evidence.append("later")
+    with pytest.raises((AttributeError, TypeError)):
+        result.context.location_versions[result.data.id] = 999
+    with pytest.raises(ValidationError):
+        result.evidence[0].rights.use = "allowed"
+    assert result.model_dump_json() == original
+
+
+def test_model_copy_keeps_nested_collections_immutable(manual_request):
+    original = confirm_location(manual_request)
+    copied = original.model_copy(update={"issues": [original.issues[0]] if original.issues else []})
+    import pytest
+    with pytest.raises((AttributeError, TypeError)):
+        copied.issues.append("later")
+    assert copied == original

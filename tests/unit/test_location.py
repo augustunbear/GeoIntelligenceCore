@@ -15,11 +15,11 @@ def test_manual_confirmation_without_industry(manual_request):
     assert first.status == Status.ok
     assert first.data.version == 1
     assert first.data.point == Point(longitude=11, latitude=49)
-    assert first.data.confirmation.evidence_ids == ["manual-1"]
+    assert first.data.confirmation.evidence_ids == ("manual-1",)
     second = confirm_location(manual_request.model_copy(update={"entrances": [Entrance(id="main", point=Point(longitude=11.001, latitude=49), role="main")]}), previous=first.data)
     assert second.status == Status.ok
     assert second.data.version == 2 and second.data.id == first.data.id
-    assert first.data.entrances == []
+    assert first.data.entrances == ()
 
 
 def test_ambiguous_candidate_not_confirmed(manual_request):
@@ -27,7 +27,7 @@ def test_ambiguous_candidate_not_confirmed(manual_request):
     result = confirm_location({"candidates": [candidate, candidate], "confirmation": manual_request.confirmation})
     assert result.status == Status.invalid_input and result.data is None
     assert result.issues
-    result = confirm_location(manual_request.model_copy(update={"point": None, "candidate": None}))
+    result = confirm_location({**manual_request.model_dump(), "point": None, "candidate": None})
     assert result.status == Status.invalid_input and result.data is None
 
 
@@ -52,7 +52,7 @@ def test_candidate_requires_explicit_selection(manual_request):
 
 
 def test_invalid_confirmation_evidence(manual_request):
-    request = manual_request.model_copy(update={"evidence": []})
+    request = {**manual_request.model_dump(), "evidence": []}
     result = confirm_location(request)
     assert result.status == Status.invalid_input and result.data is None
 

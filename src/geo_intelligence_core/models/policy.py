@@ -5,8 +5,8 @@ from .common import FrozenModel
 
 
 class UsagePolicy(FrozenModel):
-    allowed_endpoints: list[str] = Field(default_factory=list)
-    allowed_capabilities: list[str] = Field(default_factory=list)
+    allowed_endpoints: tuple[str, ...] = Field(default_factory=list)
+    allowed_capabilities: tuple[str, ...] = Field(default_factory=list)
     max_calls_per_run: StrictInt = Field(default=0, ge=0)
     max_concurrency: StrictInt = Field(default=1, ge=1)
     max_area_m2: StrictFloat | None = Field(default=None, gt=0)

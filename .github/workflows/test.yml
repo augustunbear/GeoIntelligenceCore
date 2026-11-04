@@ -20,5 +20,4 @@ jobs:
         run: python -m pytest tests/unit/test_location.py tests/contract/test_core.py -q
       - name: Build distributions
         run: |
-          python -m pip install build hatchling==1.29.0
           python -m build --no-isolation
