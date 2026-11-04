@@ -1,6 +1,6 @@
 # GeoIntelligenceCore
 
-Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: P01 and P02 implementation PRs open (2026-11-04); offline core and configuration preflight are under review. No release, deployment, live-data provider or analysis execution has been delivered.**
+Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: P01/P02 implementation PRs open and P03 local geometry in a stacked feature branch (2026-11-04). No release, deployment, live-data provider or analysis execution has been delivered.**
 
 ## Mission / 定位
 
@@ -57,3 +57,7 @@ Implementation progress: P01 provides installable offline manual location confir
 ## P02 configuration preflight (stacked PR)
 
 `resolve_config` applies profile and template defaults, then explicit allowed parameters, and rejects overrides above policy ceilings. `ProviderRegistry` declares configured capability ports; preflight reports selected disabled or unconfigured topics without invoking providers. `Rights.allows` requires an explicit permission and matching purpose. The five checked-in JSON schemas are generated from Pydantic models. These are contract and offline preflight features, not a working analysis pipeline.
+
+## P03 local geometry (stacked feature branch)
+
+Install the optional `geometry` extra for offline ellipsoidal distance, explicit straight-line radial regions and local polygon overlays. Calls require independent area/vertex limits. See [geometry usage](docs/usage/geometry.md) for supported extent and boundary semantics. No road reachability or administrative data acquisition is implied.
