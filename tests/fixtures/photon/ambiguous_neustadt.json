@@ -1,0 +1,7 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type": "Feature", "geometry": {"type": "Point", "coordinates": [11.58, 48.14]}, "properties": {"osm_type": "N", "osm_id": 101, "name": "Neustadt", "countrycode": "DE", "city": "Neustadt"}},
+    {"type": "Feature", "geometry": {"type": "Point", "coordinates": [12.11, 49.01]}, "properties": {"osm_type": "N", "osm_id": 102, "name": "Neustadt", "countrycode": "DE", "city": "Neustadt"}}
+  ]
+}

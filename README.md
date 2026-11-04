@@ -1,6 +1,6 @@
 # GeoIntelligenceCore
 
-Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: P01/P02 implementation PRs open, P03 local geometry and P04 bounded provider HTTP in separate draft PRs, with both combined in an integration branch (2026-11-04). No release, deployment, live-data provider or analysis execution has been delivered.**
+Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: P01–P06 changes are under review in stacked draft PRs and integration branches (2026-11-04). No release, deployment, live provider activation or analysis execution has been delivered.**
 
 ## Mission / 定位
 
@@ -65,3 +65,7 @@ Install the optional `geometry` extra for offline ellipsoidal distance, explicit
 ## P04 bounded provider access (integration branch)
 
 Install the optional `providers` extra for the HTTP gateway, atomic call/cost budget, and rights-gated cache. The gateway requires explicit endpoints and hard limits, rejects unsafe DNS and redirects, and returns typed failure statuses. See [provider activation](docs/operations/provider-activation.md). These controls do not activate a live provider or establish permission to cache its data.
+
+## P05/P06 provider adapters (integration branch)
+
+The configurable Photon resolver returns forward/reverse location candidates for explicit confirmation. The Overpass adapter returns bounded, mapped nearby places and unverified company sites. Both use the controlled provider gateway. See [location usage](docs/usage/location.md); no live provider has been activated.

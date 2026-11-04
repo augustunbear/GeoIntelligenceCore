@@ -4,11 +4,11 @@ Updated: 2026-11-04.
 
 - **Decision confirmed**: independent shared private repository `augustunbear/GeoIntelligenceCore`, separate from RestaurantTrafficDiagnosis.
 - **Delivered**: initial documentation-only foundation: README, contributor instructions, architecture, ADR, open-source inventory, provider/data handling policy, draft contract, roadmap.
-- **Implementation under review**: P01 contains an installable offline Python package, manual location confirmation, CI and synthetic tests in unmerged PR #3; P02 contains configuration preflight, model contracts and schemas in stacked unmerged PR #4. P03 adds optional local geometry in draft PR #5; P04 adds bounded HTTP access, budget and cache in draft PR #6. The integration branch combines their independent changes. No release, live provider adapter, hosted infrastructure or consumer wiring has been delivered.
+- **Implementation under review**: P01–P04 provide the offline core, geometry and bounded HTTP primitives in stacked draft PRs #3–#7. P05 Photon candidate resolution and P06 Overpass/places are in separate draft PRs #8–#9 and combined here. No release, activated live adapter, hosted infrastructure or consumer wiring has been delivered.
 - **Known risks**: German address match and POI coverage unverified; public OSM API operational restrictions; commercial geodata redistribution; PostGIS availability in target Neon not checked; census grids are historical.
 - **Design baseline merged in main (PR #1)**: complete functional design F-01–F-13, shared rules G-01–G-10, food-service templates T-01–T-03, cross-industry scenarios V-01–V-08, ADR-0002 and planning handoff. This describes intended behavior, not implemented functionality.
 - **Planning delivered in this change**: [step-by-step plan](../superpowers/plans/2026-11-04-core-implementation.md), [traceability](../plans/REQUIREMENTS_TRACEABILITY.md), reconciled roadmap and target V1 contract, based on main `99bce3d90186acf8a431896341ab95fc66708ac7`.
-- **Next executable task after integration review**: P05 location provider adapter, subject to the stacked P01–P04 dependencies. P05–P13, E and POP work items remain unimplemented.
+- **Next executable task after P05/P06 integration review**: P07 reachability adapter, subject to the stacked P01–P06 dependencies. P07–P13, E and POP work items remain unimplemented.
 - **Consumer boundary**: RestaurantTrafficDiagnosis retains consultant UI, case isolation, domain-specific reasons and evidence approval. GeoIntelligenceCore provides geospatial facts only.
 
 ## Open-source selection research (2026-11-04, merged in main)
@@ -43,4 +43,8 @@ P03 is based on P02 head `904bc3405169d94ef464193d39f575b60ba35d24`. Offline dis
 
 ## P03/P04 integration (unmerged)
 
-P04 head `3a2ee379b729f06334025dbc1d8fe48dd3ba1b5f` and P03 head `76a3cd415d24f1704e1159285a82bebc50183d71` independently build on P02. This branch places the complete P03 geometry change on P04, preserving both optional extras and hashed Python 3.12 locks. CI installs all lock sets and runs the combined offline test suite. The HTTP gateway remains a guarded infrastructure primitive; Photon, Overpass and ORS adapters have not been delivered.
+P04 head `3a2ee379b729f06334025dbc1d8fe48dd3ba1b5f` and P03 head `76a3cd415d24f1704e1159285a82bebc50183d71` independently build on P02. Integration PR #7 places the complete P03 geometry change on P04, preserving both optional extras and hashed Python 3.12 locks. CI installs all lock sets and runs the combined offline test suite. The HTTP gateway remains a guarded infrastructure primitive.
+
+## P05/P06 integration (unmerged)
+
+P05 Photon PR #8 independently builds on P04; P06 Overpass/places PR #9 builds on P03/P04 integration. This branch combines their published source changes, with synthetic offline tests. Photon and Overpass remain opt-in; live source terms, quotas, data quality and production activation are unverified.

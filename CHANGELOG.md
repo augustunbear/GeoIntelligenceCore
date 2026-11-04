@@ -25,3 +25,8 @@ This pre-release does not include search, provider adapters, geometry operations
 
 - Combine P03 geometry with P04 bounded HTTP, budget and cache on the P04 branch; retain both optional extras and hashed lock sets.
 - Run both suites in CI. No live provider adapter, release or schema migration is claimed.
+
+## P05/P06 integration — unreleased
+
+- Add the optional Photon forward/reverse candidate resolver to the P06 Overpass and company-place branch. Preserve hard geographic filtering and explicit provider status; candidates require manual confirmation.
+- No live provider activation, release or deployment is claimed.
