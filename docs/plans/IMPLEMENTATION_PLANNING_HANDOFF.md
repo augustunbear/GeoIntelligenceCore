@@ -44,3 +44,9 @@ V1_CONTRACT 是早期草案，不能假定支持配置、模板、版本快照�
 - 没有静默降级、虚假零值、业务因果或无依据综合评分。
 - 不混淆研究、文档、实现、测试、发布与部署。
 - 提供更新后的实施文档与明确待决事项；实际开发授权另按用户指令处理。
+
+## 开源选型输入（2026-11-04 补充）
+
+先读 [ADR-0003](../architecture/adr/ADR-0003-open-source-selection.md)、[逐项选型](../research/OPEN_SOURCE_SELECTION.md)、[版本核验](../research/OPEN_SOURCE_VERIFICATION_2026-11-04.md) 和 [接入方案](../architecture/INTEGRATION_BLUEPRINT.md)。
+实施项必须引用选定库、复用方式、自有补充语义与 A01—A11 验收门。不要重新默认使用旧 ORS 域名、公共 Nominatim 联想或 OTP 旧 TravelTime API。
+显式安排尚未完成的安装/版本锁、德国样本质量、当前完整服务条款、配额、JAR 与传递依赖核实。库的确定选型不代表生产 endpoint 已获授权或所有资料可用。

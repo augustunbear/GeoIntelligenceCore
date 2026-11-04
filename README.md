@@ -16,6 +16,13 @@ Keep the core industry-neutral; industry selection is optional. Industry profile
 - [ADR-0002](docs/architecture/adr/ADR-0002-generic-core-industry-profiles.md) — confirmed direction and review clarifications
 - [实施规划交接](docs/plans/IMPLEMENTATION_PLANNING_HANDOFF.md) — inputs and completion criteria for the next step-by-step plan
 
+## Open-source selection baseline
+
+- [逐项开源选型](docs/research/OPEN_SOURCE_SELECTION.md) — all functional requirements mapped to selected tools, alternatives and source evidence
+- [31 项候选核验快照](docs/research/OPEN_SOURCE_VERIFICATION_2026-11-04.md) — observed releases, maintenance and license evidence; not a tested dependency lock
+- [最佳接入方案](docs/architecture/INTEGRATION_BLUEPRINT.md) — optional dependencies, data flows, adapter boundaries and A01–A11 acceptance gates
+- [ADR-0003](docs/architecture/adr/ADR-0003-open-source-selection.md) — research selection baseline, with explicit production activation conditions
+
 ## Repository documentation
 
 - [AGENTS.md](AGENTS.md) — contribution and assistant workflow rules
