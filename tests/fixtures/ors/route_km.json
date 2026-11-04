@@ -1,0 +1,1 @@
+{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"summary":{"distance":1.25,"duration":600}},"geometry":{"type":"LineString","coordinates":[[10.0,50.0],[10.01,50.01]]}}],"metadata":{"query":{"units":"km"}}}

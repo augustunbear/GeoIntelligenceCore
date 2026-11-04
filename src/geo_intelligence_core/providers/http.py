@@ -105,14 +105,27 @@ class HttpGateway:
         if (p.max_calls_per_run < 1 or p.deadline_s is None or p.max_response_bytes is None or
                 p.cost_ceiling is None or not p.currency or not p.pricing_ref or self.cost_per_call is None):
             return fail(Status.unconfigured, 'missing_hard_limit')
-        if method != 'GET' or not isinstance(params, dict):
+        if method not in ('GET', 'POST') or not isinstance(params, dict):
             return fail(Status.invalid_input, 'method_or_params')
+        if method == 'POST':
+            try:
+                def contains_scope(value):
+                    return (isinstance(value, dict) and
+                            ('scope_token' in value or any(contains_scope(v) for v in value.values()))) or (
+                            isinstance(value, (tuple, list)) and any(contains_scope(v) for v in value))
+                if contains_scope(params):
+                    return fail(Status.invalid_input, 'unsafe_path_or_params')
+                body = json.dumps(params, allow_nan=False)
+                if len(body.encode('utf-8')) > p.max_response_bytes:
+                    return fail(Status.invalid_input, 'request_too_large')
+            except (TypeError, ValueError, OverflowError):
+                return fail(Status.invalid_input, 'unsafe_path_or_params')
         if (not path.startswith('/') or path.startswith('//') or '\\' in path or
                 '?' in path or '#' in path or any(ord(c) < 32 for c in path) or
-                'scope_token' in params or any(not isinstance(k, str) or
+                (method == 'GET' and 'scope_token' in params) or (method == 'GET' and any(not isinstance(k, str) or
                                                not isinstance(v, (str, int, float, bool)) or
                                                (isinstance(v, float) and not __import__('math').isfinite(v))
-                                               for k, v in params.items())):
+                                               for k, v in params.items()))):
             return fail(Status.invalid_input, 'unsafe_path_or_params')
         try:
             base = cfg.endpoint.rstrip('/') + '/'
@@ -146,12 +159,18 @@ class HttpGateway:
                             netloc = f'[{pinned_ip}]' if ':' in pinned_ip else pinned_ip
                             pinned = urlunsplit(('https', netloc, parsed.path, parsed.query, ''))
                             outbound_headers = {**self.headers, 'Host': parsed.hostname}
-                            request = client.build_request('GET', pinned, params=params if hops == 0 else None,
+                            request = client.build_request(method, pinned,
+                                                           params=params if method == 'GET' and hops == 0 else None,
+                                                           content=body if method == 'POST' else None,
                                                            headers=outbound_headers)
+                            if method == 'POST':
+                                request.headers['Content-Type'] = 'application/json'
                             request.extensions['sni_hostname'] = parsed.hostname
                             response = await client.send(request, stream=True)
                             try:
                                 if response.status_code in (301, 302, 303, 307, 308):
+                                    if method == 'POST':
+                                        return fail(Status.unavailable, 'redirect_rejected')
                                     location = response.headers.get('Location')
                                     if not location or hops >= 3:
                                         return fail(Status.unavailable, 'redirect_rejected')

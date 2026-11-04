@@ -1,6 +1,6 @@
 # GeoIntelligenceCore
 
-Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: P01–P06 changes are under review in stacked draft PRs and integration branches (2026-11-04). No release, deployment, live provider activation or analysis execution has been delivered.**
+Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: P01–P07 changes are under review in stacked draft PRs and integration branches (2026-11-04). No release, deployment, live provider activation or analysis execution has been delivered.**
 
 ## Mission / 定位
 
@@ -69,3 +69,7 @@ Install the optional `providers` extra for the HTTP gateway, atomic call/cost bu
 ## P05/P06 provider adapters (integration branch)
 
 The configurable Photon resolver returns forward/reverse location candidates for explicit confirmation. The Overpass adapter returns bounded, mapped nearby places and unverified company sites. Both use the controlled provider gateway. See [location usage](docs/usage/location.md); no live provider has been activated.
+
+## P07 routing (integration branch)
+
+The optional ORS adapter provides walking, cycling and driving routes and directed duration matrices through bounded HTTP POST. See [routing usage](docs/usage/routing.md). Live activation is pending endpoint permissions, quota and rights verification.

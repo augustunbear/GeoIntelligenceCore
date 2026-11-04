@@ -34,6 +34,7 @@ class RouteRequest(FrozenModel):
     destination: Point
     mode: str
     time: datetime | None = None
+    time_kind: Literal['depart_at', 'arrive_by'] = 'depart_at'
 
 
 class MatrixRequest(FrozenModel):
@@ -41,6 +42,7 @@ class MatrixRequest(FrozenModel):
     destinations: dict[str, Point]
     mode: str
     time: datetime | None = None
+    time_kind: Literal['depart_at', 'arrive_by'] = 'depart_at'
 
 
 class CatchmentRequest(FrozenModel):

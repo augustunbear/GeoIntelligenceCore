@@ -30,3 +30,8 @@ This pre-release does not include search, provider adapters, geometry operations
 
 - Add the optional Photon forward/reverse candidate resolver to the P06 Overpass and company-place branch. Preserve hard geographic filtering and explicit provider status; candidates require manual confirmation.
 - No live provider activation, release or deployment is claimed.
+
+## P07 integration — unreleased
+
+- Add optional ORS walking, cycling and driving routes and directed duration matrices through bounded JSON POST. Preserve explicit distance units and per-cell no-route status.
+- Live ORS activation remains pending current terms, quota and rights verification; no release or schema version bump is claimed.
