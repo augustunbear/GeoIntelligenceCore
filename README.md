@@ -8,6 +8,14 @@ Turn an independently verified location into traceable spatial facts: geocoding,
 
 First potential consumer: [RestaurantTrafficDiagnosis](https://github.com/augustunbear/RestaurantTrafficDiagnosis) (consultant-assisted low restaurant traffic diagnosis); other potential consumers include GastroPreisRadar and future site-selection products. No integration is implemented yet.
 
+## Functional design baseline / 功能设计基线
+
+Keep the core industry-neutral; industry selection is optional. Industry profiles and use-case templates are separate, versioned concepts. Begin with a food-service profile and three templates: surroundings, venue discovery, and location comparison. Validate generality with food-service, retail and education scenarios without building all three industry products. Business causation and scoring remain consumer responsibilities.
+
+- [完整功能设计](docs/design/FUNCTIONAL_DESIGN.md) — numbered capabilities, shared rules, templates and acceptance scenarios
+- [ADR-0002](docs/architecture/adr/ADR-0002-generic-core-industry-profiles.md) — confirmed direction and review clarifications
+- [实施规划交接](docs/plans/IMPLEMENTATION_PLANNING_HANDOFF.md) — inputs and completion criteria for the next step-by-step plan
+
 ## Repository documentation
 
 - [AGENTS.md](AGENTS.md) — contribution and assistant workflow rules
@@ -29,7 +37,9 @@ First potential consumer: [RestaurantTrafficDiagnosis](https://github.com/august
 6. No personal data or keys in repository, logs or sample payloads. Cross-tenant isolation enforced by the consumer or a future authenticated service.
 7. German/Chinese/English consumer-facing UI and documentation where exposed; provider-neutral API property names remain English.
 
-## Suggested delivery
+## Suggested delivery (earlier outline; reconcile in next planning step)
+
+Next task: generate a traceable step-by-step implementation plan from the functional baseline and planning handoff before starting implementation. The outline below is historical planning input, not the complete scope.
 
 Initial milestone: installable Python package and tests; geocode/search interface (Photon candidate), validated location contract and a manually selectable map location. Next: OSM POI and transportation evidence with deduplication and source quality, walking isochrones, Zensus spatial statistics. Validate all third-party licenses, cost, and coverage before enabling a provider in paid consultation products.
 
