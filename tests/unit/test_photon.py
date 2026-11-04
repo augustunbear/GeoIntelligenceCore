@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import httpx
+import pytest
 
 from geo_intelligence_core.models.common import Status
 from geo_intelligence_core.models.location import Point
@@ -103,6 +104,8 @@ def test_hard_filters_and_query_mapping():
 
 
 def test_invalid_bounded_and_unconfigured():
+    with pytest.raises(ValueError, match='version'):
+        PhotonCapabilities(api_version='legacy')
     resolver, seen = setup(httpx.Response(200, json={'features': []}), max_candidates=2)
     assert run(resolver.search(SearchRequest(text='a', limit=3), CTX)).status == Status.invalid_input
     assert run(resolver.search(SearchRequest(text='Berlin', country_codes=('DE', 'AT'), limit=2), CTX)).status == Status.unsupported

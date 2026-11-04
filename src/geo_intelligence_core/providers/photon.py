@@ -25,6 +25,8 @@ class PhotonCapabilities:
     fallback_language: str = 'de'
 
     def __post_init__(self):
+        if self.api_version != 'v1':
+            raise ValueError('unsupported Photon API version')
         if not self.supported_languages or self.fallback_language not in self.supported_languages:
             raise ValueError('fallback_language must be supported')
 
