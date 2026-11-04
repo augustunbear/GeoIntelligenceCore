@@ -1,0 +1,24 @@
+name: Offline core tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  p01:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install locked test dependencies
+        run: python -m pip install --require-hashes -r requirements/core-py312.lock
+      - name: Install package
+        run: python -m pip install --no-deps -e .
+      - name: Test offline core
+        run: python -m pytest tests/unit/test_location.py tests/contract/test_core.py -q
+      - name: Build distributions
+        run: |
+          python -m pip install build hatchling==1.29.0
+          python -m build --no-isolation
