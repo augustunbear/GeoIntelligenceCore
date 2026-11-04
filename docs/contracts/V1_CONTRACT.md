@@ -1,5 +1,7 @@
 # V1 contract proposal — draft, not implemented
 
+> Design reconciliation required: [ADR-0002](../architecture/adr/ADR-0002-generic-core-industry-profiles.md) and [functional design](../design/FUNCTIONAL_DESIGN.md) add optional industry profiles, separate templates, effective conditions, snapshot/version provenance and richer availability semantics. The examples below remain an early draft and do not implement or fully specify these concepts. Final schemas are a next-planning task.
+
 ## Canonical conventions
 - GeoJSON uses `[longitude, latitude]` WGS84, CRS EPSG:4326; typed Python point objects expose explicit `latitude` and `longitude`. Never silently reverse them.
 - Distance meters; routing time seconds; UTC RFC3339 timestamps with offsets; IDs opaque; business-specific IDs are **outside** this package.
