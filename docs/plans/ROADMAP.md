@@ -2,6 +2,8 @@
 
 **No software milestones below are implemented as of 2026-11-04.** This plan does not authorize production deployment or binding API spend.
 
+> Planning update (2026-11-04): this is the earlier staged outline. Next, generate a detailed plan from [the functional baseline](../design/FUNCTIONAL_DESIGN.md) and [planning handoff](IMPLEMENTATION_PLANNING_HANDOFF.md), including optional industry profiles, separate use-case templates and cross-industry acceptance. Reconcile scope explicitly; do not treat all target capabilities as first-release commitments or this outline as complete.
+
 ## M0 — research/architecture baseline
 - [x] Independent repository selected
 - [x] Source candidate inventory, provider/data policy, architecture/contract proposal and contributor workflow documented
