@@ -103,7 +103,7 @@ P01引入pytest、Pydantic、build及锁定工具；后续沿用已经建立的�
 
 **边界、资料与失败处理：** 无效配置不联网。未知权利不允许保留/缓存/导出；使用权限必须与用途匹配。
 
-- [ ] **1. 写失败测试。** test_precedence：模板半径1000、显式500、policy最大800 =>有效500并记录来源；显式900 =>invalid_input而不是裁成800。test_missing_capability：必需未配置=>unconfigured且fake.calls==0。test_selected_population_disabled：人口未选不产生错误，显式选但disabled保留原因。test_schema_roundtrip：未知字段/错误类型拒绝，null与0序列化不同。
+- [ ] **1. 写失败测试。** test_precedence：模板半径1000、显式500、policy最大800 =>有效500并记录来源；显式900 =>invalid_input而不是裁成800。test_missing_capability：必需未配置=>unconfigured且fake.calls==0；TopicSelection.required与模板required_topics取并集，显式false不得降低模板必需性。test_selected_population_disabled：人口未选不产生错误，显式选但disabled保留原因。test_schema_roundtrip：未知字段/错误类型拒绝，null与0序列化不同。
 - [ ] **2. 验证失败。** 运行 `python -m pytest tests/unit/test_configuration.py tests/contract/test_schemas.py -q`；未实现阶段预期FAIL，确认失败源于缺失行为而非测试配置。
 - [ ] **3. 实现。** 实现配置/模板独立版本、字段覆盖白名单、权利和强制上限优先级，语言值限定de/zh-CN/en。设计时不绑定真实 endpoint，不给网络预算无限默认；生成 JSON Schema 并校验样例。provider 端口签名以更新的契约为准，模型仅随本次验证用途落地。
 - [ ] **4. 验证通过。** 重跑同一命令，预期全部目标用例PASS；运行已有受影响契约回归。P13的live skip/blocked必须如实记录，不算PASS。
@@ -115,13 +115,13 @@ P01引入pytest、Pydantic、build及锁定工具；后续沿用已经建立的�
 **依赖：** P01/P02。
 **Files：** src/geo_intelligence_core/geometry.py; tests/unit/test_geometry.py; requirements/geometry-py312.lock; docs/usage/geometry.md; pyproject.toml。
 
-**Interfaces / 可见交付：** distance_m(Point,Point)->float；circle(CircleRequest)->Result[Region]；combine(list[Region],SpatialOperation)->Result[Region]。Region 支持合法 Polygon/MultiPolygon 和边界规则；输入行政边界必须带来源版本，此步不自动下载边界。
+**Interfaces / 可见交付：** distance_m(Point,Point)->float；circle(CircleRequest, *, limits: GeometryLimits)->Result[Region]；combine(list[Region],SpatialOperation, *, limits: GeometryLimits)->Result[Region]。Region 支持合法 Polygon/MultiPolygon 和边界规则；输入行政边界必须带来源版本，此步不自动下载边界。
 
 **边界、资料与失败处理：** 只称直线范围/指定区域，不推断道路可达性。geometry extra 缺失时核心仍可导入。
 
 - [ ] **1. 写失败测试。** test_geodesic：赤道(0,0)到(1,0)约111319.49m，误差<=1m；同点为0。test_boundary：方形(0,0)-(1,1)边界点covers=True、within=False。test_union：两个面积4、重叠2的合成投影方形联合面积6。test_invalid_or_unsupported：自交、反经线跨越、极区、大于policy范围明确invalid_input/unsupported，不自动凸包。test_circle：生成顶点距中心误差<=1m，绝不标walk。
 - [ ] **2. 验证失败。** 运行 `python -m pytest tests/unit/test_geometry.py -q`；未实现阶段预期FAIL，确认失败源于缺失行为而非测试配置。
-- [ ] **3. 实现。** 复用 pyproj.Geod/Transformer(always_xy=True)、Shapely 空间关系；本次支持不跨反经线且纬度绝对值<=80的局部面运算，超出明确unsupported并写文档。距离函数可用测地全局点对。面积用适合当地的等面积投影或测地面积，环/排除/交并差保持孔洞；范围上限由policy传入。
+- [ ] **3. 实现。** 复用 pyproj.Geod/Transformer(always_xy=True)、Shapely 空间关系；本次支持不跨反经线且纬度绝对值<=80的局部面运算，超出明确unsupported并写文档。距离函数可用测地全局点对。面积用适合当地的等面积投影或测地面积，环/排除/交并差保持孔洞；单项调用显式传入独立GeometryLimits，分析编排从可信policy派生该值；顶点数量在运算前检查、面积在可估算输入及最终输出检查，不要求离线调用提供网络预算。
 - [ ] **4. 验证通过。** 重跑同一命令，预期全部目标用例PASS；运行已有受影响契约回归。P13的live skip/blocked必须如实记录，不算PASS。
 - [ ] **5. 提交并独立审查。** `git add <本任务实际变更文件>`，`git commit -m "feat: add explicit geodesic and region operations"`；PR列出验收证据、权利/覆盖限制与未启用能力。
 
@@ -135,7 +135,7 @@ P01引入pytest、Pydantic、build及锁定工具；后续沿用已经建立的�
 
 **边界、资料与失败处理：** 生产具体调用量/费用/SLO没有现成证据：启用记录必须填来源条款、账户配额、计划用量、单次范围、并发和花费硬上限。缺任一必需值保持unconfigured；免费服务需记录价格0的依据，不猜账单。网络费用无法估计时拒绝收费调用。
 
-- [ ] **1. 写失败测试。** test_retry_budget：fake budget总2次，连续429后最多2次调用，Retry-After超过总deadline则立即rate_limited。test_concurrent_reservation：两个请求竞争最后1额度，恰好1个出网。test_ssrf_redirect：允许主机重定向127.0.0.1/私网/非HTTPS被拒绝，零后续调用。test_private_cache：scope A不能命中B；rights unknown/denied不写。test_response_limit：超大响应停止读取，不按空结果返回。test_no_secret_logs：token/原地址不出现日志。
+- [ ] **1. 写失败测试。** test_retry_budget：fake budget总2次，连续429后最多2次调用，Retry-After超过总deadline则立即rate_limited。test_concurrent_reservation：两个请求竞争最后1额度，恰好1个出网。test_ssrf_redirect：允许主机重定向127.0.0.1/私网/非HTTPS被拒绝，零后续调用。test_private_cache：AnalyzeRequest.scope_token经RequestContext传播至内部缓存键，scope A不能命中B；私有记录缺scope拒绝缓存；scope不外发；rights unknown/denied不写。test_response_limit：超大响应停止读取，不按空结果返回。test_no_secret_logs：token/原地址不出现日志。
 - [ ] **2. 验证失败。** 运行 `python -m pytest tests/unit/test_http_policy.py -q`；未实现阶段预期FAIL，确认失败源于缺失行为而非测试配置。
 - [ ] **3. 实现。** 设置有限超时、整体期限、响应流大小、每次重试前原子额度预留；默认关闭重定向，仅管理员白名单显式许可逐跳验证，禁私网解析及环境代理隐式继承。只读白名单查询可重试，401/403/invalid_input不重试；凭据仅运行时注入。提供单进程Budget参考实现，文档明确多worker必须注入共享额度实现，否则不声称应用总量受控。缓存默认关闭，私有scope与来源/版本/语言/参数/方法完整入键；旧资料仅显式选取。
 - [ ] **4. 验证通过。** 重跑同一命令，预期全部目标用例PASS；运行已有受影响契约回归。P13的live skip/blocked必须如实记录，不算PASS。
@@ -231,7 +231,7 @@ P01引入pytest、Pydantic、build及锁定工具；后续沿用已经建立的�
 
 **边界、资料与失败处理：** 不做报告排版、地图UI、客户权限系统；私有资料不能落公共缓存。合法旧快照使用必须显式指定。
 
-- [ ] **1. 写失败测试。** test_correction：修正保留原记录、理由/证据和scope；错误scope拒绝，不修改共享事实。test_conflict：冲突保留两来源，不平均。test_rights：export denied字段不出现JSON/CSV/GeoJSON及摘要，未知权利同样不导出；删除造成不完整时有redactions。test_snapshot：相同保留内容同hash，配置升级不改历史。test_csv_formula：以=,+,-,@或控制字符起始的文本不能被表格执行。test_locales：三语言键集合一致、数字/来源一致，原名不翻造。
+- [ ] **1. 写失败测试。** test_correction：correct必须提供同实体类型/身份的replacement，结果呈现新值且原记录不变；confirm/exclude不接受新值；修改source identity/rights被拒绝；错误scope拒绝，不修改共享事实。test_conflict：冲突保留两来源，不平均。test_rights：export denied字段不出现JSON/CSV/GeoJSON及摘要，未知权利同样不导出；删除造成不完整时有redactions。test_snapshot：相同保留内容同hash，配置升级不改历史。test_csv_formula：以=,+,-,@或控制字符起始的文本不能被表格执行。test_locales：三语言键集合一致、数字/来源一致，原名不翻造。
 - [ ] **2. 验证失败。** 运行 `python -m pytest tests/unit/test_evidence.py tests/unit/test_export.py -q`；未实现阶段预期FAIL，确认失败源于缺失行为而非测试配置。
 - [ ] **3. 实现。** 逐字段及派生来源检查用途/保存/导出权限，拒绝或脱敏时说明原因；快照规范化序列化并记录不可复现部分。摘要用确定性模板引用已存在事实，不接LLM。CSV规范引用和公式防护；GeoJSON只含合法图层与属性。没有完整权利时不能把原数据暗存快照。
 - [ ] **4. 验证通过。** 重跑同一命令，预期全部目标用例PASS；运行已有受影响契约回归。P13的live skip/blocked必须如实记录，不算PASS。
@@ -301,7 +301,7 @@ P01引入pytest、Pydantic、build及锁定工具；后续沿用已经建立的�
 | P08 | `assert unsupported_inbound.status == "unsupported" and gateway.calls == 0` |
 | P09 | `assert selected_population.status == "partial"`；`assert selected_population.data.topic_results["population_reference"].data is None` |
 | P10 | `assert forbidden_value not in exported.data`；`assert old_snapshot.canonical_hash == repeated_snapshot.canonical_hash` |
-| P11 | `assert incompatible.rows[0].difference is None`（Comparison行定义显式包含nullable difference） |
+| P11 | `assert incompatible.data.rows[0].difference is None`（Comparison行定义显式包含nullable difference） |
 | P12 | `assert subprocess_result.returncode == 0`（清洁环境只装core并禁网确认地点） |
 | P13 | `assert measured_calls <= activation.max_calls`；没有live配置时验证报告为blocked/skip而非pass |
 
@@ -385,7 +385,7 @@ wheel文件名在打包配置变更时按实际产物更新；安装阶段允许
 **Interfaces：** import_pbf(path:Path,query:PlaceQuery,evidence:Evidence)->Result[PlaceSet]；suggest_duplicates(places:list[Place])->Result[list[DuplicateCandidate]]。
 
 - [ ] **1. 确认启用前提。** 记录具体使用者、来源/权利和预算；缺失则维持disabled/unconfigured，不影响首批。
-- [ ] **2. 写并运行失败测试。** pyosmium最小区域合成PBF与HTTP归一结果一致；重复ID、越界、坏文件/超大小拒绝，无请求时下载。RapidFuzz仅相似排序，100分也不自动合并；同址不同店保留。数据文件不入git，合成fixtures可由测试生成，底层依赖单独锁与许可证审查。 运行 `python -m pytest tests/unit/test_pbf.py tests/unit/test_dedupe.py -q`，尚未实现时应FAIL。
+- [ ] **2. 写并运行失败测试。** pyosmium最小区域合成PBF与HTTP归一结果一致；重复ID、越界、坏文件/超大小拒绝，无显式请求时不得下载。RapidFuzz仅相似排序，100分也不自动合并；同址不同店保留。数据文件不入git，合成fixtures可由测试生成，底层依赖单独锁与许可证审查。 运行 `python -m pytest tests/unit/test_pbf.py tests/unit/test_dedupe.py -q`，尚未实现时应FAIL。
 - [ ] **3. 实现最小能力。** 在所列文件实现上述接口，复用P01—P12契约/权利/预算；只有本任务需要的可选依赖才安装、锁定与扫描。
 - [ ] **4. 验证与记录。** 同命令PASS，增加该能力的schema/三行业相关回归；对真实数据另记覆盖与性能，不用合成测试冒充现实验证。
 - [ ] **5. 独立提交PR。** 仅包含该项及必要文档，更新能力清单/状态/发布说明；保留关闭路径。
