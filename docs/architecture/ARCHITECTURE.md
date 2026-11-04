@@ -1,5 +1,9 @@
 # Architecture and module boundaries (proposal)
 
+## Functional boundaries added by design review
+
+See [ADR-0002](adr/ADR-0002-generic-core-industry-profiles.md) and [functional design](../design/FUNCTIONAL_DESIGN.md). The core is industry-neutral. Optional industry profiles define categories and defaults; independently versioned use-case templates compose capabilities. Effective parameters, provenance and versions remain visible. No silent semantic fallback or domain scoring. UI, durable storage, case permissions, scheduling and notifications remain consumer responsibilities; snapshot comparison is a core capability, not an authorization to operate a monitoring service. The package layout below is an earlier proposal, not a complete implementation plan.
+
 ## Delivery
 `geo_intelligence_core` shall be a Python package with `pyproject.toml` and typed public interfaces. Include an opt-in JavaScript mapping integration example, but map UI and identity belong to consumers. Later, optional authenticated FastAPI façade reuses the exact same application services; no HTTP service is required for initial delivery.
 

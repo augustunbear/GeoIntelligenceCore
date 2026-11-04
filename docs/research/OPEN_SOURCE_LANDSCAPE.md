@@ -1,5 +1,7 @@
 # Open-source research: candidates and integration path
 
+> Superseded for selection decisions by [detailed selection](OPEN_SOURCE_SELECTION.md), [verification snapshot](OPEN_SOURCE_VERIFICATION_2026-11-04.md) and [integration blueprint](../architecture/INTEGRATION_BLUEPRINT.md), researched on 2026-11-04. This earlier inventory is preserved as historical research, not the final provider/endpoint/version choice.
+
 Date: 2026-11-04. Assessment = desk review of projects and prior RestaurantTrafficDiagnosis research, **not** tested compatibility or legal opinion. Validate current version, maintenance, security, runtime, license and terms before production. External links are upstream project URLs, not vendored code.
 
 | Candidate | Source | Function | Integration recommendation | Caveats |
