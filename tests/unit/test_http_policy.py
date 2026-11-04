@@ -118,7 +118,7 @@ def test_no_secret_logs(caplog):
 def test_invalid_and_unconfigured_do_not_connect():
     transport = FakeTransport([httpx.Response(200, json={})])
     g = gateway(transport)
-    assert run(g.request('p', 'POST', '/x', {}, context())).status == Status.invalid_input
+    assert run(g.request('p', 'PUT', '/x', {}, context())).status == Status.invalid_input
     assert run(g.request('missing', 'GET', '/x', {}, context())).status == Status.unconfigured
     assert run(g.request('p', 'GET', '//localhost/x', {}, context())).status == Status.invalid_input
     assert transport.calls == 0

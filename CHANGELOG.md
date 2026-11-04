@@ -25,3 +25,9 @@ This pre-release does not include search, provider adapters, geometry operations
 
 - Combine P03 geometry with P04 bounded HTTP, budget and cache on the P04 branch; retain both optional extras and hashed lock sets.
 - Run both suites in CI. No live provider adapter, release or schema migration is claimed.
+
+## P07 stacked change — unreleased
+
+- Add optional ORS route and directed duration matrix adapter through the bounded HTTP gateway, with explicit units and per-cell no-route status.
+- Add bounded JSON POST support, synthetic provider fixtures, and offline tests; reject unsupported time conditions and unapproved legacy endpoints.
+- Live ORS activation remains pending current terms, quota and rights verification; no release or schema version bump is claimed.

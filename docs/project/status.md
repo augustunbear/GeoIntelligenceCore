@@ -44,3 +44,7 @@ P03 is based on P02 head `904bc3405169d94ef464193d39f575b60ba35d24`. Offline dis
 ## P03/P04 integration (unmerged)
 
 P04 head `3a2ee379b729f06334025dbc1d8fe48dd3ba1b5f` and P03 head `76a3cd415d24f1704e1159285a82bebc50183d71` independently build on P02. This branch places the complete P03 geometry change on P04, preserving both optional extras and hashed Python 3.12 locks. CI installs all lock sets and runs the combined offline test suite. The HTTP gateway remains a guarded infrastructure primitive; Photon, Overpass and ORS adapters have not been delivered.
+
+## P07 stacked ORS adapter (unmerged)
+
+P07 builds on the P03/P04 integration branch. It adds mocked route and directed matrix requests through the bounded gateway, explicit distance units and per-cell null handling. Offline tests pass; the live test is skipped until current ORS terms, quotas, attribution, and permissible endpoint use are verified. This does not activate a provider or imply release/deployment.
