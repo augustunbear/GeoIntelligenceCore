@@ -6,7 +6,7 @@ pushed_at 仅代表仓库活动，不证明代码质量、安全或用户支持�
 
 | 项目 | 观察到的 Release | 发布日期 UTC | 仓库推送日期 UTC | GitHub 许可识别 | 本项目决定 |
 |---|---|---|---|---|---|
-| [komoot/photon](https://github.com/komoot/photon) | [1.3.0](https://github.com/komoot/photon/releases/tag/1.3.0) | 2026-08-07 | 2026-11-02 | Apache-2.0 | 首选地址引擎；远程可配置适配器，演示实例仅受限验证 |
+| [komoot/photon](https://github.com/komoot/photon) | [1.3.0](https://github.com/komoot/photon/releases/tag/1.3.0) | 2026-08-07 | 2026-11-02 | Apache-2.0 | 首选地址引擎；可配置适配器，公共/演示实例按最新受控使用策略显式评估 |
 | [pelias/pelias](https://github.com/pelias/pelias) | 未取得 latest Release；不推定无发布 | — | 2026-07-24 | MIT | 备选地址平台；多源地址确有增益时替换，不初始自建 |
 | [osm-search/Nominatim](https://github.com/osm-search/Nominatim) | [v5.3.3](https://github.com/osm-search/Nominatim/releases/tag/v5.3.3) | 2026-10-14 | 2026-11-03 | GPL-3.0 | 不选公共接口作联想；自建/合约服务可做地址核实备选 |
 | [GIScience/openrouteservice](https://github.com/GIScience/openrouteservice) | [v10.1.0](https://github.com/GIScience/openrouteservice/releases/tag/v10.1.0) | 2026-10-14 | 2026-11-03 | GPL-3.0 | 首选步行/骑行/驾车路线与等时圈接口 |
@@ -35,7 +35,7 @@ pushed_at 仅代表仓库活动，不证明代码质量、安全或用户支持�
 | [geopy/geopy](https://github.com/geopy/geopy) | [2.5.0](https://github.com/geopy/geopy/releases/tag/2.5.0) | 2026-07-12 | 2026-07-12 | MIT | 暂不引入；不能代替来源元数据和本项目 provider 合约 |
 | [DinoTools/python-overpy](https://github.com/DinoTools/python-overpy) | 未取得 latest Release；不推定无发布 | — | 2026-11-02 | MIT | 暂不引入；小范围 JSON 查询直接通过 HTTPX，减少包装层 |
 | [Project-OSRM/osrm-backend](https://github.com/Project-OSRM/osrm-backend) | [v26.11.0](https://github.com/Project-OSRM/osrm-backend/releases/tag/v26.11.0) | 2026-11-01 | 2026-11-02 | BSD-2-Clause | 不选初始方案；重点是路线/矩阵，非本项目等时圈主路径 |
-| [r5py/r5py](https://github.com/r5py/r5py) | [v1.1.7](https://github.com/r5py/r5py/releases/tag/v1.1.7) | 2026-06-29 | 2026-09-20 | NOASSERTION | 首选可选公交区域分析；独立重型运行环境 |
+| [r5py/r5py](https://github.com/r5py/r5py) | [v1.1.7](https://github.com/r5py/r5py/releases/tag/v1.1.7) | 2026-06-29 | 2026-09-20 | NOASSERTION | 条件备选公交区域分析；暂缓启用，不为人口单独引入 |
 | [conveyal/r5](https://github.com/conveyal/r5) | [v7.6](https://github.com/conveyal/r5/releases/tag/v7.6) | 2026-08-01 | 2026-11-04 | MIT | R5py 下层引擎参考；不得擅自以最新版本替换其配套 JAR |
 
 ## 人工补充核验
