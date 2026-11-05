@@ -60,3 +60,5 @@ Follow-up independent review found duplicate Photon IDs could inflate candidate 
 Provider-scope review follow-up: Photon requires positive search and reverse cases, ORS positive route/matrix/catchments, and Overpass positive places before any HTTP. A partial capability batch cannot approve a whole provider. Synthetic complete batches exercise real adapters; incomplete Photon/ORS batches were observed passing before the fix and now block without requests. Full suite: 248 passed, 3 live skips.
 
 Checkout verification follow-up: generated __pycache__/*.pyc files no longer make ordinary Python imports fail the clean-checkout gate. Untracked Python source and modified tracked runner files still fail verification. An isolated real Git checkout/compile regression reproduced the blocker before the fix. Full suite: 249 passed, 3 live skips.
+
+The same source-identity regression also verifies that Git ignore rules cannot hide untracked Python source: all untracked paths are inspected, with only generated cache bytecode filtered. Final focused measurement suite: 47 passed; full suite immediately before this hardening: 249 passed, 3 live skips.

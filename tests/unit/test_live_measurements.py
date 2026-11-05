@@ -346,6 +346,7 @@ def test_checkout_identity_ignores_generated_cache_but_not_source_changes(tmp_pa
     assert compileall.compile_dir(str(tmp_path/'src'),quiet=1)
     assert compileall.compile_dir(str(runner.parent),quiet=1)
     assert m.package_identity()['verified']
+    (tmp_path/'.git/info/exclude').write_text('untracked.py\n')
     extra = tmp_path/'src/geo_intelligence_core/untracked.py'
     extra.write_text('untracked = True\n')
     assert not m.package_identity()['verified']
