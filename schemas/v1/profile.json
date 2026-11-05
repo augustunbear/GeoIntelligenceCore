@@ -1,0 +1,44 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "category_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Category Ids",
+      "type": "array"
+    },
+    "defaults": {
+      "additionalProperties": true,
+      "title": "Defaults",
+      "type": "object"
+    },
+    "display_groups": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Display Groups",
+      "type": "object"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version"
+  ],
+  "title": "Profile",
+  "type": "object"
+}

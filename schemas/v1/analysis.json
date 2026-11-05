@@ -1,0 +1,542 @@
+{
+  "$defs": {
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "method_version": {
+          "minLength": 1,
+          "title": "Method Version",
+          "type": "string"
+        },
+        "quality": {
+          "$ref": "#/$defs/Quality"
+        },
+        "reference_period": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference Period"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "rights": {
+          "$ref": "#/$defs/Rights"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_ref": {
+          "minLength": 1,
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "source_type": {
+          "minLength": 1,
+          "title": "Source Type",
+          "type": "string"
+        },
+        "valid_period": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid Period"
+        }
+      },
+      "required": [
+        "id",
+        "source_id",
+        "source_type",
+        "source_ref",
+        "retrieved_at",
+        "method_version",
+        "rights",
+        "quality"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Issue": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message_key": {
+          "title": "Message Key",
+          "type": "string"
+        },
+        "safe_params": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Safe Params",
+          "type": "object"
+        }
+      },
+      "required": [
+        "code",
+        "message_key"
+      ],
+      "title": "Issue",
+      "type": "object"
+    },
+    "Metric": {
+      "additionalProperties": false,
+      "properties": {
+        "denominator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Denominator"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "nature": {
+          "enum": [
+            "measured",
+            "derived",
+            "estimated",
+            "unverified"
+          ],
+          "title": "Nature",
+          "type": "string"
+        },
+        "numerator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Numerator"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "nature"
+      ],
+      "title": "Metric",
+      "type": "object"
+    },
+    "Permission": {
+      "enum": [
+        "allowed",
+        "denied",
+        "unknown"
+      ],
+      "title": "Permission",
+      "type": "string"
+    },
+    "Quality": {
+      "additionalProperties": false,
+      "properties": {
+        "coverage": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Coverage"
+        },
+        "freshness": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Freshness"
+        },
+        "precision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Precision"
+        },
+        "source_reliability": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Reliability"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        },
+        "verification": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verification"
+        }
+      },
+      "title": "Quality",
+      "type": "object"
+    },
+    "RequestContext": {
+      "additionalProperties": false,
+      "properties": {
+        "effective_conditions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Effective Conditions",
+          "type": "object"
+        },
+        "location_versions": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Location Versions",
+          "type": "object"
+        },
+        "method_version": {
+          "default": "manual-v1",
+          "title": "Method Version",
+          "type": "string"
+        },
+        "profile_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Profile Ref"
+        },
+        "request_id": {
+          "minLength": 1,
+          "title": "Request Id",
+          "type": "string"
+        },
+        "scope_token": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scope Token"
+        },
+        "template_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Template Ref"
+        }
+      },
+      "required": [
+        "request_id"
+      ],
+      "title": "RequestContext",
+      "type": "object"
+    },
+    "Result_Metric_": {
+      "additionalProperties": false,
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/RequestContext"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Metric"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/Issue"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "schema_version": {
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/Status"
+        }
+      },
+      "required": [
+        "status",
+        "data",
+        "context"
+      ],
+      "title": "Result[Metric]",
+      "type": "object"
+    },
+    "Rights": {
+      "additionalProperties": false,
+      "properties": {
+        "attribution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attribution"
+        },
+        "cache": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "checked_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Checked At"
+        },
+        "display": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "export": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "license_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License Url"
+        },
+        "permitted_purpose": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Permitted Purpose"
+        },
+        "redistribute": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "retain": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "use": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        }
+      },
+      "title": "Rights",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "ok",
+        "partial",
+        "no_results",
+        "not_collected",
+        "disabled",
+        "unconfigured",
+        "unsupported",
+        "unavailable",
+        "rate_limited",
+        "invalid_input",
+        "conflict",
+        "unknown"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "request_context": {
+      "$ref": "#/$defs/RequestContext"
+    },
+    "selected_topics": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Selected Topics",
+      "type": "array"
+    },
+    "topic_results": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Result_Metric_"
+      },
+      "title": "Topic Results",
+      "type": "object"
+    }
+  },
+  "required": [
+    "request_context"
+  ],
+  "title": "Analysis",
+  "type": "object"
+}

@@ -1,6 +1,6 @@
 # GeoIntelligenceCore
 
-Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: design, research and implementation plan only (2026-11-04); no functional library, API, deployment or provider integration has yet been delivered.**
+Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: P01–P07 changes are under review in stacked draft PRs and integration branches (2026-11-04). No release, deployment, live provider activation or analysis execution has been delivered.**
 
 ## Mission / 定位
 
@@ -52,4 +52,24 @@ Start with P01–P04: installable offline core, location confirmation, contracts
 
 Population remains optional: administrative references only when useful and inexpensive; grid aggregation is low priority; transit population is lowest priority and excluded from the first release. No JVM/R5py solely for population. Current live endpoint terms, actual budgets and quality still require verification.
 
-Next executable task: **P01 — installable core and manual location confirmation**. No code, tests, released package or production integration exists yet.
+Implementation progress: P01 provides installable offline manual location confirmation in [PR #3](https://github.com/augustunbear/GeoIntelligenceCore/pull/3). P02 adds immutable configuration/result shapes, five JSON schemas and capability preflight in a stacked PR. Both are unmerged and unreleased; provider calls, analysis execution and production integration remain pending.
+
+## P02 configuration preflight (stacked PR)
+
+`resolve_config` applies profile and template defaults, then explicit allowed parameters, and rejects overrides above policy ceilings. `ProviderRegistry` declares configured capability ports; preflight reports selected disabled or unconfigured topics without invoking providers. `Rights.allows` requires an explicit permission and matching purpose. The five checked-in JSON schemas are generated from Pydantic models. These are contract and offline preflight features, not a working analysis pipeline.
+
+## P03 local geometry (stacked feature branch)
+
+Install the optional `geometry` extra for offline ellipsoidal distance, explicit straight-line radial regions and local polygon overlays. Calls require independent area/vertex limits. See [geometry usage](docs/usage/geometry.md) for supported extent and boundary semantics. No road reachability or administrative data acquisition is implied.
+
+## P04 bounded provider access (integration branch)
+
+Install the optional `providers` extra for the HTTP gateway, atomic call/cost budget, and rights-gated cache. The gateway requires explicit endpoints and hard limits, rejects unsafe DNS and redirects, and returns typed failure statuses. See [provider activation](docs/operations/provider-activation.md). These controls do not activate a live provider or establish permission to cache its data.
+
+## P05/P06 provider adapters (integration branch)
+
+The configurable Photon resolver returns forward/reverse location candidates for explicit confirmation. The Overpass adapter returns bounded, mapped nearby places and unverified company sites. Both use the controlled provider gateway. See [location usage](docs/usage/location.md); no live provider has been activated.
+
+## P07 routing (integration branch)
+
+The optional ORS adapter provides walking, cycling and driving routes and directed duration matrices through bounded HTTP POST. See [routing usage](docs/usage/routing.md). Live activation is pending endpoint permissions, quota and rights verification.

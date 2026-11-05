@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling==1.29.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "geo-intelligence-core"
+version = "0.1.0a1"
+description = "Provider-neutral, offline-first geospatial facts"
+readme = "README.md"
+requires-python = ">=3.12,<4"
+dependencies = ["pydantic>=2.14,<3"]
+
+[project.optional-dependencies]
+geometry = ["shapely==2.2.0", "pyproj==3.8.0"]
+providers = ["httpx==0.28.1"]
+test = ["pytest>=9,<10"]
+build = ["build==1.6.1", "hatchling==1.29.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/geo_intelligence_core"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
