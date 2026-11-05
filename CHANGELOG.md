@@ -40,3 +40,10 @@ This pre-release does not include search, provider adapters, geometry operations
 - Add ORS time isochrones with explicit outbound/inbound capability and direction mapping, entrance selection, sorted second thresholds and bounded polygon validation.
 - Preserve MultiPolygon holes and report non-nested areas as partial without repairing or substituting a circle; add synthetic offline cases.
 - Add optional `CatchmentRequest.time_kind` with strict offset-aware time validation. Timed and arrival requests remain unsupported by this graph adapter. No live ORS activation or release is claimed.
+
+## P09 analysis composition — unreleased
+
+- Add packaged food-service profile and T-01/T-02/T-03 template definitions with explicit version references and no default catchment radius or population requirement.
+- Compose selected place topics under a shared call budget after required-capability preflight. Preserve individual failure status and nullable data; static place retrieval does not establish historical occupancy or attendance.
+- Extend OSM food-service mapping with restaurant, cafe, bar and fast_food category labels while preserving the existing broad category and source identity. Synthetic retail and education scenarios exercise the same core request path.
+- T-03 comparison execution remains reserved for P11; no live provider quality or population capability is claimed.

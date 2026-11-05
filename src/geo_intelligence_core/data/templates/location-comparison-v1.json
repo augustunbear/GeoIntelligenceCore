@@ -1,0 +1,1 @@
+{"id":"location-comparison","version":"1","profile_ref":"food-service@1","required_inputs":["locations"],"required_topics":[],"optional_topics":["routes","population_reference"],"defaults":{}}

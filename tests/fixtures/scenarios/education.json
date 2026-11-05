@@ -1,0 +1,1 @@
+{"scenario":"education","location_id":"school-a","category_ids":["education"],"raw_tags":{"amenity":"school"},"time_label":"morning arrival","expected":"same spatial selection without attendance inference"}

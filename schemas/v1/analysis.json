@@ -8,13 +8,25 @@
           "title": "Id",
           "type": "string"
         },
-        "method_version": {
+        "source_id": {
           "minLength": 1,
-          "title": "Method Version",
+          "title": "Source Id",
           "type": "string"
         },
-        "quality": {
-          "$ref": "#/$defs/Quality"
+        "source_type": {
+          "minLength": 1,
+          "title": "Source Type",
+          "type": "string"
+        },
+        "source_ref": {
+          "minLength": 1,
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
         },
         "reference_period": {
           "anyOf": [
@@ -28,29 +40,6 @@
           "default": null,
           "title": "Reference Period"
         },
-        "retrieved_at": {
-          "format": "date-time",
-          "title": "Retrieved At",
-          "type": "string"
-        },
-        "rights": {
-          "$ref": "#/$defs/Rights"
-        },
-        "source_id": {
-          "minLength": 1,
-          "title": "Source Id",
-          "type": "string"
-        },
-        "source_ref": {
-          "minLength": 1,
-          "title": "Source Ref",
-          "type": "string"
-        },
-        "source_type": {
-          "minLength": 1,
-          "title": "Source Type",
-          "type": "string"
-        },
         "valid_period": {
           "anyOf": [
             {
@@ -62,6 +51,17 @@
           ],
           "default": null,
           "title": "Valid Period"
+        },
+        "method_version": {
+          "minLength": 1,
+          "title": "Method Version",
+          "type": "string"
+        },
+        "rights": {
+          "$ref": "#/$defs/Rights"
+        },
+        "quality": {
+          "$ref": "#/$defs/Quality"
         }
       },
       "required": [
@@ -119,84 +119,6 @@
       "title": "Issue",
       "type": "object"
     },
-    "Metric": {
-      "additionalProperties": false,
-      "properties": {
-        "denominator": {
-          "anyOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "integer"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Denominator"
-        },
-        "evidence_ids": {
-          "default": [],
-          "items": {
-            "type": "string"
-          },
-          "title": "Evidence Ids",
-          "type": "array"
-        },
-        "nature": {
-          "enum": [
-            "measured",
-            "derived",
-            "estimated",
-            "unverified"
-          ],
-          "title": "Nature",
-          "type": "string"
-        },
-        "numerator": {
-          "anyOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "integer"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Numerator"
-        },
-        "unit": {
-          "title": "Unit",
-          "type": "string"
-        },
-        "value": {
-          "anyOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "integer"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Value"
-        }
-      },
-      "required": [
-        "value",
-        "unit",
-        "nature"
-      ],
-      "title": "Metric",
-      "type": "object"
-    },
     "Permission": {
       "enum": [
         "allowed",
@@ -209,6 +131,18 @@
     "Quality": {
       "additionalProperties": false,
       "properties": {
+        "precision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Precision"
+        },
         "coverage": {
           "anyOf": [
             {
@@ -232,18 +166,6 @@
           ],
           "default": null,
           "title": "Freshness"
-        },
-        "precision": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Precision"
         },
         "source_reliability": {
           "anyOf": [
@@ -288,12 +210,10 @@
     "RequestContext": {
       "additionalProperties": false,
       "properties": {
-        "effective_conditions": {
-          "additionalProperties": {
-            "type": "string"
-          },
-          "title": "Effective Conditions",
-          "type": "object"
+        "request_id": {
+          "minLength": 1,
+          "title": "Request Id",
+          "type": "string"
         },
         "location_versions": {
           "additionalProperties": {
@@ -302,10 +222,12 @@
           "title": "Location Versions",
           "type": "object"
         },
-        "method_version": {
-          "default": "manual-v1",
-          "title": "Method Version",
-          "type": "string"
+        "effective_conditions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Effective Conditions",
+          "type": "object"
         },
         "profile_ref": {
           "anyOf": [
@@ -319,9 +241,21 @@
           "default": null,
           "title": "Profile Ref"
         },
-        "request_id": {
-          "minLength": 1,
-          "title": "Request Id",
+        "template_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Template Ref"
+        },
+        "method_version": {
+          "default": "manual-v1",
+          "title": "Method Version",
           "type": "string"
         },
         "scope_token": {
@@ -335,18 +269,6 @@
           ],
           "default": null,
           "title": "Scope Token"
-        },
-        "template_ref": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Template Ref"
         }
       },
       "required": [
@@ -355,28 +277,25 @@
       "title": "RequestContext",
       "type": "object"
     },
-    "Result_Metric_": {
+    "Result_object_": {
       "additionalProperties": false,
       "properties": {
-        "context": {
-          "$ref": "#/$defs/RequestContext"
+        "schema_version": {
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/Status"
         },
         "data": {
           "anyOf": [
-            {
-              "$ref": "#/$defs/Metric"
-            },
+            {},
             {
               "type": "null"
             }
-          ]
-        },
-        "evidence": {
-          "items": {
-            "$ref": "#/$defs/Evidence"
-          },
-          "title": "Evidence",
-          "type": "array"
+          ],
+          "title": "Data"
         },
         "issues": {
           "items": {
@@ -385,13 +304,15 @@
           "title": "Issues",
           "type": "array"
         },
-        "schema_version": {
-          "default": "1.0",
-          "title": "Schema Version",
-          "type": "string"
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "title": "Evidence",
+          "type": "array"
         },
-        "status": {
-          "$ref": "#/$defs/Status"
+        "context": {
+          "$ref": "#/$defs/RequestContext"
         }
       },
       "required": [
@@ -399,12 +320,36 @@
         "data",
         "context"
       ],
-      "title": "Result[Metric]",
+      "title": "Result[object]",
       "type": "object"
     },
     "Rights": {
       "additionalProperties": false,
       "properties": {
+        "use": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "retain": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "cache": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "display": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "export": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "redistribute": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
         "attribution": {
           "anyOf": [
             {
@@ -417,9 +362,29 @@
           "default": null,
           "title": "Attribution"
         },
-        "cache": {
-          "$ref": "#/$defs/Permission",
-          "default": "unknown"
+        "license_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License Url"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
         },
         "checked_at": {
           "anyOf": [
@@ -434,26 +399,6 @@
           "default": null,
           "title": "Checked At"
         },
-        "display": {
-          "$ref": "#/$defs/Permission",
-          "default": "unknown"
-        },
-        "export": {
-          "$ref": "#/$defs/Permission",
-          "default": "unknown"
-        },
-        "license_url": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "License Url"
-        },
         "permitted_purpose": {
           "anyOf": [
             {
@@ -465,30 +410,6 @@
           ],
           "default": null,
           "title": "Permitted Purpose"
-        },
-        "redistribute": {
-          "$ref": "#/$defs/Permission",
-          "default": "unknown"
-        },
-        "retain": {
-          "$ref": "#/$defs/Permission",
-          "default": "unknown"
-        },
-        "source_url": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Source Url"
-        },
-        "use": {
-          "$ref": "#/$defs/Permission",
-          "default": "unknown"
         }
       },
       "title": "Rights",
@@ -518,6 +439,13 @@
     "request_context": {
       "$ref": "#/$defs/RequestContext"
     },
+    "topic_results": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Result_object_"
+      },
+      "title": "Topic Results",
+      "type": "object"
+    },
     "selected_topics": {
       "default": [],
       "items": {
@@ -525,13 +453,6 @@
       },
       "title": "Selected Topics",
       "type": "array"
-    },
-    "topic_results": {
-      "additionalProperties": {
-        "$ref": "#/$defs/Result_Metric_"
-      },
-      "title": "Topic Results",
-      "type": "object"
     }
   },
   "required": [

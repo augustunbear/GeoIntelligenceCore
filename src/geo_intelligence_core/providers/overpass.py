@@ -27,6 +27,9 @@ def _selectors(category_ids):
             for value, mapped in values.items():
                 if mapped == category:
                     selectors.add((key, value))
+    for category in category_ids:
+        if category in tags.get("amenity", {}) and category in _mapping().get("food_service_subtypes", ()):
+            selectors.add(("amenity", category))
     return sorted(selectors)
 
 
@@ -54,6 +57,9 @@ def _place(element, mapping, evidence_id):
     point = Point(latitude=center["lat"], longitude=center["lon"])
     categories = sorted({mapped for key, values in mapping["tags"].items()
                          if (value := tags.get(key)) and (mapped := values.get(value, values.get("*")))})
+    if tags.get("amenity") in mapping.get("food_service_subtypes", ()):
+        categories.append(tags["amenity"])
+        categories.sort()
     names = {key: value for key, value in tags.items() if key == "name" or key.startswith("name:")}
     contacts = {key: value for key, value in tags.items() if key in ("website", "contact:website", "phone", "contact:phone", "email", "contact:email")}
     address_keys = {"addr:country": "country_code", "addr:postcode": "postcode", "addr:city": "locality",

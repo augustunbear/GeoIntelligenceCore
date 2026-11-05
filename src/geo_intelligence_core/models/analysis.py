@@ -18,7 +18,7 @@ class Metric(FrozenModel):
 
 class Analysis(FrozenModel):
     request_context: RequestContext
-    topic_results: dict[str, Result[Metric]] = Field(default_factory=dict)
+    topic_results: dict[str, Result[object]] = Field(default_factory=dict)
     selected_topics: tuple[str, ...] = ()
 
 

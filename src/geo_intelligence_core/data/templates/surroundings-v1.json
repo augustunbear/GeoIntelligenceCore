@@ -1,0 +1,1 @@
+{"id":"surroundings","version":"1","profile_ref":"food-service@1","required_inputs":["locations"],"required_topics":[],"optional_topics":["places","transport_places","company_sites","routes","population_reference"],"defaults":{}}
