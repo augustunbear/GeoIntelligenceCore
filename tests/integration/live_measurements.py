@@ -266,7 +266,9 @@ def package_identity():
         if package == root / 'src/geo_intelligence_core':
             clean = subprocess.run(['git', '-C', str(root), 'diff', '--quiet', 'HEAD', '--', *paths], capture_output=True).returncode == 0
             untracked = subprocess.check_output(['git', '-C', str(root), 'ls-files', '--others', '--exclude-standard', '--', *paths], text=True)
-            if clean and not untracked.strip():
+            unexpected = [path for path in untracked.splitlines()
+                          if not (Path(path).suffix == '.pyc' and '__pycache__' in Path(path).parts)]
+            if clean and not unexpected:
                 commit = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
                 verified = True
     except (OSError, subprocess.CalledProcessError):

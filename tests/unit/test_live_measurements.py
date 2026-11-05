@@ -324,3 +324,31 @@ def test_duplicate_photon_ids_cannot_satisfy_candidate_count(operation):
     async def invoke(case):
         return Result(status=Status.ok,data=[candidate,candidate],context=CTX)
     assert asyncio.run(m.measure_cases([case],invoke=invoke,clock=lambda:1.0))['status']=='failed'
+
+
+def test_checkout_identity_ignores_generated_cache_but_not_source_changes(tmp_path, monkeypatch):
+    import compileall
+    import shutil
+    import subprocess
+    import geo_intelligence_core as imported
+    root = Path(__file__).parents[2]
+    shutil.copytree(root/'src', tmp_path/'src', ignore=shutil.ignore_patterns('__pycache__'))
+    runner = tmp_path/'tests/integration/live_measurements.py'
+    runner.parent.mkdir(parents=True)
+    shutil.copy2(PATH, runner)
+    def git(*args):
+        return subprocess.run(['git','-C',str(tmp_path),*args],check=True,capture_output=True)
+    git('init')
+    git('add','src','tests')
+    git('-c','user.name=Synthetic','-c','user.email=synthetic@example.invalid','commit','-m','fixture')
+    monkeypatch.setattr(imported,'__file__',str(tmp_path/'src/geo_intelligence_core/__init__.py'))
+    monkeypatch.setattr(m,'__file__',str(runner))
+    assert compileall.compile_dir(str(tmp_path/'src'),quiet=1)
+    assert compileall.compile_dir(str(runner.parent),quiet=1)
+    assert m.package_identity()['verified']
+    extra = tmp_path/'src/geo_intelligence_core/untracked.py'
+    extra.write_text('untracked = True\n')
+    assert not m.package_identity()['verified']
+    extra.unlink()
+    runner.write_text(runner.read_text()+'\n# Modified tracked runner\n')
+    assert not m.package_identity()['verified']

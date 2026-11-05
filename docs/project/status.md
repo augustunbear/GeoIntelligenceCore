@@ -58,3 +58,5 @@ Complete request cross-product labels are now required before I/O for positive a
 Follow-up independent review found duplicate Photon IDs could inflate candidate cardinality. Search/reverse measurements now reject duplicate IDs; both new tests were observed failing before the fix. Final full suite: 245 passed, 3 live skips. Runtime package sources remain unchanged.
 
 Provider-scope review follow-up: Photon requires positive search and reverse cases, ORS positive route/matrix/catchments, and Overpass positive places before any HTTP. A partial capability batch cannot approve a whole provider. Synthetic complete batches exercise real adapters; incomplete Photon/ORS batches were observed passing before the fix and now block without requests. Full suite: 248 passed, 3 live skips.
+
+Checkout verification follow-up: generated __pycache__/*.pyc files no longer make ordinary Python imports fail the clean-checkout gate. Untracked Python source and modified tracked runner files still fail verification. An isolated real Git checkout/compile regression reproduced the blocker before the fix. Full suite: 249 passed, 3 live skips.
