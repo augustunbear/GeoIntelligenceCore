@@ -1,7 +1,8 @@
-"""Live Overpass coverage requires a frozen, approved P13 activation record."""
+"""Overpass live activation requires bounded representative-region coverage."""
 import pytest
+from .live_gate import require_live_activation
 
 
-@pytest.mark.skip(reason="P13 approved instance, use/retention rights, quota and labeled region absent")
 def test_overpass_live_coverage_gate():
-    raise AssertionError("A live gate must measure coverage, not merely HTTP status")
+    record = require_live_activation("overpass")
+    pytest.fail("approved Overpass record detected; implement and independently review labeled POI coverage, truncation and failure measurements before activation")
