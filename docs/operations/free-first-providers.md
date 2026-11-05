@@ -22,7 +22,7 @@ Per-run limits already exist in `HttpGateway`. Daily caps across restarts/worker
 
 ## Switching instances without changing business logic
 
-The existing ports and adapters separate consumer logic from provider protocol. With the **same supported protocol**, change the provider composition/configuration:
+The existing ports separate consumer logic from provider protocol. Photon instance switching is regression-tested. ORS currently restricts host/path to HeiGIT and requires `credential_handle`; removing those fixed instance assumptions safely is a planned FF-03 change, not an already delivered capability. See the [incremental implementation plan](../superpowers/plans/2026-11-05-free-first-trial.md). The target for the **same supported protocol** is to change only provider composition/configuration:
 
 1. Select a distinct instance ID, base URL (including any reverse-proxy prefix), matching HTTPS origin allowlist and supported capability flags.
 2. Supply credentials as runtime headers only if required. Build a separate gateway per authenticated provider so headers cannot leak to another provider; inject a shared budget where the application needs a total across gateways.

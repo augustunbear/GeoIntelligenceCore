@@ -10,12 +10,13 @@
 
 **Spec:** [功能设计](../../design/FUNCTIONAL_DESIGN.md)、[V1目标契约](../../contracts/V1_CONTRACT.md)、[接入方案](../../architecture/INTEGRATION_BLUEPRINT.md)、ADR-0001/0002/0003。
 
-基于2026-11-04实际读取的main：`99bce3d90186acf8a431896341ab95fc66708ac7`（PR #1已合并）；开始规划时开放PR为空，仓库仅有文档。本文新增代码路径均为**未来创建目标**，不是已存在实现。计划提交不代表开发、测试、发布或部署已完成。
+原始设计基线为 2026-11-04 main `99bce3d90186acf8a431896341ab95fc66708ac7`；2026-11-05 按当前 main `b7fb468b1122260251b5ef051a1a5fc9219e1878` 更新执行入口。P01–P12 已合并离线实现，P13 已合并预检/阻塞记录；真实来源 runner 与现场质量仍待完成。下列 P01–P13 清单保留为原始任务规格，未勾选不表示当前代码尚未实现，也不能整批勾选冒充所有目标已验收。实际状态以 [项目状态](../../project/status.md) 与验收记录为准。
 
+**下一步执行 [免费优先试用增量计划 FF-01–FF-05](2026-11-05-free-first-trial.md)**；不重新从 P01 开发。免费公共来源优先、同协议配置切换、P13 现场补齐与 E07 交接以增量计划为准。
 ## Global Constraints
 
 - 核心保持行业无关；行业配置与用途模板独立版本。首先提供餐饮类别和三个模板；零售、教育仅验证通用性。
-- 系统面向受控使用者，不完全向大众开放，调用次数可控。
+- 系统面向受控使用者，每天几次至几十次查询；免费公共来源优先，付费/自建只作后续选择。
 - 最小基础包：Pydantic＋标准库；不需要密钥/数据库/云账号，导入不得联网或启动JVM。
 - 数据权利/调用方强制约束 > 合法显式参数 > 模板可覆盖默认 > 行业基础默认。
 - GeoJSON WGS84 [longitude, latitude]；距离米、持续时间秒、UTC时间戳与IANA当地时区分开。
@@ -133,7 +134,7 @@ P01引入pytest、Pydantic、build及锁定工具；后续沿用已经建立的�
 
 **Interfaces / 可见交付：** HTTPX AsyncClient 通过 HttpGateway.request(provider_id: str, method: str, path: str, params: dict, context: RequestContext)->Result[dict]。构造注入ProviderConfig、UsagePolicy、Budget、clock、transport；Cache.get/put只接收已获retain/cache许可的对象和完整键。
 
-**边界、资料与失败处理：** 生产具体调用量/费用/SLO没有现成证据：启用记录必须填来源条款、账户配额、计划用量、单次范围、并发和花费硬上限。缺任一必需值保持unconfigured；免费服务需记录价格0的依据，不猜账单。网络费用无法估计时拒绝收费调用。
+**边界、资料与失败处理：** 生产具体调用量/费用/SLO没有现成证据：启用记录必须填来源条款、适用的公开/账户限额、计划用量、单次范围、并发和花费硬上限。缺任一必需值保持unconfigured；免费服务需记录价格0的依据，不猜账单。网络费用无法估计时拒绝收费调用。
 
 - [ ] **1. 写失败测试。** test_retry_budget：fake budget总2次，连续429后最多2次调用，Retry-After超过总deadline则立即rate_limited。test_concurrent_reservation：两个请求竞争最后1额度，恰好1个出网。test_ssrf_redirect：允许主机重定向127.0.0.1/私网/非HTTPS被拒绝，零后续调用。test_private_cache：AnalyzeRequest.scope_token经RequestContext传播至内部缓存键，scope A不能命中B；私有记录缺scope拒绝缓存；scope不外发；rights unknown/denied不写。test_response_limit：超大响应停止读取，不按空结果返回。test_no_secret_logs：token/原地址不出现日志。
 - [ ] **2. 验证失败。** 运行 `python -m pytest tests/unit/test_http_policy.py -q`；未实现阶段预期FAIL，确认失败源于缺失行为而非测试配置。
@@ -149,7 +150,7 @@ P01引入pytest、Pydantic、build及锁定工具；后续沿用已经建立的�
 
 **Interfaces / 可见交付：** PhotonResolver 实现 LocationResolver.search/reverse；消费 HttpGateway，返回 Candidate列表，无自动确认。SearchRequest country_codes/bbox 是硬条件，near只是偏好。
 
-**边界、资料与失败处理：** 无获准实例=>unconfigured。公共轻量实例只能显式配置并记录条款，不自动自建、不绑定demo。实时质量验证在P13。
+**边界、资料与失败处理：** 无获准实例=>unconfigured。当前首选 Photon 公共实例；仅在显式选择后调用，记录允许合理小量使用的公开条款，不需注册或购买。默认导入仍不联网，实时质量验证在 P13 / FF-04。
 
 - [ ] **1. 写失败测试。** test_candidates：两个同名候选返回2个，confirmation不存在；缺门牌精度不标entrance。test_lang：zh-CN不支持时记录所用语言fallback和原名，不能伪称中文全覆盖。test_empty_vs_timeout：空成功为no_results，超时unavailable/data=null。test_query_mapping：按目标服务版本映射q/lang/limit/country/bbox，服务不支持硬过滤时本地过滤或unsupported。test_cancel_stale：取消过时请求后不继续重试。
 - [ ] **2. 验证失败。** 运行 `python -m pytest tests/unit/test_photon.py -q`；未实现阶段预期FAIL，确认失败源于缺失行为而非测试配置。
@@ -165,7 +166,7 @@ P01引入pytest、Pydantic、build及锁定工具；后续沿用已经建立的�
 
 **Interfaces / 可见交付：** OverpassPlaceProvider.search(PlaceQuery,RequestContext)->Result[PlaceSet]；normalize_places(list[Place],PlaceQuery)->Result[PlaceSet]。通用category覆盖餐饮、零售、办公、教育、医疗、住宿、文体、公共服务、交通停车、开放空间。
 
-**边界、资料与失败处理：** OSM来源记录ODbL/归属和覆盖未知；不采购企业人数，不推断办公人数/停车空位/站点班次。未知类别不强塞餐饮。
+**边界、资料与失败处理：** 当前 Overpass 首选 Private.coffee 免费公共实例，无需账号/key；记录公平使用及公开条款。OSM来源记录ODbL/归属和覆盖未知；不采购企业人数，不推断办公人数/停车空位/站点班次。未知类别不强塞餐饮。
 
 - [ ] **1. 写失败测试。** test_typed_ids：node/7和way/7不合并；同source/type/id的重复合并且保留证据。test_same_address：同址两店unique_count==2；跨源疑似同店仅标候选。test_partial_remark：带timeout remark且有记录=>partial；无可用记录=>unavailable，不是ok空列表。test_boundary_filter：按P03约定纳入。test_company_site：office记录不是已验证法律主体，workforce=null。test_parking_stop：容量/班次缺失仍null。
 - [ ] **2. 验证失败。** 运行 `python -m pytest tests/unit/test_places.py tests/unit/test_overpass.py -q`；未实现阶段预期FAIL，确认失败源于缺失行为而非测试配置。
@@ -181,7 +182,7 @@ P01引入pytest、Pydantic、build及锁定工具；后续沿用已经建立的�
 
 **Interfaces / 可见交付：** OrsRoutingProvider.route/matrix实现契约；route显式origin/destination，MatrixRequest保留有序origin/destination IDs，每格独立status。endpoint配置使用经启用核实的新HeiGIT路由。
 
-**边界、资料与失败处理：** 适配器mock可交付；线上启用必须取得完整当前ToS/账户配额/输出归属和报告使用规则。未通过不得标生产可用。
+**边界、资料与失败处理：** 优先 ORS 免费 Standard，未取得 key 不阻塞 Photon/Overpass。适配器mock可交付；线上启用必须取得完整当前ToS/账户配额/输出归属和报告使用规则。未通过不得标生产可用。
 
 - [ ] **1. 写失败测试。** test_units：供应商秒值保留秒、km明确转m；禁止无单位输入猜测。test_directed_matrix：A到B=600s、B到A=900s，结果不转置；null格不是0。test_no_route：unavailable/unsupported原因可解释，无直线替代。test_time_support：不支持arrive_by的模式在请求前unsupported。test_endpoints：未经允许的旧主机不自动回退。
 - [ ] **2. 验证失败。** 运行 `python -m pytest tests/unit/test_ors_routes.py -q`；未实现阶段预期FAIL，确认失败源于缺失行为而非测试配置。
@@ -277,9 +278,9 @@ P01引入pytest、Pydantic、build及锁定工具；后续沿用已经建立的�
 
 **Interfaces / 可见交付：** 验收输入为具体版本wheel、受控实例许可、消费者实际调用需求和已批准预算；输出逐门pass/fail/blocked/not_applicable及原始证据位置。不得把mock成功写成真实质量达标。
 
-**边界、资料与失败处理：** 本任务不自行购买服务、自建集群或部署。若提供者质量未通过，准确交付离线/预览版，不称生产就绪；替换来源按ADR另评估。
+**边界、资料与失败处理：** 本任务不自行购买服务、自建集群或部署。若提供者质量未通过，准确交付离线/预览版，不称生产就绪；同协议实例按 FF-03 改配置并复验；不同协议补适配器，改变架构边界才另起 ADR。
 
-- [ ] **1. 写失败测试。** test_live_opt_in：无GEO_LIVE_TESTS=1或许可/密钥则skip且报告未验证；不是pass。德国标注样本至少覆盖城市/郊区/乡村/变音符/缺门牌/同名各类，记录候选命中、歧义和失败，不仅检查200。test_budget：代表区域并发回放记录calls、p50/p95、内存；超限拒绝且不会追加请求。
+- [ ] **1. 写失败测试。** test_live_opt_in：无GEO_LIVE_TESTS=1、适用许可或必需认证则skip且报告未验证；Photon/Overpass不强制密钥，费用0合法；不是pass。德国标注样本至少覆盖城市/郊区/乡村/变音符/缺门牌/同名各类，记录候选命中、歧义和失败，不仅检查200。test_budget：代表区域并发回放记录calls、p50/p95、内存；超限拒绝且不会追加请求。
 - [ ] **2. 验证失败。** 运行 `python -m pytest tests/integration tests/performance -q（仅显式配置获准live环境；否则离线记录blocked/skip）`；未实现阶段预期FAIL，确认失败源于缺失行为而非测试配置。
 - [ ] **3. 实现。** 先把实际消费者期望、样本选择和成功门槛写入启用记录，再做有预算的验证，防止测后改指标。固定各源当前条款/配额/归属及允许用途，尤其ORS完整账户条款；不能取得时只阻塞该provider线上启用，离线核心可交付。A06/A08计算不适用，A07随E01启用。完成独立审查，修复后记录证据，不以CI=部署。
 - [ ] **4. 验证通过。** 重跑同一命令，预期全部目标用例PASS；运行已有受影响契约回归。P13的live skip/blocked必须如实记录，不算PASS。
@@ -404,16 +405,16 @@ wheel文件名在打包配置变更时按实际产物更新；安装阶段允许
 - [ ] **4. 验证与记录。** 同命令PASS，增加该能力的schema/三行业相关回归；对真实数据另记覆盖与性能，不用合成测试冒充现实验证。
 - [ ] **5. 独立提交PR。** 仅包含该项及必要文档，更新能力清单/状态/发布说明；保留关闭路径。
 
-### E07：真实消费者接入与是否服务化
+### E07：作为依赖接入真实消费者
 
-**排期与原因：** 后续跨仓库任务；本计划不直接修改消费者。
+**排期与原因：** 跨仓库任务；先核对消费者当前事实分支和已完成 E07，不重复开发。本次增量见 FF-05，核心库不单独部署。
 **依赖：** P12/P13可用能力。
 **关联：** F-12/F-13；A01/A09/A11。
 **Files：** 本库 docs/usage/consumer-integration.md; tests/contract/test_consumer.py；消费者文件路径在读取其当前AGENTS/事实分支后确定，不虚构现有模块。
 **Interfaces：** 先对RestaurantTrafficDiagnosis真实运行时/包分发/资料权利/案件隔离做接入核对，形成其独立实施PR；消费本库固定commit/tag的公共API，将Evidence映射为消费者来源记录。
 
 - [ ] **1. 确认启用前提。** 记录具体使用者、来源/权利和预算；缺失则维持disabled/unconfigured，不影响首批。
-- [ ] **2. 写并运行失败测试。** 验证同一地点重新确认使旧分析标过期而不抹历史；保存刷新后恢复；案件A不得读B资料；部分结果可解释；三语与地图归属保持；诊断证据须人工批准。本库没有restaurant_id。第二消费者使用同发布物后才评估HTTP服务/PostGIS/自建，不把服务化当必做阶段。 运行 `本库运行 python -m pytest tests/contract/test_consumer.py -q；消费者按其实际AGENTS规定测试并记录命令，不用虚假命令声称通过`，尚未实现时应FAIL。
+- [ ] **2. 写并运行失败测试。** 验证同一地点重新确认使旧分析标过期而不抹历史；保存刷新后恢复；案件A不得读B资料；部分结果可解释；三语与地图归属保持；诊断证据须人工批准。本库没有restaurant_id。新增消费者仍优先依赖安装；HTTP服务/PostGIS是范围外独立决策，来源自建并不要求把核心服务化。 运行 `本库运行 python -m pytest tests/contract/test_consumer.py -q；消费者按其实际AGENTS规定测试并记录命令，不用虚假命令声称通过`，尚未实现时应FAIL。
 - [ ] **3. 实现最小能力。** 在所列文件实现上述接口，复用P01—P12契约/权利/预算；只有本任务需要的可选依赖才安装、锁定与扫描。
 - [ ] **4. 验证与记录。** 同命令PASS，增加该能力的schema/三行业相关回归；对真实数据另记覆盖与性能，不用合成测试冒充现实验证。
 - [ ] **5. 独立提交PR。** 仅包含该项及必要文档，更新能力清单/状态/发布说明；保留关闭路径。
@@ -468,7 +469,7 @@ wheel文件名在打包配置变更时按实际产物更新；安装阶段允许
 | 生产调用预算 | 默认不联网；调用者显式提供总量/并发/范围/费用上限 | P04定义可验证约束；P13依据实际需求/账户条款记录具体值，缺失不启用 |
 | SLO与地址质量 | 不捏造当前流量/命中率/延迟 | P13测试前登记消费者容忍度与人工样本判据，实测后给结论 |
 | 开源精确版本 | 复用已选库，Python3.12先测 | P01及各extra引入任务实际解析/安装/锁hash/审计；有问题再按ADR替换 |
-| ORS/Photon/Overpass实例 | 只接已获准配置，无默认demo | P13完整条款/配额/覆盖记录；受控公共实例也必须适用且可接受无SLA |
+| ORS/Photon/Overpass实例 | 显式选择免费试用配置：ORS Standard / Photon demo / Private.coffee | FF-01–FF-04；公开条款允许即无需额外书面许可，有账号才核对账号额度；不承诺 SLA |
 | 餐饮范围默认 | 不给全行业统一半径；请求明确范围 | P09用缺失范围=>invalid_input测试落实 |
 | 真实消费者 | 本库示例与schema先行，commit pin | E07读取消费者事实分支再确定真实编辑点和运行时兼容 |
 | POP-01/02/03 | 当前均不启用，分别条件/低/最低 | 各POP任务收益与数据门可选择defer/omit |
@@ -479,4 +480,4 @@ wheel文件名在打包配置变更时按实际产物更新；安装阶段允许
 规划自检：任务无依赖环；F/G/T/V/A都有[追踪归属](../../plans/REQUIREMENTS_TRACEABILITY.md)；首版中只覆盖子集的F功能明确列出后续任务；旧路线图/契约/状态同步；公共函数命名与字段统一；五类高风险均有归属测试。
 此文未运行任何软件测试或安装任何依赖。将来每个任务完成时，提交实际命令、结果、commit、审查结论与适用验收门，不能只勾选本文。
 
-建议下一次从P01开始，一次完成一个可审查步骤；不要先把所有目录与空接口搭完。实施前由用户选择继续执行及执行方式；本次仅保存计划，不开始开发、合并或部署。
+下一步从增量计划 FF-01 开始，每项独立验证与 PR；P01–P12 不重做。本文更新实施安排，不声称新增功能已开发、服务已激活或已部署。
