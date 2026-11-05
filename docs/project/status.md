@@ -52,3 +52,6 @@ P05 Photon PR #8 independently builds on P04; P06 Overpass/places PR #9 builds o
 ## P07 integration (unmerged)
 
 P07 route and matrix changes from draft PR #10 are combined with the P05/P06 integration head. JSON POST remains bounded by the P04 gateway. The live ORS test is skipped pending current terms, quotas, attribution and permitted endpoint use.
+## P08 stacked network catchments (unmerged)
+
+P08 builds on P07 and adds mocked ORS isochrones with separately gated inbound direction, explicit time semantics, geometry limits and topology validation. Non-nested polygons are reported partial; malformed data is unknown; no circle fallback occurs. The offline tests do not establish live graph coverage, rights or endpoint readiness. P08 remains an unmerged draft and does not activate real credentials.

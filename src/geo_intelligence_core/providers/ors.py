@@ -8,7 +8,10 @@ from urllib.parse import urlsplit
 from geo_intelligence_core.models.common import Issue, Result, Status
 from geo_intelligence_core.models.policy import ProviderConfig
 from geo_intelligence_core.models.requests import RequestContext
-from geo_intelligence_core.models.spatial import MatrixCell, MatrixRequest, Route, RouteRequest, TravelMatrix
+from geo_intelligence_core.models.spatial import (Catchment, CatchmentRequest, GeometryLimits,
+    MatrixCell, MatrixRequest, Region, Route, RouteRequest, TravelMatrix)
+from geo_intelligence_core.catchments import checked_network_polygon, nesting_violations
+from geo_intelligence_core.geometry import _GeometryProblem
 from .http import HttpGateway
 
 _PROFILES = {'walking': 'foot-walking', 'cycling': 'cycling-regular', 'driving': 'driving-car'}
@@ -126,3 +129,72 @@ class OrsRoutingProvider:
                 context=context)
         except (KeyError, TypeError, ValueError):
             return _failure(Status.unknown, 'invalid_matrix_response', context, kind=TravelMatrix)
+
+    async def catchments(self, request: CatchmentRequest, context: RequestContext) -> Result[list[Catchment]]:
+        failure = self._preflight(request.mode, context, Catchment, time=request.time,
+                                  time_kind=request.time_kind)
+        if failure is not None:
+            return failure
+        cfg = self.gateway.providers[self.provider_id]
+        if request.direction == 'inbound' and not cfg.capability_flags.get('catchment_inbound', False):
+            return _failure(Status.unsupported, 'inbound_not_enabled', context, kind=Catchment)
+        if not request.durations_s or any(v <= 0 for v in request.durations_s):
+            return _failure(Status.invalid_input, 'durations', context, kind=Catchment)
+        point = request.location.point
+        if request.entrance_id is not None:
+            entrance = next((e for e in request.location.entrances if e.id == request.entrance_id), None)
+            if entrance is None or request.mode not in entrance.modes:
+                return _failure(Status.invalid_input, 'entrance', context, kind=Catchment)
+            point = entrance.point
+        policy = self.gateway.policy
+        if policy.max_area_m2 is None or policy.max_geometry_vertices is None:
+            return _failure(Status.unconfigured, 'geometry_limits', context, kind=Catchment)
+        limits = GeometryLimits(max_area_m2=policy.max_area_m2,
+                                max_vertices=policy.max_geometry_vertices)
+        durations = sorted(set(request.durations_s))
+        location_type = 'destination' if request.direction == 'inbound' else 'start'
+        body = {'locations': [[point.longitude, point.latitude]], 'range': durations,
+                'range_type': 'time', 'location_type': location_type}
+        reply = await self.gateway.request(self.provider_id, 'POST',
+            f'/v2/isochrones/{_PROFILES[request.mode]}', body, context)
+        if reply.status != Status.ok:
+            return Result[list[Catchment]](status=reply.status, data=None,
+                                           issues=reply.issues, context=context)
+        try:
+            raw = reply.data
+            query = raw['metadata']['query']
+            if (query['location_type'] != location_type or query['range_type'] != 'time' or
+                tuple(query['range']) != tuple(durations)):
+                raise ValueError('response query does not match request')
+            features = raw['features']
+            if not isinstance(features, (list, tuple)) or len(features) != len(durations):
+                raise ValueError('missing thresholds')
+            by_duration = {}
+            for feature in features:
+                properties = feature['properties']
+                duration = properties['value']
+                if (type(duration) is not int or duration not in durations or
+                    duration in by_duration or properties['group_index'] != 0):
+                    raise ValueError('unexpected threshold or group')
+                geometry = feature['geometry']
+                try:
+                    polygon = checked_network_polygon(geometry, limits=limits)
+                except _GeometryProblem as exc:
+                    if exc.code == 'geometry_extra_missing':
+                        return _failure(Status.unavailable, exc.code, context, kind=Catchment)
+                    return _failure(Status.unknown, 'invalid_isochrone_polygon', context, kind=Catchment)
+                except (ValueError, TypeError, KeyError, IndexError, AttributeError):
+                    return _failure(Status.unknown, 'invalid_isochrone_polygon', context, kind=Catchment)
+                region = Region(id=f'{self.provider_id}:{request.location.id}:{request.location.version}:{request.direction}:{request.mode}:{duration}',
+                    version='1', geometry=geometry, method='ors_isochrone_time',
+                    source_ref=self.provider_id, boundary_rule='point_covers')
+                by_duration[duration] = (Catchment(region=region, direction=request.direction,
+                    mode=request.mode, duration_s=duration, time=request.time), polygon)
+            ordered = [by_duration[d] for d in durations]
+            nested = not nesting_violations([polygon for _, polygon in ordered])
+            return Result[list[Catchment]](status=Status.ok if nested else Status.partial,
+                data=[catchment for catchment, _ in ordered],
+                issues=[] if nested else [Issue(code='non_nested_isochrones', message_key='routing.non_nested_isochrones')],
+                context=context)
+        except (KeyError, TypeError, IndexError, ValueError, AttributeError):
+            return _failure(Status.unknown, 'invalid_isochrone_response', context, kind=Catchment)

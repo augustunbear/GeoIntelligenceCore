@@ -1,8 +1,9 @@
 """Typed spatial data; geometric computations belong to P03."""
 from datetime import datetime
 from typing import Literal
-from pydantic import Field, StrictFloat, StrictInt
+from pydantic import Field, StrictFloat, StrictInt, field_validator
 from .common import FrozenModel
+from .evidence import utc
 from .location import Location, Point
 
 
@@ -52,6 +53,12 @@ class CatchmentRequest(FrozenModel):
     mode: str
     durations_s: tuple[StrictInt, ...]
     time: datetime | None = None
+    time_kind: Literal['depart_at', 'arrive_by'] = 'depart_at'
+
+    @field_validator('time')
+    @classmethod
+    def utc_time(cls, value):
+        return utc(value) if value is not None else None
 
 
 class Route(FrozenModel):

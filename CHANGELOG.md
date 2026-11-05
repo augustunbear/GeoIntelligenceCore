@@ -35,3 +35,8 @@ This pre-release does not include search, provider adapters, geometry operations
 
 - Add optional ORS walking, cycling and driving routes and directed duration matrices through bounded JSON POST. Preserve explicit distance units and per-cell no-route status.
 - Live ORS activation remains pending current terms, quota and rights verification; no release or schema version bump is claimed.
+## P08 stacked change — unreleased
+
+- Add ORS time isochrones with explicit outbound/inbound capability and direction mapping, entrance selection, sorted second thresholds and bounded polygon validation.
+- Preserve MultiPolygon holes and report non-nested areas as partial without repairing or substituting a circle; add synthetic offline cases.
+- Add optional `CatchmentRequest.time_kind` with strict offset-aware time validation. Timed and arrival requests remain unsupported by this graph adapter. No live ORS activation or release is claimed.
