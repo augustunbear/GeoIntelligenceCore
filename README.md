@@ -1,6 +1,6 @@
 # GeoIntelligenceCore
 
-Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: 0.1.0a1 source candidate under test, unreleased. Offline synthetic analysis and consumer packaging checks exist; live providers are not activated and no consumer repository is integrated.**
+Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: 0.1.0a1 source candidate under test, unreleased. Offline synthetic analysis and consumer packaging checks exist; live providers are not activated here; consumer integration status is owned by each consumer repository.**
 
 ## Install and offline consumer example
 
@@ -10,7 +10,7 @@ Requires Python 3.12. Build with `python -m build`, then install the wheel from 
 
 Turn an independently verified location into traceable spatial facts: geocoding, catchments, nearby places and infrastructure, area-level statistics, source attribution, and quality indicators. GeoIntelligenceCore must **not** decide restaurant business causes or invent customer counts. Domain applications interpret the evidence.
 
-First potential consumer: [RestaurantTrafficDiagnosis](https://github.com/augustunbear/RestaurantTrafficDiagnosis) (consultant-assisted low restaurant traffic diagnosis); other potential consumers include GastroPreisRadar and future site-selection products. No integration is implemented yet.
+First potential consumer: [RestaurantTrafficDiagnosis](https://github.com/augustunbear/RestaurantTrafficDiagnosis) (consultant-assisted low restaurant traffic diagnosis); other potential consumers include GastroPreisRadar and future site-selection products. Check that consumer’s current fact branch for E07 integration status; this library’s tests alone do not establish it.
 
 ## Functional design baseline / 功能设计基线
 
@@ -21,6 +21,8 @@ Keep the core industry-neutral; industry selection is optional. Industry profile
 - [分步骤实施计划](docs/superpowers/plans/2026-11-04-core-implementation.md) — 13 first-release steps, 7 follow-up work items and 3 conditional population items
 - [需求追踪表](docs/plans/REQUIREMENTS_TRACEABILITY.md) — F/G/T/V/A coverage and deferred scope
 - [实施规划交接](docs/plans/IMPLEMENTATION_PLANNING_HANDOFF.md) — retained planning requirements
+
+- [免费优先试用增量计划](docs/superpowers/plans/2026-11-05-free-first-trial.md) — 当前执行入口 FF-01–FF-05；不重做 P01–P13，不单独部署核心
 
 ## Open-source selection baseline
 
