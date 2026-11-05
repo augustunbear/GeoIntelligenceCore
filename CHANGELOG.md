@@ -65,3 +65,9 @@ This pre-release does not include search, provider adapters, geometry operations
 - Add T-03 per-location analysis and explicit metric comparability: mapping, category selection, source coverage, reference period, scope type/threshold/version, boundary, method, time, unit, and measurement nature must match before a difference is reported.
 - Preserve missing or incomplete cells as null with reasons. Count distinct source keys across overlapping place result sets; no population union, rank, score, or investment recommendation is produced.
 - Keep comparison and derived metric outputs subject to evidence rights during retention and export. Unknown or denied rights redact values and dependent differences.
+
+### Free-first trial configuration
+
+- Prefer permitted public Photon/Overpass and free ORS Standard before paid or self-hosted services. Document same-protocol instance migration and remaining live-validation boundaries.
+- Accept explicit zero cost and credential-free public services in the offline-tested P13 activation gate; retain required evidence and positive operational limits.
+- Add synthetic Photon instance/prefix/auth switching regression coverage.
