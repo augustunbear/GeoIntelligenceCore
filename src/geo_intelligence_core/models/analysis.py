@@ -20,6 +20,8 @@ class Analysis(FrozenModel):
     request_context: RequestContext
     topic_results: dict[str, Result[object]] = Field(default_factory=dict)
     selected_topics: tuple[str, ...] = ()
+    corrections: tuple["Correction", ...] = ()
+    originals: dict[str, dict[str, object]] = Field(default_factory=dict)
 
 
 class ComparisonRow(FrozenModel):
@@ -42,6 +44,7 @@ class Snapshot(FrozenModel):
     canonical_hash: str
     retained_evidence_ids: tuple[str, ...]
     redactions: tuple[str, ...] = ()
+    purpose: str = ''
 
 
 class Correction(FrozenModel):
@@ -53,3 +56,5 @@ class Correction(FrozenModel):
     reason: str
     scope_token: str
     at: str
+
+Analysis.model_rebuild()
