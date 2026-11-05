@@ -35,7 +35,7 @@
 | 顺序 | 工作项 | 执行仓库 | 状态与独立交付 |
 | --- | --- | --- | --- |
 | 1 | FF-01 免费试用配置入口 | GeoIntelligenceCore | 待做；显式选择实例即可构造既有适配器，不硬编码进业务 |
-| 2 | FF-02 跨请求预算接入契约 | 本库定义契约/示例；调用方实现持久化 | 待做；重试与多个运行共享日额度，禁止费用升级 |
+| 2 | FF-02 跨请求预算接入契约 | 本库定义契约/示例；调用方实现持久化 | 功能分支实现合成共享存储契约/示例；实际持久化与跨 worker 验证仍由调用方完成 |
 | 3 | FF-03 同协议切换验收 | GeoIntelligenceCore | 部分已有；Photon 已测，补 Overpass/ORS、认证隔离与实例身份 |
 | 4 | FF-04 分来源现场验证 | GeoIntelligenceCore | 待做；先实现可测 runner，再分别验证免费来源 |
 | 5 | FF-05 E07 免费来源交接与实际启用 | 本库交接；RestaurantTrafficDiagnosis 接入 | 待核对调用方现状后补差，不重复已完成 E07 |
@@ -60,11 +60,11 @@
 
 **Interfaces:** 复用 `Budget.reserve(provider_id: str, calls: int, estimated_cost: Decimal) -> bool` 与 `Budget.record(provider_id: str, actual_cost: Decimal) -> None`。调用方为每个运行构造绑定 run_id 的预算对象，底层按稳定来源额度域共享存储，原子执行“每运行 5 次 + 每来源每日 50 次 + 金额 0”。并发 1 另由调用方共享锁/信号量包住该来源的执行并在 finally 释放；Budget.reserve 本身不承担并发槽释放。按 UTC 日重置，重试、重定向均记尝试。凭据轮换不改变同一额度域，实例别名不能产生新额度。持久化用调用方已有存储；本库测试用合成存储与可控时钟，不新增基础设施。
 
-- [ ] 写 `test_shared_last_slot` / `test_retry_counts`：两个 gateway 竞争每日最后 1 次仅一条请求出网，429 重试消耗额度，费用预算不能静默提高。
-- [ ] 写 `test_restart_and_utc_reset` / `test_store_unavailable`：重建调用对象仍保留已用量，跨 UTC 日按规则重置；预算存储失效必须停止请求且显式说明原因。测试对象须模拟同一存储被两个对象原子访问，不用单个进程计数器冒充跨 worker 证明。补 `test_shared_concurrency_release`：两个 gateway 的请求实际重叠时并发始终为 1，成功/异常/超时/取消后均释放共享槽；已消耗的尝试额度不退回。
-- [ ] 先运行 `python -m pytest tests/contract/test_shared_budget.py -q` 观察失败，再补示例与契约；调用方负责防抖/重复点击防护，来源限额不足时等待或返回明确状态，不自动换端点。
-- [ ] 同命令通过，运行 `python -m pytest tests/unit/test_http_policy.py tests/performance/test_budget.py -q`。文档分开“本库契约已验证”和“真实存储跨 worker 验证待调用方完成”。
-- [ ] 独立 PR；FF-05 在调用方验证真实存储，不因此给 GeoIntelligenceCore 新增数据库。
+- [x] 写 `test_shared_last_slot` / `test_retry_counts`：两个 gateway 竞争每日最后 1 次仅一条请求出网，429 重试消耗额度，费用预算不能静默提高。
+- [x] 写 `test_restart_and_utc_reset` / `test_store_unavailable`：重建调用对象仍保留已用量，跨 UTC 日按规则重置；预算存储失效必须停止请求且显式说明原因。测试对象须模拟同一存储被两个对象原子访问，不用单个进程计数器冒充跨 worker 证明。补 `test_shared_concurrency_release`：两个 gateway 的请求实际重叠时并发始终为 1，成功/异常/超时/取消后均释放共享槽；已消耗的尝试额度不退回。
+- [x] 先运行 `python -m pytest tests/contract/test_shared_budget.py -q` 观察失败，再补示例与契约；调用方负责防抖/重复点击防护，来源限额不足时等待或返回明确状态，不自动换端点。
+- [x] 同命令通过，运行 `python -m pytest tests/unit/test_http_policy.py tests/performance/test_budget.py -q`。文档分开“本库契约已验证”和“真实存储跨 worker 验证待调用方完成”。
+- [x] 独立 PR；FF-05 在调用方验证真实存储，不因此给 GeoIntelligenceCore 新增数据库。
 
 ## FF-03：免费、付费、自建的切换契约
 

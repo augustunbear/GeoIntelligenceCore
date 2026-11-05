@@ -13,6 +13,7 @@ from geo_intelligence_core.models.common import Issue, Result, Status
 from geo_intelligence_core.models.policy import ProviderConfig, UsagePolicy
 from geo_intelligence_core.models.requests import RequestContext
 from geo_intelligence_core.ports import Budget
+from .budget import BudgetUnavailable
 
 class UnsafeEndpoint(Exception):
     pass
@@ -151,7 +152,11 @@ class HttpGateway:
                         pinned_ip = await self._validate_url(url, redirect=hops > 0)
                     except (OSError, UnsafeEndpoint):
                         return fail(Status.unavailable, 'unsafe_redirect')
-                    if not await self.budget.reserve(provider_id, 1, cost):
+                    try:
+                        permitted = await self.budget.reserve(provider_id, 1, cost)
+                    except BudgetUnavailable:
+                        return fail(Status.unavailable, 'budget_unavailable')
+                    if not permitted:
                         return fail(Status.rate_limited, 'budget_exhausted')
                     try:
                         async with asyncio.timeout(remaining):
