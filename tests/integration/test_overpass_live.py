@@ -1,8 +1,5 @@
-"""Overpass live activation requires bounded representative-region coverage."""
-import pytest
-from .live_gate import require_live_activation
+"""Opt-in overpass measurement; approved labels, thresholds and persistent quotas required."""
+from .live_measurements import run_live_test
 
-
-def test_overpass_live_coverage_gate():
-    record = require_live_activation("overpass")
-    pytest.fail("approved Overpass record detected; implement and independently review labeled POI coverage, truncation and failure measurements before activation")
+def test_overpass_live_quality_gate():
+    run_live_test("overpass")

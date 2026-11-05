@@ -35,10 +35,10 @@
 | 顺序 | 工作项 | 执行仓库 | 状态与独立交付 |
 | --- | --- | --- | --- |
 | 1 | FF-01 免费试用配置入口 | GeoIntelligenceCore | 功能分支已实现，待 PR 审核；离线构造既有适配器，不代表现场启用 |
-| 2 | FF-02 跨请求预算接入契约 | 本库定义契约/示例；调用方实现持久化 | 待做；重试与多个运行共享日额度，禁止费用升级 |
-| 3 | FF-03 同协议切换验收 | GeoIntelligenceCore | 部分已有；Photon 已测，补 Overpass/ORS、认证隔离与实例身份 |
-| 4 | FF-04 分来源现场验证 | GeoIntelligenceCore | 待做；先实现可测 runner，再分别验证免费来源 |
-| 5 | FF-05 E07 免费来源交接与实际启用 | 本库交接；RestaurantTrafficDiagnosis 接入 | 待核对调用方现状后补差，不重复已完成 E07 |
+| 2 | FF-02 跨请求预算接入契约 | 本库定义契约/示例；调用方实现持久化 | PR #25 已交付契约；真实消费者存储见 FF-05 |
+| 3 | FF-03 同协议切换验收 | GeoIntelligenceCore | PR #26 已交付 synthetic 切换验收 |
+| 4 | FF-04 分来源现场验证 | GeoIntelligenceCore | runner 已实现并离线审查；实际来源测量 blocked |
+| 5 | FF-05 E07 免费来源交接与实际启用 | 本库交接；RestaurantTrafficDiagnosis 接入 | 已核对 E07 并补调用方差异；现场启用 blocked |
 
 依赖：FF-01 → FF-02/FF-03 → FF-04 → FF-05 的对应来源启用。FF-05 的离线接入与 UI 检查可提前。Photon/Overpass 验证不等待 ORS 账号；ORS 被阻塞时交付明确禁用路线的受控试用。
 
@@ -84,8 +84,8 @@
 
 **Interfaces:** 新增 `async measure_cases(cases: list[dict], *, invoke, clock) -> dict` 测量帮助函数，invoke 接收一条已预先标注的 case 并返回 Result。报告记录样本引用、calls、各状态/质量、p50/p95、峰值内存、版本/实例/权利/预算及逐门 pass/fail/blocked；不同类型来源各自有断言，不共用一个准确率掩盖差异。原始资料仅在许可允许时保存，报告脱敏。
 
-- [ ] 离线失败测试：用合成 invoke 验证错误候选、歧义、空结果、超时、partial、无路线、超预算均不能误判 pass。阈值和样本必须在请求前冻结，缺失即 blocked；live 无 opt-in 一律 skip。
-- [ ] 运行 `python -m pytest tests/unit/test_live_measurements.py tests/integration/test_live_gate_config.py -q`，失败后实现帮助函数及三个真实 adapter runner，替换当前无条件 pytest.fail 占位。保存“runner 已实现”与“现场通过”两个独立状态。
+- [x] 离线失败测试：用合成 invoke 验证错误候选、歧义、空结果、超时、partial、无路线、超预算均不能误判 pass。阈值和样本必须在请求前冻结，缺失即 blocked；live 无 opt-in 一律 skip。
+- [x] 运行 `python -m pytest tests/unit/test_live_measurements.py tests/integration/test_live_gate_config.py -q`，失败后实现帮助函数及三个真实 adapter runner，替换当前无条件 pytest.fail 占位。保存“runner 已实现”与“现场通过”两个独立状态。
 - [ ] 同命令通过并独立审查 runner；准备获准公共地址样本与预先人工标注的匹配/精度期望。Photon 覆盖城市/郊区/乡村/变音符/缺门牌/同名；Overpass 预定小范围类别与独立参考；ORS 验证方向、无路线、矩阵和范围。每次分批不超过 5 次，跨批/当天共享预算。
 - [ ] 按来源单独运行，例如 `GEO_LIVE_TESTS=1 GEO_LIVE_ACTIVATION_FILE=/secure/activation.json python -m pytest tests/integration/test_photon_live.py -q`；Overpass/ORS 分别选对应文件。未注册 ORS 时只阻塞 ORS；公共服务无需虚构 credential_env。完整账号条款仍只适用于 ORS；公开条款足以许可的服务不索取额外书面许可。
 - [ ] 记录真实测量、阈值和结果，small sample 的 p95 仅描述该批样本，不当作 SLA；不通过时保留手工/离线路径。无获准样本或 key 时，提交已完成 runner 与 blocked 原因，不标整项现场通过。独立 PR。
@@ -113,3 +113,5 @@
 | 人口分析、公交/JVM、独立服务部署 | 当前不需要 | 维持原 POP/E06 延后范围 |
 
 完成定义：所选来源有可追溯试用结论、实际调用方限额和明确关闭路径；未选来源允许 disabled。发布包、生产可用与消费者已接入各自凭证据标记，计划文件更新本身不改变任何验收门状态。
+
+执行记录：FF-04 runner 的独立审查及离线回归已完成（221 passed/3 skips）；上列真实样本准备、逐源实测和实际启用保持未勾选。FF-05 已读取调用方 development 并实现持久预算与顾问流程增量，真实目标数据库/来源启用仍未执行。
