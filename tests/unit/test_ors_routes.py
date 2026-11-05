@@ -61,6 +61,20 @@ def test_missing_or_mismatched_unit_is_unknown():
     assert run(p.route(RouteRequest(origin=A, destination=B, mode='walking'), CTX)).status == Status.unknown
 
 
+def test_reversed_or_unrelated_route_geometry_is_rejected():
+    raw = json.loads((FIX / 'route_km.json').read_text())
+    raw['features'][0]['geometry']['coordinates'].reverse()
+    p, _ = provider(raw, unit='km')
+    reversed_route = run(p.route(RouteRequest(origin=A, destination=B, mode='walking'), CTX))
+    assert reversed_route.status == Status.unknown and reversed_route.data is None
+    assert reversed_route.issues[0].code == 'invalid_route_response'
+
+    raw['features'][0]['geometry']['coordinates'] = [[11, 51], [11.01, 51.01]]
+    p, _ = provider(raw, unit='km')
+    unrelated_route = run(p.route(RouteRequest(origin=A, destination=B, mode='walking'), CTX))
+    assert unrelated_route.status == Status.unknown and unrelated_route.data is None
+
+
 def test_directed_matrix_order_and_null():
     p, seen = provider(json.loads((FIX / 'matrix_directed.json').read_text()))
     result = run(p.matrix(MatrixRequest(origins={'A': A, 'B': B},

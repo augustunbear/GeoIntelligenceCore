@@ -27,6 +27,14 @@ def _number(value):
     return type(value) in (int, float) and math.isfinite(value) and value >= 0
 
 
+def _endpoint_distance_m(coordinate, point):
+    """Great-circle separation for checking provider route endpoint snapping."""
+    lon1, lat1 = map(math.radians, coordinate[:2])
+    lon2, lat2 = map(math.radians, (point.longitude, point.latitude))
+    a = math.sin((lat2 - lat1) / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin((lon2 - lon1) / 2) ** 2
+    return 6371008.8 * 2 * math.asin(min(1.0, math.sqrt(a)))
+
+
 class OrsRoutingProvider:
     """Requires an explicitly permitted HeiGIT endpoint and gateway credentials.
 
@@ -84,6 +92,9 @@ class OrsRoutingProvider:
             coords = geometry['coordinates']
             if any(not isinstance(p, (list, tuple)) or len(p) < 2 or not all(type(v) in (int, float) and math.isfinite(v) for v in p[:2]) for p in coords):
                 raise ValueError('invalid route coordinates')
+            if (_endpoint_distance_m(coords[0], request.origin) > 250 or
+                    _endpoint_distance_m(coords[-1], request.destination) > 250):
+                raise ValueError('route endpoints do not match requested direction')
             route = Route(distance_m=float(distance * (1000 if unit == 'km' else 1)),
                           duration_s=float(duration), geometry=geometry,
                           mode=request.mode, origin=request.origin, destination=request.destination)
