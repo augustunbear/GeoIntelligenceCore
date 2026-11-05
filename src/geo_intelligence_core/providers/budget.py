@@ -2,6 +2,15 @@
 import asyncio
 from decimal import Decimal
 
+
+class BudgetUnavailable(RuntimeError):
+    """A caller's shared budget cannot safely decide a reservation.
+
+    Storage adapters translate outages/indeterminate transactions to this type.
+    A gateway must stop without sending the request or exposing exception details.
+    """
+
+
 class InMemoryBudget:
     def __init__(self, max_calls: int, cost_ceiling: Decimal):
         if type(max_calls) is not int or max_calls < 0 or cost_ceiling is None or cost_ceiling < 0:

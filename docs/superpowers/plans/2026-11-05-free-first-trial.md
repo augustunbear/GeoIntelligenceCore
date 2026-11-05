@@ -72,11 +72,11 @@
 
 **Interfaces:** 保持既有三类 port 和 Result 不变。切换只更改 instance_id、base URL、认证 headers、能力和限额/权利引用；注册到原 capability_id。保存的实例来源标识与缓存键必须变化；历史快照不改写。不同协议通过新增 adapter，不承诺只改 URL。ORS 将硬编码主机/路径改为显式获准实例配置，认证要求独立于费用；已知 HeiGIT hosted 必须有凭据，其他实例仅显式允许无认证。仍由 HttpGateway 校验 HTTPS、origin allowlist、DNS 与重定向，不能用放宽 SSRF 代替兼容自建。
 
-- [ ] 保留 PR #22 已有 Photon search/reverse 回归；新增 Overpass query、ORS route/matrix/catchments 的公共/带认证/自建 HTTPS 前缀参数化测试，断言参数、单位、方向和结果结构一致。
-- [ ] 新增 `test_credentials_isolated_between_instances` / `test_instance_cache_identity`：A 的 key 不发给 B，切换实例后旧缓存不命中，429 不触发付费端点；私网/IP/非 HTTPS 仍被既有策略拒绝。
-- [ ] 运行上述六个测试文件，先确认新增用例能暴露缺口；仅修复缺口，不更换已工作的协议实现。
-- [ ] 运行 `python -m pytest tests/unit tests/contract -q`，记录所有实例为 synthetic；如需私网自建访问，单列后续受审策略扩展，不解除 SSRF 防护。
-- [ ] 独立 PR；不需要购买账号或真实自建服务器即可完成此项。
+- [x] 保留 PR #22 已有 Photon search/reverse 回归；新增 Overpass query、ORS route/matrix/catchments 的公共/带认证/自建 HTTPS 前缀参数化测试，断言参数、单位、方向和结果结构一致。
+- [x] 新增 `test_credentials_isolated_between_instances` / `test_instance_cache_identity`：A 的 key 不发给 B，切换实例后旧缓存不命中，429 不触发付费端点；私网/IP/非 HTTPS 仍被既有策略拒绝。
+- [x] 运行上述六个测试文件，先确认新增用例能暴露缺口；仅修复缺口，不更换已工作的协议实现。
+- [x] 运行 `python -m pytest tests/unit tests/contract -q`，记录所有实例为 synthetic；如需私网自建访问，单列后续受审策略扩展，不解除 SSRF 防护。
+- [x] 独立 PR；不需要购买账号或真实自建服务器即可完成此项。
 
 ## FF-04：补齐 P13 runner，分别验证免费来源
 

@@ -109,8 +109,7 @@ def test_auth_and_zero_cost():
     custom = s.model_copy(update={'endpoint': 'https://owned.example.org/ors',
         'instance_id': 'synthetic-ors', 'authentication_required': False,
         'policy': s.policy.model_copy(update={'allowed_endpoints': ('https://owned.example.org',)})})
-    with pytest.raises(ValueError, match='FF-03'):
-        build_trial_provider(custom, budget=InMemoryBudget(50, 0))
+    assert build_trial_provider(custom, budget=InMemoryBudget(50, 0)).provider_id == 'synthetic-ors'
 
 
 def test_runtime_credentials_are_not_settings_or_errors():
