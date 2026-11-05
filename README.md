@@ -85,3 +85,7 @@ The optional ORS adapter provides walking, cycling and driving routes and direct
 ### Factual location comparison (P11)
 
 For `location-comparison@1`, supply at least two confirmed locations, the same selected place topics, and one explicit Region per location or an explicit radius. The result includes each location's topic status and comparison rows; a difference is null unless source coverage, reference period, category mapping, scope, method, time, unit, and value are comparable. `compare(analyses, metric_ids)` also accepts analyses with explicitly supplied metrics and conditions. Distinct source keys give a factual union count for comparable place sets, not a visitor or demand estimate. Optional disabled population data stays null without blocking selected place metrics.
+
+## Low-volume trial providers
+
+Use the [free-first provider policy](docs/operations/free-first-providers.md): Photon and Private.coffee Overpass require no account/key; ORS Standard uses a free key. Compatible public, paid and self-hosted instances use configurable endpoints and credentials behind the same adapters. Live quality remains unverified; no paid subscription is required to install or trial the library.

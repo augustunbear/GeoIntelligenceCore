@@ -135,3 +135,34 @@ def test_malformed_response_and_cancel_stale():
             pass
     run(cancel())
     assert len(calls) == 1
+
+
+@pytest.mark.parametrize('endpoint,headers,expected_path', [
+    ('https://public.example.org', {}, '/api'),
+    ('https://paid.example.org/geocoding', {'Authorization': 'synthetic-key'}, '/geocoding/api'),
+    ('https://owned.example.org/photon', {}, '/photon/api'),
+])
+def test_instance_switch_preserves_adapter_contract(endpoint, headers, expected_path):
+    from urllib.parse import urlsplit
+    origin = 'https://' + urlsplit(endpoint).netloc
+    seen = []
+    def reply(request):
+        seen.append(request)
+        return httpx.Response(200, json={'features': [feature(7, 'Synthetic')]})
+    limits = UsagePolicy(allowed_endpoints=(origin,), max_calls_per_run=2,
+                         max_concurrency=1, deadline_s=1, max_response_bytes=10000,
+                         cost_ceiling=Decimal('0'), currency='EUR', pricing_ref='synthetic')
+    gateway = HttpGateway({'instance': ProviderConfig(id='instance', endpoint=endpoint)},
+                          limits, InMemoryBudget(2, Decimal('0')), headers=headers,
+                          transport=httpx.MockTransport(reply),
+                          resolver=lambda _: ['93.184.215.14'], cost_per_call=Decimal('0'))
+    adapter = PhotonResolver(gateway, provider_id='instance', capabilities=PhotonCapabilities())
+    result = run(adapter.search(SearchRequest(text='Synthetic'), CTX))
+    assert result.status == Status.ok and result.data[0].id == 'photon:osm:N:7'
+    assert seen[0].url.path == expected_path
+    assert seen[0].headers['host'] == urlsplit(endpoint).netloc
+    assert seen[0].headers.get('authorization') == headers.get('Authorization')
+    reversed_result = run(adapter.reverse(ReverseRequest(point=Point(longitude=11.58, latitude=48.14)), CTX))
+    assert reversed_result.status == Status.ok and reversed_result.data[0].id == result.data[0].id
+    assert seen[1].url.path == expected_path.removesuffix('/api') + '/reverse'
+    assert seen[1].headers.get('authorization') == headers.get('Authorization')
