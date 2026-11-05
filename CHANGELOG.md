@@ -1,5 +1,11 @@
 # Changelog
 
+## P12 consumer packaging candidate — unreleased
+
+- Export the public consumer facade and exercise manual confirmation, all three synthetic templates, disabled population, comparison, snapshot and JSON export through it.
+- Add a saved v1 result-envelope fixture, clean Python 3.12 wheel and sdist installs for the core and optional extras, offline no-key execution, archive marker checks, MapLibre GeoJSON integration guidance, and observed dependency inventory/audit.
+- No tag, PyPI release, live provider activation, downstream product integration, or schema version change is claimed.
+
 ## 0.1.0a1 — unreleased
 
 - Add installable Python 3.12 core and immutable Pydantic v1 target models for manual location confirmation.

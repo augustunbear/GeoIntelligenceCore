@@ -1,0 +1,113 @@
+{
+  "document": "0.1.0a1 candidate dependency inventory",
+  "observed_utc_date": "2026-11-05",
+  "environment": "isolated Python 3.12, core + geometry + providers",
+  "license_note": "Metadata is descriptive and not a legal determination; missing expression requires separate license review. Provider data rights are separate.",
+  "components": [
+    {
+      "license_expression": "MIT",
+      "license_metadata": null,
+      "name": "annotated-types",
+      "version": "0.8.0"
+    },
+    {
+      "license_expression": "MIT",
+      "license_metadata": null,
+      "name": "anyio",
+      "version": "4.16.0"
+    },
+    {
+      "license_expression": null,
+      "license_metadata": "MPL-2.0",
+      "name": "certifi",
+      "version": "2026.10.23"
+    },
+    {
+      "license_expression": null,
+      "license_metadata": null,
+      "name": "geo-intelligence-core",
+      "version": "0.1.0a1"
+    },
+    {
+      "license_expression": null,
+      "license_metadata": "MIT",
+      "name": "h11",
+      "version": "0.16.0"
+    },
+    {
+      "license_expression": "BSD-3-Clause",
+      "license_metadata": null,
+      "name": "httpcore",
+      "version": "1.0.9"
+    },
+    {
+      "license_expression": null,
+      "license_metadata": "BSD-3-Clause",
+      "name": "httpx",
+      "version": "0.28.1"
+    },
+    {
+      "license_expression": "BSD-3-Clause",
+      "license_metadata": null,
+      "name": "idna",
+      "version": "3.20"
+    },
+    {
+      "license_expression": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0",
+      "license_metadata": null,
+      "name": "numpy",
+      "version": "2.5.4"
+    },
+    {
+      "license_expression": "MIT",
+      "license_metadata": null,
+      "name": "pydantic",
+      "version": "2.14.2"
+    },
+    {
+      "license_expression": "MIT",
+      "license_metadata": null,
+      "name": "pydantic_core",
+      "version": "2.50.2"
+    },
+    {
+      "license_expression": "MIT",
+      "license_metadata": null,
+      "name": "pyproj",
+      "version": "3.8.0"
+    },
+    {
+      "license_expression": "BSD-3-Clause",
+      "license_metadata": null,
+      "name": "shapely",
+      "version": "2.2.0"
+    },
+    {
+      "license_expression": "MIT",
+      "license_metadata": null,
+      "name": "typing-inspection",
+      "version": "0.4.5"
+    },
+    {
+      "license_expression": "PSF-2.0",
+      "license_metadata": null,
+      "name": "typing_extensions",
+      "version": "4.16.0"
+    }
+  ],
+  "audit": {
+    "tool": "pip-audit",
+    "scope": "installed combined-extra venv site-packages",
+    "runtime_dependency_ids": [],
+    "bootstrap_pip_version": "25.0.1",
+    "bootstrap_pip_advisory_ids": [
+      "PYSEC-2026-1795",
+      "PYSEC-2026-1796",
+      "PYSEC-2026-196",
+      "PYSEC-2026-2875",
+      "PYSEC-2026-2876",
+      "PYSEC-2026-3721"
+    ],
+    "note": "Audit returned nonzero due to pip bootstrap advisories; pip is not a runtime dependency of the distributed wheel. Re-run current audit before release."
+  }
+}

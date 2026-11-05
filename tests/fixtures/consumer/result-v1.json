@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "status": "ok",
+  "data": {"longitude": 11, "latitude": 49},
+  "issues": [],
+  "evidence": [],
+  "context": {
+    "request_id": "synthetic",
+    "location_versions": {"site": 1},
+    "effective_conditions": {},
+    "profile_ref": null,
+    "template_ref": null,
+    "method_version": "manual-v1",
+    "scope_token": null
+  }
+}
