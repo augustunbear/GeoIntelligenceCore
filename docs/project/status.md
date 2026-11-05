@@ -54,3 +54,5 @@ Review corrections cover strict negative-result semantics, nullable credentials,
 ## PR #27 matrix quality correction (2026-11-05)
 
 Complete request cross-product labels are now required before I/O for positive and all-null matrix controls. Result cells must match that set exactly without duplicates and retain the expected per-cell status. RED regressions reproduced partial-label acceptance and unchecked extra/duplicate/status cells; focused suite 41 passed, full Python 3.12 suite 243 passed, 3 live skips. Runtime package sources are unchanged. No live calls, activation or release. PR remains stacked on #26; its target is codex/ff03-instance-switch, not main. Latest commit/CI/merge state is recorded by GitHub.
+
+Follow-up independent review found duplicate Photon IDs could inflate candidate cardinality. Search/reverse measurements now reject duplicate IDs; both new tests were observed failing before the fix. Final full suite: 245 passed, 3 live skips. Runtime package sources remain unchanged.

@@ -131,7 +131,7 @@ def _matches(case, result):
     if op in ('search', 'reverse'):
         ids = [c.id for c in data]
         by_id = {c.id: c for c in data}
-        return (e['min_candidates'] <= len(ids) <= e['max_candidates']
+        return (len(ids) == len(by_id) and e['min_candidates'] <= len(ids) <= e['max_candidates']
                 and all(v in ids and by_id[v].precision in e['precisions'][v] and distance_m(by_id[v].point, Point(longitude=e['candidate_points'][v][0],
                     latitude=e['candidate_points'][v][1])) <= e['max_error_m'] for v in e['candidate_ids'])
                 and (not e.get('first_id') or ids[0] == e['first_id']))

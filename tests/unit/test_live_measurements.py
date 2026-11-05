@@ -268,3 +268,15 @@ def test_matrix_results_cover_exactly_the_labeled_directed_cells(status, defect)
     result = Result(status=Status(status), data=TravelMatrix(cells=cells), context=CTX,
                     issues=[Issue(code='no_route_cells', message_key='routing.no_route_cells')] if status == 'unavailable' else [])
     assert m._matches(case, result) is (defect is None)
+
+
+@pytest.mark.parametrize('operation', ['search', 'reverse'])
+def test_duplicate_photon_ids_cannot_satisfy_candidate_count(operation):
+    from geo_intelligence_core.models.location import Candidate, Point
+    case = {'id':'distinct-candidates','operation':operation,'expect':{'status':'ok',
+        'candidate_ids':['same'], 'candidate_points':{'same':[10,50]}, 'max_error_m':100,
+        'precisions':{'same':['house']}, 'min_candidates':2, 'max_candidates':2}}
+    candidate = Candidate(id='same',source_ref='synthetic',point=Point(longitude=10,latitude=50),precision='house')
+    async def invoke(case):
+        return Result(status=Status.ok,data=[candidate,candidate],context=CTX)
+    assert asyncio.run(m.measure_cases([case],invoke=invoke,clock=lambda:1.0))['status']=='failed'
