@@ -166,7 +166,8 @@ def _sanitize(analysis: Analysis, purpose: str, action: str) -> tuple[Analysis, 
         union_counts = dict(comparison.union_counts)
         union_issues = dict(comparison.union_issues)
         for metric_id in union_counts:
-            if not all(grants(row.evidence_ids, row) for row in rows if row.metric_id == metric_id):
+            metric_rows = [row for row in rows if row.metric_id == metric_id]
+            if len(metric_rows) < 2 or not all(grants(row.evidence_ids, row) for row in metric_rows):
                 union_counts[metric_id] = None
                 union_issues[metric_id] = (*union_issues.get(metric_id, ()), 'rights_restricted')
                 redactions.append(f'comparison:union:{metric_id}')

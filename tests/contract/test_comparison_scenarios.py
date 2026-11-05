@@ -138,3 +138,21 @@ def test_comparison_snapshot_and_exports_filter_restricted_sources():
     assert duplicate_export.data is not None
     import json
     assert json.loads(duplicate_export.data)['analysis']['comparison']['rows'][1]['value'] is None
+
+
+def test_union_without_two_authorized_rows_is_redacted():
+    import json
+    from geo_intelligence_core.evidence import snapshot
+    from geo_intelligence_core.export import export_result
+    from geo_intelligence_core.models.analysis import Comparison, ComparisonRow
+    context = RequestContext(request_id='orphan-union')
+    for rows in ([], [ComparisonRow(location_version='a@1', metric_id='places.unique_count',
+                                      value=1, difference=None, unit='places', evidence_ids=[]) ]):
+        source = Analysis(request_context=context,
+            comparison=Comparison(rows=rows, union_counts={'places.unique_count': 1234567}))
+        retained = snapshot(source, 'research')
+        assert retained.status == Status.partial
+        assert retained.data.analysis.comparison.union_counts['places.unique_count'] is None
+        output = export_result(retained.data, 'json', 'en', 'research')
+        assert json.loads(output.data)['analysis']['comparison']['union_counts']['places.unique_count'] is None
+        assert '1234567' not in output.data
