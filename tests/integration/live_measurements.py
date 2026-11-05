@@ -323,6 +323,12 @@ async def run_provider(provider, record, *, budget, headers=None, transport=None
         if {c['operation'] for c in cases if c['expect']['status'] == 'ok'} != allowed:
             raise ValueError('positive coverage of every provider operation required')
         requests = {c['id']: models[c['operation']].model_validate(c['request']) for c in cases}
+        if provider == 'ors':
+            directions = {requests[c['id']].direction for c in cases
+                          if c['operation'] == 'catchments' and c['expect']['status'] == 'ok'}
+            required = {'outbound', 'inbound'} if s.capability_flags.get('catchment_inbound') else {'outbound'}
+            if not required.issubset(directions):
+                raise ValueError('positive coverage of enabled catchment directions required')
         port = build_trial_provider(s, budget=budget, headers=headers)
         port.gateway.transport, port.gateway.resolver = transport, resolver
     except (OSError, ValueError, KeyError, TypeError):

@@ -42,7 +42,7 @@ typed request model serialized as JSON. Operations are `search`/`reverse` for
 Photon, `places` for Overpass, `route`/`matrix`/`catchments` for ORS. Thresholds are
 `{cases: {<id>: <expectation>}, max_p95_s: <positive seconds>,
 max_peak_bytes: <positive bytes>}`. Freeze all labels and performance bounds
-before requests. Each provider batch must include a positive quality case for every required operation: Photon search and reverse; Overpass places; ORS route, matrix and catchments. Missing operations block before any HTTP; negative controls cannot substitute for positive coverage. Missing/malformed labels block before provider I/O.
+before requests. Each provider batch must include a positive quality case for every required operation: Photon search and reverse; Overpass places; ORS route, matrix and outbound catchments, plus inbound catchments whenever that capability is enabled. Missing operations block before any HTTP; negative controls cannot substitute for positive coverage. Missing/malformed labels block before provider I/O.
 
 | Positive case | Required expectation fields besides `status: "ok"` |
 | --- | --- |

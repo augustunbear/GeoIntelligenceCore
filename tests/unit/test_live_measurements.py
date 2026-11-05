@@ -86,10 +86,16 @@ def complete_batch(provider, operation, request_payload, expect, payload):
                      'catchments':json.loads((fixture/'isochrones.json').read_text())}
     requests[operation], expectations[operation], responses[operation] = request_payload, expect, payload
     cases = [{'id':op,'operation':op,'request':request} for op,request in requests.items()]
+    if provider == 'ors' and operation == 'catchments' and request_payload['direction'] == 'inbound':
+        cases.append({'id':'catchments-outbound','operation':'catchments','request':{**request_payload,'direction':'outbound'}})
+        expectations['catchments-outbound']={**expect,'direction':'outbound'}
+        responses['catchments-outbound']=json.loads((Path(__file__).parents[1]/'fixtures/ors/isochrones.json').read_text())
     def reply(req):
         path = req.url.path
         op = ('reverse' if 'reverse' in path else 'search') if provider == 'photon' else (
             'route' if 'directions' in path else 'matrix' if 'matrix' in path else 'catchments')
+        if op == 'catchments' and 'catchments-outbound' in responses and json.loads(req.content).get('location_type') != 'destination':
+            op = 'catchments-outbound'
         return httpx.Response(200,json=responses[op if provider != 'overpass' else 'places'])
     return cases, expectations, reply
 
@@ -218,7 +224,8 @@ def test_code_identity_is_bound_to_imported_package_not_cwd(tmp_path,monkeypatch
     assert before==after and len(after['code_sha256'])==64
 
 
-def test_runner_honors_explicit_inbound_and_auth_configuration(tmp_path):
+@pytest.mark.parametrize('omit', [None, 'inbound', 'outbound'])
+def test_runner_honors_explicit_inbound_and_auth_configuration(tmp_path, omit):
     from geo_intelligence_core.providers.budget import InMemoryBudget
     request_payload={'location':{'id':'synthetic','version':1,'point':{'longitude':10,'latitude':50},
         'confirmation':{'method':'manual','at':'2026-11-05T00:00:00Z','evidence_ids':['synthetic']}},
@@ -237,6 +244,8 @@ def test_runner_honors_explicit_inbound_and_auth_configuration(tmp_path):
     payload['metadata']['query']['location_type']='destination'
     cases, expectations, respond = complete_batch('ors','catchments',request_payload,
         {'status':'ok','durations_s':[300,600,900],'direction':'inbound','area_m2':[1,1e10]},payload)
+    if omit:
+        cases = [c for c in cases if c['operation'] != 'catchments' or c['request']['direction'] != omit]
     samples.write_text(json.dumps(cases))
     thresholds.write_text(json.dumps({'cases':expectations,'max_p95_s':5,'max_peak_bytes':50_000_000}))
     seen=[]
@@ -245,7 +254,10 @@ def test_runner_honors_explicit_inbound_and_auth_configuration(tmp_path):
         return respond(req)
     report=asyncio.run(m.run_provider('ors',record,budget=InMemoryBudget(5,Decimal(0)),headers={'X-Api-Key':'synthetic-only'},
         transport=httpx.MockTransport(reply),resolver=lambda _:['93.184.215.14']))
-    assert report['status']=='passed' and len(seen)==3
+    if omit:
+        assert report['status']=='blocked' and not seen
+        return
+    assert report['status']=='passed' and len(seen)==4
     assert seen[0].headers['x-api-key']=='synthetic-only'
 
 
