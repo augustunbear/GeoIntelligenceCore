@@ -1,5 +1,75 @@
 {
   "$defs": {
+    "Correction": {
+      "additionalProperties": false,
+      "properties": {
+        "target_ref": {
+          "title": "Target Ref",
+          "type": "string"
+        },
+        "action": {
+          "enum": [
+            "confirm",
+            "correct",
+            "exclude",
+            "attach"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "replacement": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Replacement"
+        },
+        "attachments": {
+          "default": [],
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Attachments",
+          "type": "array"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "scope_token": {
+          "title": "Scope Token",
+          "type": "string"
+        },
+        "at": {
+          "title": "At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_ref",
+        "action",
+        "reason",
+        "scope_token",
+        "at"
+      ],
+      "title": "Correction",
+      "type": "object"
+    },
     "Evidence": {
       "additionalProperties": false,
       "properties": {
@@ -453,6 +523,22 @@
       },
       "title": "Selected Topics",
       "type": "array"
+    },
+    "corrections": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Correction"
+      },
+      "title": "Corrections",
+      "type": "array"
+    },
+    "originals": {
+      "additionalProperties": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Originals",
+      "type": "object"
     }
   },
   "required": [

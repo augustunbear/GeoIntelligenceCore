@@ -47,3 +47,9 @@ This pre-release does not include search, provider adapters, geometry operations
 - Compose selected place topics under a shared call budget after required-capability preflight. Preserve individual failure status and nullable data; static place retrieval does not establish historical occupancy or attendance.
 - Extend OSM food-service mapping with restaurant, cafe, bar and fast_food category labels while preserving the existing broad category and source identity. Synthetic retail and education scenarios exercise the same core request path.
 - T-03 comparison execution remains reserved for P11; no live provider quality or population capability is claimed.
+
+## P10 evidence correction and export — unreleased
+
+- Preserve scoped factual corrections with original records and explicit source identity checks; snapshot only purpose-authorized retained content with redaction notes and a canonical hash.
+- Recheck each contributing source's export rights for deterministic JSON, CSV and GeoJSON; ship DE, ZH-CN and EN summaries, with CSV formula safeguards.
+- Additive `Analysis.corrections`, `Analysis.originals` and `Snapshot.purpose` fields update the generated analysis schema. No storage authorization, public redistribution, report layout or live provider enablement is claimed.
