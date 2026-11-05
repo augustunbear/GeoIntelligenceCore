@@ -34,3 +34,19 @@ clean wheel/extras/sdist installation. Focused trial/live-config/consumer suite
 leak; its failing regression now passes for direct construction, model validation
 and copying. Full suite reran after the fix. This is branch verification, not a
 merged/released/live status.
+
+## FF-03–FF-05 source branches (2026-11-05)
+
+Explicit ORS instances and safe serving-instance provenance are implemented;
+Photon/Overpass/ORS switching is verified with synthetic adapters. FF-04 replaces
+three unconditional placeholder failures with measured real-adapter runners and
+frozen labels/thresholds, actual-attempt accounting, persistent same-host test
+quotas and sanitized reports. [Runner instructions](../verification/free-trial-measurements.md).
+No approved live samples/thresholds or persistent measurement quota path were
+supplied, so source quality/activation remains blocked and no live requests ran.
+The [FF-05 handoff](../usage/free-trial-consumer-handoff.md) records the already
+merged E07 baseline and the remaining consumer-owned storage/authorization flow.
+P01–P13 are not rebuilt. No merge, release, target migration or deployment.
+
+Combined offline verification after independent review: **221 passed, 3 live skips**.
+Review corrections cover strict negative-result semantics, nullable credentials, independent Photon precision/cardinality labels, code/policy-bound reports, custom authentication/inbound settings and anonymous-key isolation.

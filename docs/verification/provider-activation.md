@@ -36,3 +36,9 @@ Execution paths after approval: Photon runner must exercise search and reverse t
 | Multi-worker application budget | blocked if applicable | Shared atomic limiter, period quota and concurrent replay evidence; a process-local limiter does not suffice |
 
 Any provider failing the live gate remains disabled/unconfigured. Offline core remains a separately assessable deliverable.
+
+## FF-04 update
+
+The placeholder tests are replaced by [bounded measured runners](free-trial-measurements.md).
+No live requests were executed in this increment; the existing provider
+quality/activation gates stay blocked pending reviewed samples and thresholds.

@@ -101,7 +101,7 @@ Switching to a different API protocol (e.g. a non-Photon commercial geocoder) re
 
 ## Verification boundary
 
-Zero-cost/no-key records are valid activation inputs. Missing required terms/budget/sample references still block a live run; keyed providers still require their key. ORS defaults to required authentication; an approved no-key self-hosted instance explicitly sets `authentication_required=false`. Hosted ORS Standard must retain required authentication. Version may be explicitly recorded as unknown where the operator does not publish one, with the reproducibility limitation retained. Current live tests deliberately fail on a complete activation record until measured runners are implemented; passing the offline configuration tests is not a provider-quality result. No public instance is silently enabled at import time.
+Zero-cost/no-key records are valid activation inputs. Missing required terms/budget/sample references still block a live run; keyed providers still require their key. ORS defaults to required authentication; an approved no-key self-hosted instance explicitly sets `authentication_required=false`. Hosted ORS Standard must retain required authentication. Version may be explicitly recorded as unknown where the operator does not publish one, with the reproducibility limitation retained. Current live tests run measured, label-driven adapter gates only with complete approved inputs; passing the offline configuration tests is not a provider-quality result. No public instance is silently enabled at import time.
 
 FF-03 adds `ProviderConfig.authentication_required` (default true) and
 `authentication_header` (default Authorization). The factory copies these from

@@ -1,8 +1,5 @@
-"""Photon live activation requires a frozen sample and explicit approval."""
-import pytest
-from .live_gate import require_live_activation
-
+"""Opt-in photon measurement; approved labels, thresholds and persistent quotas required."""
+from .live_measurements import run_live_test
 
 def test_photon_live_quality_gate():
-    record = require_live_activation("photon")
-    pytest.fail("approved Photon record detected; implement and independently review labeled German candidate, ambiguity and failure measurements before activation")
+    run_live_test("photon")
