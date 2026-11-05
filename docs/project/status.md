@@ -62,3 +62,5 @@ Provider-scope review follow-up: Photon requires positive search and reverse cas
 Checkout verification follow-up: generated __pycache__/*.pyc files no longer make ordinary Python imports fail the clean-checkout gate. Untracked Python source and modified tracked runner files still fail verification. An isolated real Git checkout/compile regression reproduced the blocker before the fix. Full suite: 249 passed, 3 live skips.
 
 The same source-identity regression also verifies that Git ignore rules cannot hide untracked Python source: all untracked paths are inspected, with only generated cache bytecode filtered. Final focused measurement suite: 47 passed; full suite immediately before this hardening: 249 passed, 3 live skips.
+
+Final quality/configuration follow-up: Photon labels must be distinct, cover the minimum cardinality and include any first-ranked ID before I/O. Reports now retain complete effective settings and their canonical SHA-256 for consumer binding; settings changes cannot reuse old approval. Six Photon regressions failed before the fix. Full suite: 255 passed, 3 live skips. Runtime package source remains unchanged.

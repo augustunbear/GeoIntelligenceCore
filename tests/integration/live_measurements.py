@@ -85,7 +85,9 @@ def _valid(case):
                         and len(points[v]) == 2 and all(_number(n) for n in points[v])
                         and -180 <= points[v][0] <= 180 and -90 <= points[v][1] <= 90
                         and isinstance(precisions.get(v), list) and bool(precisions[v])
-                        and all(k in ('house','street','locality','unknown') for k in precisions[v]) for v in ids))
+                        and all(k in ('house','street','locality','unknown') for k in precisions[v]) for v in ids)
+                and len(set(ids)) == len(ids) and e['min_candidates'] <= len(ids) <= e['max_candidates']
+                and ('first_id' not in e or e['first_id'] in ids))
     if op == 'places':
         return (isinstance(e.get('source_keys'), list) and bool(e['source_keys'])
                 and all(isinstance(v, str) for v in e['source_keys'])
@@ -347,7 +349,10 @@ async def run_provider(provider, record, *, budget, headers=None, transport=None
                   rights_ref=record['rights_ref'], quota_ref=record['quota_ref'], purpose=record['purpose'],
                   instance_owner=record['instance_owner'], instance_version=record['instance_version'],
                   terms_ref=record['terms_ref'], pricing_ref=record['pricing_ref'], currency=record['currency'],
-                  effective_limits=s.policy.model_dump(mode='json'), code_identity=package_identity(),
+                  effective_limits=s.policy.model_dump(mode='json'),
+                  effective_settings=s.model_dump(mode='json'),
+                  settings_sha256=hashlib.sha256(json.dumps(s.model_dump(mode='json'), sort_keys=True, separators=(',', ':')).encode()).hexdigest(),
+                  code_identity=package_identity(),
                   configuration_sha256=hashlib.sha256(json.dumps({'settings':s.model_dump(mode='json'),
                     **{k:record[k] for k in ('terms_ref','rights_ref','quota_ref','pricing_ref','purpose','instance_owner','instance_version')}}, sort_keys=True).encode()).hexdigest())
     gates = {'quality': report['status'],

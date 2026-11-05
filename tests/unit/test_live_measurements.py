@@ -135,6 +135,9 @@ def test_real_adapter_runner_uses_frozen_inputs_and_counted_budget(tmp_path, pro
         assert report['status'] == 'blocked' and report['calls'] == 0 and not calls
         return
     assert report['status'] == 'passed' and report['calls'] == len(calls) == len(cases)
+    import hashlib
+    assert report['settings_sha256'] == hashlib.sha256(json.dumps(report['effective_settings'],sort_keys=True,separators=(',', ':')).encode()).hexdigest()
+    assert report['effective_settings']['policy']['deadline_s'] == 5.0
     assert len(report['samples_sha256']) == len(report['thresholds_sha256']) == 64
     assert report['provider'] == provider and 'synthetic' not in json.dumps(report.get('headers', {}))
 
@@ -319,7 +322,7 @@ def test_duplicate_photon_ids_cannot_satisfy_candidate_count(operation):
     from geo_intelligence_core.models.location import Candidate, Point
     case = {'id':'distinct-candidates','operation':operation,'expect':{'status':'ok',
         'candidate_ids':['same'], 'candidate_points':{'same':[10,50]}, 'max_error_m':100,
-        'precisions':{'same':['house']}, 'min_candidates':2, 'max_candidates':2}}
+        'precisions':{'same':['house']}, 'min_candidates':1, 'max_candidates':2}}
     candidate = Candidate(id='same',source_ref='synthetic',point=Point(longitude=10,latitude=50),precision='house')
     async def invoke(case):
         return Result(status=Status.ok,data=[candidate,candidate],context=CTX)
@@ -353,3 +356,18 @@ def test_checkout_identity_ignores_generated_cache_but_not_source_changes(tmp_pa
     extra.unlink()
     runner.write_text(runner.read_text()+'\n# Modified tracked runner\n')
     assert not m.package_identity()['verified']
+
+
+@pytest.mark.parametrize('operation', ['search','reverse'])
+@pytest.mark.parametrize('defect', ['unlabeled-minimum','duplicate-label','unlabeled-first'])
+def test_photon_cardinality_and_ranking_require_distinct_labels_before_io(operation, defect):
+    case={'id':'photon-labels','operation':operation,'expect':{'status':'ok','candidate_ids':['one'],
+        'candidate_points':{'one':[10,50]},'precisions':{'one':['house']},'max_error_m':100,
+        'min_candidates':1,'max_candidates':2}}
+    if defect=='unlabeled-minimum': case['expect']['min_candidates']=2
+    if defect=='duplicate-label': case['expect']['candidate_ids']=['one','one']
+    if defect=='unlabeled-first': case['expect']['first_id']='unlabeled'
+    calls=[]
+    async def invoke(case): calls.append(case)
+    result=asyncio.run(m.measure_cases([case],invoke=invoke,clock=lambda:1.0))
+    assert result['status']=='blocked' and not calls
