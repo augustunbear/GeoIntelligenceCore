@@ -402,7 +402,8 @@ def run_live_test(provider):
                     return await run_provider(provider, record, budget=budget,
                         headers={auth_header: key} if key and requires_auth else {})
         except (TimeoutError, BudgetUnavailable):
-            return {'status': 'blocked', 'reason': 'shared_budget_or_deadline_unavailable', 'provider': provider}
+            return {'status': 'blocked', 'reason': 'shared_budget_or_deadline_unavailable',
+                    'provider': provider, 'calls': budget.calls}
     report = asyncio.run(run())
     after = package_identity()
     report['source_commit'] = identity['source_commit']

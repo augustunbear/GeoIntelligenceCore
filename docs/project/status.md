@@ -66,3 +66,9 @@ The same source-identity regression also verifies that Git ignore rules cannot h
 Final quality/configuration follow-up: Photon labels must be distinct, cover the minimum cardinality and include any first-ranked ID before I/O. Reports now retain complete effective settings and their canonical SHA-256 for consumer binding; settings changes cannot reuse old approval. Six Photon regressions failed before the fix. Full suite: 255 passed, 3 live skips. Runtime package source remains unchanged.
 
 Direction/documentation review follow-up: ORS always needs a positive outbound catchment case and also an inbound case whenever catchment_inbound is enabled; either missing direction blocks before HTTP. Both missing-direction regressions failed before the fix. Obsolete provider-activation execution text has been replaced: complete approved configuration can perform live HTTP and pass measured gates, not deliberately fail as a placeholder. Full suite: 257 passed, 3 live skips.
+
+### PR #27 blocked-report quota reconciliation
+- Timeout and shared-control failure reports now preserve consumed `calls`, matching the durable ledger even when partial case diagnostics are unavailable.
+- Both regression variants failed with a missing `calls` field before the fix; full offline suite: 259 passed, 3 opt-in live skips.
+- This follow-up changes only runner/tests/docs; the packaged runtime and consumer wheel are unchanged. No live measurements, provider activation or deployment.
+- Next: verify CI and independent review, then merge #27 into its existing `codex/ff03-instance-switch` target. Parent PRs remain separate.

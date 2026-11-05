@@ -90,7 +90,8 @@ instance owner/version, terms/pricing references, dependency versions and a
 sanitized configuration fingerprint are retained in the report.
 
 A total timeout is blocked and may omit partial-case diagnostics; consumed
-attempts remain in the persistent ledger. No successful quality claim is made
+attempts remain in the persistent ledger and are recorded as `calls` in timeout
+and shared-control failure reports. No successful quality claim is made
 from such a report.
 
 Reports include `effective_settings` and a canonical `settings_sha256` (SHA-256 of sorted compact JSON from TrialSettings.model_dump(mode="json")). Consumers must use those exact settings and verify the digest before activation; changing limits or other settings requires a fresh measurement.

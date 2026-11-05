@@ -383,3 +383,35 @@ def test_photon_cardinality_and_ranking_require_distinct_labels_before_io(operat
     async def invoke(case): calls.append(case)
     result=asyncio.run(m.measure_cases([case],invoke=invoke,clock=lambda:1.0))
     assert result['status']=='blocked' and not calls
+
+
+@pytest.mark.parametrize('failure', ['timeout', 'shared_control'])
+def test_blocked_report_preserves_consumed_quota(tmp_path, monkeypatch, failure):
+    import json
+    import sqlite3
+    monkeypatch.syspath_prepend(str(Path(__file__).parents[1]))
+    import integration.live_gate as gate
+    record = {'credential_env': None, 'authentication_required': False, 'deadline_s': .1,
+              'application_name': 'Synthetic', 'contact_url': 'https://app.example.org'}
+    monkeypatch.setattr(gate, 'require_live_activation', lambda _: record)
+    monkeypatch.setattr(m, '__package__', 'integration')
+    monkeypatch.setattr(m, '__spec__', importlib.util.spec_from_file_location('integration.measurements', PATH))
+    monkeypatch.setattr(m, 'package_identity', lambda: {'verified': True, 'source_commit': 'a' * 40})
+    db = tmp_path / 'quota.sqlite'
+    folder = tmp_path / 'reports'
+    monkeypatch.setenv('GEO_LIVE_BUDGET_DB', str(db))
+    monkeypatch.setenv('GEO_LIVE_REPORT_DIR', str(folder))
+    async def invoke(provider, record, *, budget, **kwargs):
+        assert await budget.reserve(provider, 2, Decimal(0))
+        if failure == 'shared_control':
+            raise m.BudgetUnavailable('synthetic private failure')
+        await asyncio.Event().wait()
+    monkeypatch.setattr(m, 'run_provider', invoke)
+    with pytest.raises(pytest.skip.Exception):
+        m.run_live_test('photon')
+    report = json.loads(next(folder.glob('*.json')).read_text())
+    with sqlite3.connect(db) as connection:
+        consumed = connection.execute('SELECT sum(calls) FROM runs').fetchone()[0]
+    assert report['calls'] == consumed == 2
+    assert report['status'] == 'blocked'
+    assert 'private failure' not in json.dumps(report)
