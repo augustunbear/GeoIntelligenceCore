@@ -1,0 +1,1 @@
+{"scenario":"food-service","location_id":"venue-a","category_ids":["restaurant","cafe","bar","fast_food"],"raw_tags":{"amenity":"restaurant","takeaway":"yes"},"time_label":"lunch period","expected":"static place identity; takeaway qualifier, not a second venue"}

@@ -73,3 +73,7 @@ The configurable Photon resolver returns forward/reverse location candidates for
 ## P07 routing (integration branch)
 
 The optional ORS adapter provides walking, cycling and driving routes and directed duration matrices through bounded HTTP POST. See [routing usage](docs/usage/routing.md). Live activation is pending endpoint permissions, quota and rights verification.
+
+### Selected-topic analysis (P09 preview)
+
+`geo_intelligence_core.analysis.analyze(request, registry, policy, budget)` is an async composition entry point. Select an explicit Region or explicit radius with a confirmed location and category IDs (or the exact packaged `food-service@1` profile), register only the enabled provider ports, and set a positive `max_calls_per_run`. The packaged `surroundings@1` and `venue-discovery@1` templates describe required topics; `location-comparison@1` is schema-valid and comparison execution follows in P11. Static places may contain raw opening hours, but a descriptive time never establishes which venues were open or visited at that time. A disabled optional population request has null data and makes the overall result partial.

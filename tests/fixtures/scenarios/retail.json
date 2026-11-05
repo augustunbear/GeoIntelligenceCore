@@ -1,0 +1,1 @@
+{"scenario": "retail", "location_id": "shop-a", "category_ids": ["retail"], "raw_tags": {"shop": "books"}, "time_label": "after school", "expected": "same spatial selection without restaurant-specific fields"}

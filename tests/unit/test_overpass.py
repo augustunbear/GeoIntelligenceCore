@@ -111,3 +111,13 @@ def test_geometry_intersects_cannot_use_overpass_center_only():
     assert result.status == Status.unsupported
     assert result.data is None and result.issues[0].code == "geometry_intersects_unavailable"
     assert gateway.calls == []
+
+
+def test_food_service_subtypes_are_queryable_without_takeaway_duplication():
+    gateway = Gateway()
+    result = search(gateway, ('restaurant', 'cafe', 'bar', 'fast_food'))
+    assert result.status == Status.ok
+    assert all(set(p.categories) & {'restaurant', 'cafe', 'bar', 'fast_food'} for p in result.data.places)
+    assert any('restaurant' in p.categories and 'food_service' in p.categories for p in result.data.places)
+    assert 'takeaway' not in {category for p in result.data.places for category in p.categories}
+    assert '["amenity"="restaurant"]' in gateway.calls[0][3]['data']

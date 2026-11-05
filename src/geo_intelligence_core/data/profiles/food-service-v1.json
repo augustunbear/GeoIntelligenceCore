@@ -1,0 +1,1 @@
+{"id":"food-service","version":"1","category_ids":["restaurant","cafe","bar","fast_food"],"defaults":{"category_ids":["restaurant","cafe","bar","fast_food"],"language":"de"},"display_groups":{"food_venues":["restaurant","cafe","bar","fast_food"]}}
