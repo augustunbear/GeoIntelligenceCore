@@ -316,6 +316,8 @@ async def run_provider(provider, record, *, budget, headers=None, transport=None
         allowed = {'photon': {'search', 'reverse'}, 'overpass': {'places'}, 'ors': {'route', 'matrix', 'catchments'}}[provider]
         if any(c['operation'] not in allowed for c in cases):
             raise ValueError('wrong provider operation')
+        if {c['operation'] for c in cases if c['expect']['status'] == 'ok'} != allowed:
+            raise ValueError('positive coverage of every provider operation required')
         requests = {c['id']: models[c['operation']].model_validate(c['request']) for c in cases}
         port = build_trial_provider(s, budget=budget, headers=headers)
         port.gateway.transport, port.gateway.resolver = transport, resolver

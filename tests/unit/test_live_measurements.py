@@ -61,6 +61,39 @@ def test_wrong_photon_candidate_and_exception_are_failed_and_redacted():
     assert report['status'] == 'failed' and 'private-key' not in json.dumps(report)
 
 
+def complete_batch(provider, operation, request_payload, expect, payload):
+    """Complete synthetic provider scope with positive cases for every operation."""
+    a, b = {'longitude':10,'latitude':50}, {'longitude':10.01,'latitude':50.01}
+    requests, expectations, responses = {}, {}, {}
+    if provider == 'photon':
+        requests = {'search':{'text':'Synthetic'}, 'reverse':{'point':a}}
+        expectations = {op:expect for op in requests}
+        responses = {op:payload for op in requests}
+    if provider == 'ors':
+        requests = {'route':{'origin':a,'destination':b,'mode':'walking'},
+                    'matrix':{'origins':{'A':a},'destinations':{'B':b},'mode':'walking'},
+                    'catchments':{'location':{'id':'synthetic','version':1,'point':a,
+                        'confirmation':{'method':'manual','at':'2026-11-05T00:00:00Z','evidence_ids':['synthetic']}},
+                        'direction':'outbound','mode':'walking','durations_s':[300,600,900]}}
+        expectations = {'route':{'status':'ok','distance_m':[1200,1300],'duration_s':[500,700]},
+                        'matrix':{'status':'ok','cells':{'A>B':[500,700]}},
+                        'catchments':{'status':'ok','durations_s':[300,600,900],'direction':'outbound','area_m2':[1,1e10]}}
+        fixture = Path(__file__).parents[1]/'fixtures/ors'
+        route = json.loads((fixture/'route_km.json').read_text())
+        route['metadata']['query']['units']='m'
+        route['features'][0]['properties']['summary']['distance']=1250
+        responses = {'route':route,'matrix':{'durations':[[600]]},
+                     'catchments':json.loads((fixture/'isochrones.json').read_text())}
+    requests[operation], expectations[operation], responses[operation] = request_payload, expect, payload
+    cases = [{'id':op,'operation':op,'request':request} for op,request in requests.items()]
+    def reply(req):
+        path = req.url.path
+        op = ('reverse' if 'reverse' in path else 'search') if provider == 'photon' else (
+            'route' if 'directions' in path else 'matrix' if 'matrix' in path else 'catchments')
+        return httpx.Response(200,json=responses[op if provider != 'overpass' else 'places'])
+    return cases, expectations, reply
+
+
 @pytest.mark.parametrize('provider,operation,request_payload,expect,payload', [
     ('photon', 'search', {'text': 'Synthetic'}, {'status': 'ok', 'candidate_ids': ['photon:osm:N:1'],
      'candidate_points': {'photon:osm:N:1': [10, 50]}, 'max_error_m': 100,
@@ -76,11 +109,15 @@ def test_wrong_photon_candidate_and_exception_are_failed_and_redacted():
      {'status': 'ok', 'source_keys': ['osm:node:7', 'osm:node:8'], 'min_precision': 1.0, 'min_recall': 1.0},
      json.loads((Path(__file__).parents[1] / 'fixtures/overpass/places.json').read_text())),
 ])
-def test_real_adapter_runner_uses_frozen_inputs_and_counted_budget(tmp_path, provider, operation, request_payload, expect, payload):
+@pytest.mark.parametrize('complete', [False, True])
+def test_real_adapter_runner_uses_frozen_inputs_and_counted_budget(tmp_path, provider, operation, request_payload, expect, payload, complete):
     from geo_intelligence_core.providers.budget import InMemoryBudget
     samples, thresholds = tmp_path/'samples.json', tmp_path/'thresholds.json'
-    samples.write_text(json.dumps([{'id': 'sample-1', 'operation': operation, 'request': request_payload}]))
-    thresholds.write_text(json.dumps({'cases': {'sample-1': expect}, 'max_p95_s': 5, 'max_peak_bytes': 50_000_000}))
+    cases, expectations, respond = complete_batch(provider,operation,request_payload,expect,payload)
+    if not complete:
+        cases = [c for c in cases if c['operation'] == operation]
+    samples.write_text(json.dumps(cases))
+    thresholds.write_text(json.dumps({'cases': expectations, 'max_p95_s': 5, 'max_peak_bytes': 50_000_000}))
     record = dict(approved=True, approved_origin={'ors': 'https://api.heigit.org', 'photon': 'https://photon.komoot.io',
                   'overpass': 'https://overpass.private.coffee'}[provider],
         samples_ref=str(samples), thresholds_ref=str(thresholds), max_calls=5, max_concurrency=1,
@@ -90,11 +127,14 @@ def test_real_adapter_runner_uses_frozen_inputs_and_counted_budget(tmp_path, pro
     calls = []
     def reply(req):
         calls.append(req)
-        return httpx.Response(200, json=payload)
+        return respond(req)
     report = asyncio.run(m.run_provider(provider, record, budget=InMemoryBudget(5, Decimal(0)),
         headers={'Authorization': 'synthetic'} if provider == 'ors' else {},
         transport=httpx.MockTransport(reply), resolver=lambda _: ['93.184.215.14']))
-    assert report['status'] == 'passed' and report['calls'] == len(calls) == 1
+    if not complete and provider != 'overpass':
+        assert report['status'] == 'blocked' and report['calls'] == 0 and not calls
+        return
+    assert report['status'] == 'passed' and report['calls'] == len(calls) == len(cases)
     assert len(report['samples_sha256']) == len(report['thresholds_sha256']) == 64
     assert report['provider'] == provider and 'synthetic' not in json.dumps(report.get('headers', {}))
 
@@ -192,13 +232,17 @@ def test_runner_honors_explicit_inbound_and_auth_configuration(tmp_path):
         pricing_ref='synthetic',terms_ref='synthetic',instance_owner='synthetic',instance_version='unknown',max_area_m2=1e10)
     payload=json.loads((Path(__file__).parents[1]/'fixtures/ors/isochrones.json').read_text())
     payload['metadata']['query']['location_type']='destination'
+    cases, expectations, respond = complete_batch('ors','catchments',request_payload,
+        {'status':'ok','durations_s':[300,600,900],'direction':'inbound','area_m2':[1,1e10]},payload)
+    samples.write_text(json.dumps(cases))
+    thresholds.write_text(json.dumps({'cases':expectations,'max_p95_s':5,'max_peak_bytes':50_000_000}))
     seen=[]
     def reply(req):
         seen.append(req)
-        return httpx.Response(200,json=payload)
+        return respond(req)
     report=asyncio.run(m.run_provider('ors',record,budget=InMemoryBudget(5,Decimal(0)),headers={'X-Api-Key':'synthetic-only'},
         transport=httpx.MockTransport(reply),resolver=lambda _:['93.184.215.14']))
-    assert report['status']=='passed' and len(seen)==1
+    assert report['status']=='passed' and len(seen)==3
     assert seen[0].headers['x-api-key']=='synthetic-only'
 
 
