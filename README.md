@@ -1,6 +1,10 @@
 # GeoIntelligenceCore
 
-Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: P01–P07 changes are under review in stacked draft PRs and integration branches (2026-11-04). No release, deployment, live provider activation or analysis execution has been delivered.**
+Reusable, provider-neutral geospatial intelligence foundation for multiple products. **Status: 0.1.0a1 source candidate under test, unreleased. Offline synthetic analysis and consumer packaging checks exist; live providers are not activated and no consumer repository is integrated.**
+
+## Install and offline consumer example
+
+Requires Python 3.12. Build with `python -m build`, then install the wheel from `dist/` into a clean venv. Optional extras are `geo-intelligence-core[geometry]` and `geo-intelligence-core[providers]`. No key, database, JVM or network access is needed to import the base package or run `python examples/python/offline_analysis.py`. The example confirms synthetic locations, runs the three packaged templates with a mock places port, and checks a purpose-bound snapshot and export. See [consumer integration](docs/usage/consumer-integration.md) and [release candidate checks](docs/releases/0.1.0a1.md).
 
 ## Mission / 定位
 
@@ -32,7 +36,7 @@ Keep the core industry-neutral; industry selection is optional. Industry profile
 - [ADR-0001](docs/architecture/adr/ADR-0001-independent-shared-repository.md) — confirmed independent repository decision
 - [Open-source candidates](docs/research/OPEN_SOURCE_LANDSCAPE.md) — libraries, use/avoid decisions, license and operational caveats
 - [Provider strategy](docs/architecture/PROVIDERS_AND_DATA.md) — German data sources and commercial restrictions
-- [Data and API contract](docs/contracts/V1_CONTRACT.md) — implementation-target models, Python ports and completion semantics; not implemented
+- [Data and API contract](docs/contracts/V1_CONTRACT.md) — target models, Python ports and completion semantics
 - [Roadmap / acceptance criteria](docs/plans/ROADMAP.md) — staged delivery and tests
 - [Project status](docs/project/status.md) — completed, pending, next step
 
@@ -52,7 +56,7 @@ Start with P01–P04: installable offline core, location confirmation, contracts
 
 Population remains optional: administrative references only when useful and inexpensive; grid aggregation is low priority; transit population is lowest priority and excluded from the first release. No JVM/R5py solely for population. Current live endpoint terms, actual budgets and quality still require verification.
 
-Implementation progress: P01 provides installable offline manual location confirmation in [PR #3](https://github.com/augustunbear/GeoIntelligenceCore/pull/3). P02 adds immutable configuration/result shapes, five JSON schemas and capability preflight in a stacked PR. Both are unmerged and unreleased; provider calls, analysis execution and production integration remain pending.
+Implementation progress and merge status are tracked in [project status](docs/project/status.md). This source candidate does not constitute a released wheel, live source validation, or production integration.
 
 ## P02 configuration preflight (stacked PR)
 
@@ -76,7 +80,7 @@ The optional ORS adapter provides walking, cycling and driving routes and direct
 
 ### Selected-topic analysis (P09 preview)
 
-`geo_intelligence_core.analysis.analyze(request, registry, policy, budget)` is an async composition entry point. Select an explicit Region or explicit radius with a confirmed location and category IDs (or the exact packaged `food-service@1` profile), register only the enabled provider ports, and set a positive `max_calls_per_run`. The packaged `surroundings@1` and `venue-discovery@1` templates describe required topics; `location-comparison@1` is schema-valid and comparison execution follows in P11. Static places may contain raw opening hours, but a descriptive time never establishes which venues were open or visited at that time. A disabled optional population request has null data and makes the overall result partial.
+`geo_intelligence_core.analyze(request, registry, policy, budget)` is an async composition entry point. Select an explicit Region or explicit radius with a confirmed location and category IDs (or the exact packaged `food-service@1` profile), register only the enabled provider ports, and set a positive `max_calls_per_run`. The packaged `surroundings@1`, `venue-discovery@1`, and `location-comparison@1` templates are exercised with synthetic data in the offline example. Static places may contain raw opening hours, but a descriptive time never establishes which venues were open or visited at that time. A disabled optional population request has null data and makes the overall result partial.
 
 ### Factual location comparison (P11)
 
