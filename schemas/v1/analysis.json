@@ -1,5 +1,116 @@
 {
   "$defs": {
+    "Comparison": {
+      "additionalProperties": false,
+      "properties": {
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/ComparisonRow"
+          },
+          "title": "Rows",
+          "type": "array"
+        },
+        "union_counts": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Union Counts",
+          "type": "object"
+        },
+        "union_issues": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Union Issues",
+          "type": "object"
+        }
+      },
+      "required": [
+        "rows"
+      ],
+      "title": "Comparison",
+      "type": "object"
+    },
+    "ComparisonRow": {
+      "additionalProperties": false,
+      "properties": {
+        "location_version": {
+          "title": "Location Version",
+          "type": "string"
+        },
+        "metric_id": {
+          "title": "Metric Id",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "difference": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Difference"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "comparability_issues": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Comparability Issues",
+          "type": "array"
+        }
+      },
+      "required": [
+        "location_version",
+        "metric_id",
+        "value",
+        "difference",
+        "unit"
+      ],
+      "title": "ComparisonRow",
+      "type": "object"
+    },
     "Correction": {
       "additionalProperties": false,
       "properties": {
@@ -187,6 +298,211 @@
         "message_key"
       ],
       "title": "Issue",
+      "type": "object"
+    },
+    "Metric": {
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        },
+        "nature": {
+          "enum": [
+            "measured",
+            "derived",
+            "estimated",
+            "unverified"
+          ],
+          "title": "Nature",
+          "type": "string"
+        },
+        "numerator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Numerator"
+        },
+        "denominator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Denominator"
+        },
+        "evidence_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "nature"
+      ],
+      "title": "Metric",
+      "type": "object"
+    },
+    "MetricConditions": {
+      "additionalProperties": false,
+      "properties": {
+        "category_mapping_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Category Mapping Version"
+        },
+        "category_selection": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Category Selection"
+        },
+        "source_coverage": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Coverage"
+        },
+        "reference_period": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference Period"
+        },
+        "scope_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scope Type"
+        },
+        "scope_threshold": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scope Threshold"
+        },
+        "scope_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scope Version"
+        },
+        "boundary_rule": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Boundary Rule"
+        },
+        "method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Method"
+        },
+        "time_condition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Condition"
+        }
+      },
+      "title": "MetricConditions",
       "type": "object"
     },
     "Permission": {
@@ -523,6 +839,38 @@
       },
       "title": "Selected Topics",
       "type": "array"
+    },
+    "metrics": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Metric"
+      },
+      "title": "Metrics",
+      "type": "object"
+    },
+    "metric_conditions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/MetricConditions"
+      },
+      "title": "Metric Conditions",
+      "type": "object"
+    },
+    "comparison": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Comparison"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "location_statuses": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Location Statuses",
+      "type": "object"
     },
     "corrections": {
       "default": [],

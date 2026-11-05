@@ -71,7 +71,7 @@ async def analyze(request: AnalyzeRequest, registry: ProviderRegistry, policy: U
     if template_id == 'location-comparison':
         if len(request.locations) < 2:
             return _error(Status.invalid_input, context, 'locations_required')
-        return _error(Status.unsupported, context, 'comparison_pending')
+        return await _analyze_comparison(request, registry, policy, budget, profile, context)
     if template_id == 'surroundings' and len(request.locations) != 1:
         return _error(Status.invalid_input, context, 'one_location_required')
     if template_id == 'venue-discovery' and not (request.locations or request.regions):
@@ -164,3 +164,40 @@ def _topic_failure(status, context, topic, code=None):
     code = code or f'capability_{status}'
     return Result[object](status=status, data=None, context=context,
                           issues=[Issue(code=code, message_key=f'analysis.{code}', safe_params={'topic': topic})])
+
+
+async def _analyze_comparison(request, registry, policy, budget, profile, context):
+    """Run one independent factual analysis per location, then compare the same selected metrics."""
+    from .comparison import compare
+    count = len(request.locations)
+    if len(request.regions) not in (0, count) or (not request.regions and 'radius_m' not in request.explicit_parameters):
+        return _error(Status.invalid_input, context, 'explicit_region_per_location_required')
+    if not any(t.id in _PLACE_TOPICS for t in request.topics):
+        return _error(Status.unsupported, context, 'comparison_topic_unsupported')
+    results = []
+    analyses = []
+    for index, location in enumerate(request.locations):
+        child = request.model_copy(update={
+            'locations': (location,), 'regions': (request.regions[index],) if request.regions else (),
+            'template_ref': None, 'request_id': f'{context.request_id}:{index + 1}',
+        })
+        result = await analyze(child, registry, policy, budget, profile=profile)
+        results.append(result)
+        if result.data is not None:
+            analyses.append(result.data)
+        else:
+            analyses.append(Analysis(request_context=result.context, selected_topics=tuple(t.id for t in request.topics)))
+    metric_ids = [f'{t.id}.unique_count' for t in request.topics if t.id in _PLACE_TOPICS]
+    compared = compare(analyses, metric_ids)
+    if compared.data is None:
+        return _error(compared.status, context, 'comparison_failed')
+    per_location = {f'{loc.id}@{loc.version}': result.status for loc, result in zip(request.locations, results)}
+    topics = {f'{loc.id}@{loc.version}/{topic}': topic_result
+              for loc, result in zip(request.locations, results) if result.data is not None
+              for topic, topic_result in result.data.topic_results.items()}
+    analysis = Analysis(request_context=compared.context, selected_topics=tuple(t.id for t in request.topics),
+                        comparison=compared.data, location_statuses=per_location, topic_results=topics)
+    statuses = {r.status for r in results}
+    status = Status.ok if statuses == {Status.ok} and compared.status == Status.ok else Status.partial
+    return Result[Analysis](status=status, data=analysis, context=compared.context,
+                            issues=tuple(issue for r in results for issue in r.issues) + compared.issues)
