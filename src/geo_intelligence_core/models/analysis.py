@@ -16,11 +16,32 @@ class Metric(FrozenModel):
     evidence_ids: tuple[str, ...] = ()
 
 
+class MetricConditions(FrozenModel):
+    category_mapping_version: str | None = None
+    category_selection: str | None = None
+    source_coverage: str | None = None
+    reference_period: str | None = None
+    scope_type: str | None = None
+    scope_threshold: str | None = None
+    scope_version: str | None = None
+    boundary_rule: str | None = None
+    method: str | None = None
+    time_condition: str | None = None
+
+    @property
+    def complete(self) -> bool:
+        return all(bool(getattr(self, field)) for field in type(self).model_fields)
+
+
 class Analysis(FrozenModel):
     request_context: RequestContext
     topic_results: dict[str, Result[object]] = Field(default_factory=dict)
     selected_topics: tuple[str, ...] = ()
-    corrections: tuple["Correction", ...] = ()
+    metrics: dict[str, Metric] = Field(default_factory=dict)
+    metric_conditions: dict[str, MetricConditions] = Field(default_factory=dict)
+    comparison: 'Comparison | None' = None
+    location_statuses: dict[str, str] = Field(default_factory=dict)
+    corrections: tuple['Correction', ...] = ()
     originals: dict[str, dict[str, object]] = Field(default_factory=dict)
 
 
@@ -36,6 +57,8 @@ class ComparisonRow(FrozenModel):
 
 class Comparison(FrozenModel):
     rows: tuple[ComparisonRow, ...]
+    union_counts: dict[str, StrictInt | None] = Field(default_factory=dict)
+    union_issues: dict[str, tuple[str, ...]] = Field(default_factory=dict)
 
 
 class Snapshot(FrozenModel):
@@ -56,5 +79,6 @@ class Correction(FrozenModel):
     reason: str
     scope_token: str
     at: str
+
 
 Analysis.model_rebuild()

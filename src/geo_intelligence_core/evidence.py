@@ -124,8 +124,59 @@ def _sanitize(analysis: Analysis, purpose: str, action: str) -> tuple[Analysis, 
             originals[ref] = kept
         else:
             redactions.append(f'original:{ref}')
+    # Derived comparisons retain their source rights; a count or difference cannot
+    # launder a restricted source into a snapshot or export.
+    evidence_by_id = {}
+    for topic in analysis.topic_results.values():
+        for e in topic.evidence:
+            evidence_by_id.setdefault(e.id, []).append((e, topic.context.scope_token))
+    def grants(ids, row=None):
+        matching = None
+        if row is not None:
+            topic_id = row.metric_id.split('.', 1)[0]
+            topic = analysis.topic_results.get(f'{row.location_version}/{topic_id}')
+            matching = {e.id for e in topic.evidence} if topic is not None else set()
+        return bool(ids) and all(eid in evidence_by_id and
+            (matching is None or eid in matching) and
+            all(e.rights.allows(action, purpose) and scope == analysis.request_context.scope_token
+                for e, scope in evidence_by_id[eid]) for eid in ids)
+    metrics = {key: metric for key, metric in analysis.metrics.items() if grants(metric.evidence_ids)}
+    if len(metrics) != len(analysis.metrics):
+        redactions.append('metrics')
+    comparison = analysis.comparison
+    if comparison is not None:
+        rows = []
+        for row in comparison.rows:
+            allowed = grants(row.evidence_ids, row)
+            if not allowed:
+                redactions.append(f'comparison:{row.location_version}:{row.metric_id}')
+                row = row.model_copy(update={'value': None, 'difference': None,
+                    'evidence_ids': (), 'comparability_issues': (*row.comparability_issues, 'rights_restricted')})
+            rows.append(row)
+        baseline = {}
+        for i, row in enumerate(rows):
+            if row.metric_id not in baseline:
+                baseline[row.metric_id] = row
+                continue
+            if row.difference is not None and (not grants(baseline[row.metric_id].evidence_ids, baseline[row.metric_id])
+                                                or not grants(row.evidence_ids, row)):
+                rows[i] = row.model_copy(update={'difference': None,
+                    'comparability_issues': (*row.comparability_issues, 'rights_restricted')})
+                redactions.append(f'comparison:{row.location_version}:{row.metric_id}')
+        union_counts = dict(comparison.union_counts)
+        union_issues = dict(comparison.union_issues)
+        for metric_id in union_counts:
+            metric_rows = [row for row in rows if row.metric_id == metric_id]
+            if len(metric_rows) < 2 or not all(grants(row.evidence_ids, row) for row in metric_rows):
+                union_counts[metric_id] = None
+                union_issues[metric_id] = (*union_issues.get(metric_id, ()), 'rights_restricted')
+                redactions.append(f'comparison:union:{metric_id}')
+        comparison = comparison.model_copy(update={'rows': tuple(rows), 'union_counts': union_counts,
+                                                    'union_issues': union_issues})
     clean = analysis.model_copy(update={'request_context': context, 'topic_results': topics,
-                                        'originals': originals, 'corrections': tuple(corrections)})
+                                        'originals': originals, 'corrections': tuple(corrections),
+                                        'metrics': metrics, 'metric_conditions': {k: v for k, v in analysis.metric_conditions.items() if k in metrics},
+                                        'comparison': comparison})
     return clean, tuple(sorted(retained)), tuple(sorted(set(redactions)))
 
 

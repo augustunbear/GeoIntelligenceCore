@@ -53,3 +53,9 @@ This pre-release does not include search, provider adapters, geometry operations
 - Preserve scoped factual corrections with original records and explicit source identity checks; snapshot only purpose-authorized retained content with redaction notes and a canonical hash.
 - Recheck each contributing source's export rights for deterministic JSON, CSV and GeoJSON; ship DE, ZH-CN and EN summaries, with CSV formula safeguards.
 - Additive `Analysis.corrections`, `Analysis.originals` and `Snapshot.purpose` fields update the generated analysis schema. No storage authorization, public redistribution, report layout or live provider enablement is claimed.
+
+## P11 factual location comparison — unreleased
+
+- Add T-03 per-location analysis and explicit metric comparability: mapping, category selection, source coverage, reference period, scope type/threshold/version, boundary, method, time, unit, and measurement nature must match before a difference is reported.
+- Preserve missing or incomplete cells as null with reasons. Count distinct source keys across overlapping place result sets; no population union, rank, score, or investment recommendation is produced.
+- Keep comparison and derived metric outputs subject to evidence rights during retention and export. Unknown or denied rights redact values and dependent differences.

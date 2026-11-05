@@ -77,3 +77,7 @@ The optional ORS adapter provides walking, cycling and driving routes and direct
 ### Selected-topic analysis (P09 preview)
 
 `geo_intelligence_core.analysis.analyze(request, registry, policy, budget)` is an async composition entry point. Select an explicit Region or explicit radius with a confirmed location and category IDs (or the exact packaged `food-service@1` profile), register only the enabled provider ports, and set a positive `max_calls_per_run`. The packaged `surroundings@1` and `venue-discovery@1` templates describe required topics; `location-comparison@1` is schema-valid and comparison execution follows in P11. Static places may contain raw opening hours, but a descriptive time never establishes which venues were open or visited at that time. A disabled optional population request has null data and makes the overall result partial.
+
+### Factual location comparison (P11)
+
+For `location-comparison@1`, supply at least two confirmed locations, the same selected place topics, and one explicit Region per location or an explicit radius. The result includes each location's topic status and comparison rows; a difference is null unless source coverage, reference period, category mapping, scope, method, time, unit, and value are comparable. `compare(analyses, metric_ids)` also accepts analyses with explicitly supplied metrics and conditions. Distinct source keys give a factual union count for comparable place sets, not a visitor or demand estimate. Optional disabled population data stays null without blocking selected place metrics.
