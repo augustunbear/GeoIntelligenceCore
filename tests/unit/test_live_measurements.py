@@ -116,6 +116,8 @@ def test_negative_controls_are_typed_and_cause_specific():
     from geo_intelligence_core.models.places import PlaceSet
     from geo_intelligence_core.models.common import Issue
     positive={'id':'positive','operation':'matrix','expect':{'status':'ok','cells':{'A>B':[1,3]}}}
+    positive['request'] = {'origins': {'A': {'longitude': 10, 'latitude': 50}},
+                           'destinations': {'B': {'longitude': 11, 'latitude': 51}}, 'mode': 'walking'}
     negative={'id':'no-route','operation':'route','expect':{'status':'unavailable','issue_code':'no_route'}}
     async def timeout(case):
         if case['id']=='positive':
@@ -123,6 +125,7 @@ def test_negative_controls_are_typed_and_cause_specific():
         return Result(status=Status.unavailable,data=None,context=CTX,issues=[Issue(code='network_failure',message_key='provider.network_failure')])
     assert asyncio.run(m.measure_cases([positive,negative],invoke=timeout,clock=lambda:1.0))['status']=='failed'
     no_cell={'id':'no-cell','operation':'matrix','expect':{'status':'unavailable','issue_code':'no_route_cells','cells':{'A>B':None}}}
+    no_cell['request'] = positive['request']
     empty={'id':'empty','operation':'places','expect':{'status':'no_results'}}
     async def valid(case):
         if case['id']=='positive':return await timeout(case)
@@ -221,3 +224,47 @@ def test_live_ledger_last_slot_and_source_lock_cancellation(tmp_path):
         async with a.source_slot():pass
         assert not await m.LiveBudget(db,'photon','new-client').reserve('new-alias',1,Decimal(0))
     asyncio.run(run())
+
+
+def matrix_case(status='ok'):
+    return {'id': 'matrix-coverage', 'operation': 'matrix',
+        'request': {'origins': {'A': {'longitude': 10, 'latitude': 50}, 'B': {'longitude': 11, 'latitude': 50}},
+                    'destinations': {'C': {'longitude': 10, 'latitude': 51}, 'D': {'longitude': 11, 'latitude': 51}},
+                    'mode': 'walking'},
+        'expect': {'status': status, 'cells': {f'{o}>{d}': [1, 3] if status == 'ok' else None
+                                             for o in ('A', 'B') for d in ('C', 'D')},
+                   **({'issue_code': 'no_route_cells'} if status == 'unavailable' else {})}}
+
+
+@pytest.mark.parametrize('status', ['ok', 'unavailable'])
+@pytest.mark.parametrize('defect', ['missing', 'extra', 'reversed', 'no-request', 'empty-origins'])
+def test_incomplete_matrix_labels_block_before_invocation(status, defect):
+    case = matrix_case(status)
+    case['id'] = 'invalid-labels'
+    if defect == 'missing': del case['expect']['cells']['B>D']
+    if defect == 'extra': case['expect']['cells']['X>Y'] = [1, 3] if status == 'ok' else None
+    if defect == 'reversed': case['expect']['cells']['C>A'] = case['expect']['cells'].pop('A>C')
+    if defect == 'no-request': del case['request']
+    if defect == 'empty-origins': case['request']['origins'] = {}
+    calls = []
+    async def invoke(case): calls.append(case)
+    report = asyncio.run(m.measure_cases([matrix_case(), case], invoke=invoke, clock=lambda: 1.0))
+    assert report['status'] == 'blocked' and not calls
+
+
+@pytest.mark.parametrize('status', ['ok', 'unavailable'])
+@pytest.mark.parametrize('defect', [None, 'missing', 'extra', 'duplicate', 'wrong-value', 'wrong-status'])
+def test_matrix_results_cover_exactly_the_labeled_directed_cells(status, defect):
+    from geo_intelligence_core.models.spatial import TravelMatrix, MatrixCell
+    from geo_intelligence_core.models.common import Issue
+    case = matrix_case(status)
+    cells = [MatrixCell(origin_id=o, destination_id=d, duration_s=2 if status == 'ok' else None, status=status)
+             for o in ('A', 'B') for d in ('C', 'D')]
+    if defect == 'missing': cells.pop()
+    if defect == 'extra': cells.append(MatrixCell(origin_id='X', destination_id='Y', duration_s=2, status=status))
+    if defect == 'duplicate': cells.append(cells[0])
+    if defect == 'wrong-value': cells[-1] = cells[-1].model_copy(update={'duration_s': 999})
+    if defect == 'wrong-status': cells[-1] = cells[-1].model_copy(update={'status': 'unknown'})
+    result = Result(status=Status(status), data=TravelMatrix(cells=cells), context=CTX,
+                    issues=[Issue(code='no_route_cells', message_key='routing.no_route_cells')] if status == 'unavailable' else [])
+    assert m._matches(case, result) is (defect is None)

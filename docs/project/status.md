@@ -50,3 +50,7 @@ P01–P13 are not rebuilt. No merge, release, target migration or deployment.
 
 Combined offline verification after independent review: **221 passed, 3 live skips**.
 Review corrections cover strict negative-result semantics, nullable credentials, independent Photon precision/cardinality labels, code/policy-bound reports, custom authentication/inbound settings and anonymous-key isolation.
+
+## PR #27 matrix quality correction (2026-11-05)
+
+Complete request cross-product labels are now required before I/O for positive and all-null matrix controls. Result cells must match that set exactly without duplicates and retain the expected per-cell status. RED regressions reproduced partial-label acceptance and unchecked extra/duplicate/status cells; focused suite 41 passed, full Python 3.12 suite 243 passed, 3 live skips. Runtime package sources are unchanged. No live calls, activation or release. PR remains stacked on #26; its target is codex/ff03-instance-switch, not main. Latest commit/CI/merge state is recorded by GitHub.

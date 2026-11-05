@@ -48,6 +48,15 @@ def _valid(case):
     e, op = case.get('expect'), case.get('operation')
     if not isinstance(e, dict):
         return False
+    if op == 'matrix':
+        try:
+            request = MatrixRequest.model_validate(case.get('request'))
+        except (ValueError, TypeError):
+            return False
+        keys = {f'{o}>{d}' for o in request.origins for d in request.destinations}
+        if (not keys or len(keys) != len(request.origins) * len(request.destinations)
+                or not isinstance(e.get('cells'), dict) or set(e['cells']) != keys):
+            return False
     if e.get('status') == 'no_results':
         return op in ('search', 'reverse', 'places') and set(e) == {'status'}
     if e.get('status') == 'unavailable':
@@ -94,6 +103,13 @@ def _matches(case, result):
     e, op = case['expect'], case['operation']
     if str(result.status) != e['status'] or result.status == Status.partial:
         return False
+    if op == 'matrix':
+        from geo_intelligence_core.models.spatial import TravelMatrix
+        if not _valid(case) or not isinstance(result.data, TravelMatrix):
+            return False
+        cells = {f'{c.origin_id}>{c.destination_id}': c for c in result.data.cells}
+        if len(cells) != len(result.data.cells) or set(cells) != set(e['cells']):
+            return False
     if e['status'] == 'no_results':
         if op in ('search', 'reverse'):
             return isinstance(result.data, (tuple,list)) and not result.data
@@ -127,9 +143,8 @@ def _matches(case, result):
     if op == 'route':
         return all(e[k][0] <= getattr(data, k) <= e[k][1] for k in ('distance_m', 'duration_s'))
     if op == 'matrix':
-        cells = {f'{c.origin_id}>{c.destination_id}': c.duration_s for c in data.cells}
-        return all(k in cells and (cells[k] is None if bound is None else
-                   cells[k] is not None and bound[0] <= cells[k] <= bound[1]) for k, bound in e['cells'].items())
+        return all(cells[k].status == Status.ok and cells[k].duration_s is not None
+                   and bound[0] <= cells[k].duration_s <= bound[1] for k, bound in e['cells'].items())
     from pyproj import Geod
     from shapely.geometry import shape
     geod = Geod(ellps='WGS84')
