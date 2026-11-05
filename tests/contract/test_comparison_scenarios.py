@@ -90,6 +90,20 @@ def test_t03_runs_each_location_then_comparison():
     assert all(with_population_disabled.data.topic_results[f'{id}@1/population_reference'].data is None for id in ('a', 'b'))
 
 
+def test_t03_call_limit_is_shared_across_locations():
+    port = Port(); registry = ProviderRegistry(); registry.register('places', port)
+    request = AnalyzeRequest(locations=[loc('a'), loc('b')], topics=[TopicSelection(id='places')],
+        template_ref='location-comparison@1', explicit_parameters={'radius_m': 500, 'category_ids': ['cafe']})
+    policy = UsagePolicy(allowed_capabilities=['places'], max_calls_per_run=1,
+        max_area_m2=1_000_000.0, max_geometry_vertices=100)
+    result = asyncio.run(analyze(request, registry, policy, Budget()))
+    assert port.calls == 1
+    assert result.status == Status.partial
+    assert result.data.comparison.rows[1].value is None
+    assert result.data.comparison.rows[1].difference is None
+    assert result.data.location_statuses['b@1'] == Status.unavailable
+
+
 def test_comparison_snapshot_and_exports_filter_restricted_sources():
     from geo_intelligence_core.evidence import snapshot
     from geo_intelligence_core.export import export_result

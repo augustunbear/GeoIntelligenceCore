@@ -174,6 +174,22 @@ async def _analyze_comparison(request, registry, policy, budget, profile, contex
         return _error(Status.invalid_input, context, 'explicit_region_per_location_required')
     if not any(t.id in _PLACE_TOPICS for t in request.topics):
         return _error(Status.unsupported, context, 'comparison_topic_unsupported')
+    class SharedRunBudget:
+        def __init__(self):
+            self.used_calls = 0
+
+        async def reserve(self, provider_id, calls, estimated_cost):
+            if self.used_calls + calls > policy.max_calls_per_run:
+                return False
+            accepted = await budget.reserve(provider_id, calls, estimated_cost)
+            if accepted:
+                self.used_calls += calls
+            return accepted
+
+        async def record(self, provider_id, actual_cost):
+            await budget.record(provider_id, actual_cost)
+
+    shared_budget = SharedRunBudget()
     results = []
     analyses = []
     for index, location in enumerate(request.locations):
@@ -181,7 +197,7 @@ async def _analyze_comparison(request, registry, policy, budget, profile, contex
             'locations': (location,), 'regions': (request.regions[index],) if request.regions else (),
             'template_ref': None, 'request_id': f'{context.request_id}:{index + 1}',
         })
-        result = await analyze(child, registry, policy, budget, profile=profile)
+        result = await analyze(child, registry, policy, shared_budget, profile=profile)
         results.append(result)
         if result.data is not None:
             analyses.append(result.data)
