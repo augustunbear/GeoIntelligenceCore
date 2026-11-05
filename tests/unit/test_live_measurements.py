@@ -415,3 +415,31 @@ def test_blocked_report_preserves_consumed_quota(tmp_path, monkeypatch, failure)
     assert report['calls'] == consumed == 2
     assert report['status'] == 'blocked'
     assert 'private failure' not in json.dumps(report)
+
+
+def test_cancelled_reservation_waits_for_committed_quota(tmp_path, monkeypatch):
+    import threading
+    import sqlite3
+    budget = m.LiveBudget(tmp_path / 'quota.sqlite', 'photon', 'cancelled-run')
+    started, release = threading.Event(), threading.Event()
+    reserve = budget._reserve
+    def delayed(calls, cost):
+        started.set()
+        assert release.wait(2)
+        return reserve(calls, cost)
+    monkeypatch.setattr(budget, '_reserve', delayed)
+    async def run():
+        task = asyncio.create_task(budget.reserve('photon', 1, Decimal(0)))
+        while not started.is_set():
+            await asyncio.sleep(.001)
+        task.cancel()
+        asyncio.get_running_loop().call_later(.02, release.set)
+        with pytest.raises(asyncio.CancelledError):
+            await task
+        assert budget.calls == 1
+    try:
+        asyncio.run(run())
+    finally:
+        release.set()
+    with sqlite3.connect(budget.path) as connection:
+        assert connection.execute('SELECT calls FROM runs WHERE run_id=?', (budget.run_id,)).fetchone()[0] == budget.calls

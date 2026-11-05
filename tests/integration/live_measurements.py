@@ -226,7 +226,16 @@ class LiveBudget:
         cost = Decimal(estimated_cost)
         if type(calls) is not int or calls < 1 or not cost.is_finite() or cost < 0:
             raise ValueError('invalid reservation')
-        granted = await asyncio.to_thread(self._reserve, calls, cost)
+        worker = asyncio.create_task(asyncio.to_thread(self._reserve, calls, cost))
+        try:
+            granted = await asyncio.shield(worker)
+        except asyncio.CancelledError:
+            # Cancellation does not stop SQLite's worker. Settle its bounded
+            # transaction before reporting quota or releasing the source slot.
+            granted = await worker
+            if granted:
+                self.calls += calls
+            raise
         if granted:
             self.calls += calls
         return granted

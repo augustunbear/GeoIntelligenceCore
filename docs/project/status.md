@@ -72,3 +72,8 @@ Direction/documentation review follow-up: ORS always needs a positive outbound c
 - Both regression variants failed with a missing `calls` field before the fix; full offline suite: 259 passed, 3 opt-in live skips.
 - This follow-up changes only runner/tests/docs; the packaged runtime and consumer wheel are unchanged. No live measurements, provider activation or deployment.
 - Next: verify CI and independent review, then merge #27 into its existing `codex/ff03-instance-switch` target. Parent PRs remain separate.
+
+### PR #27 cancellation-safe quota settlement
+- Cancelling a SQLite reservation now waits for its bounded worker transaction to settle and updates the consumed count before releasing the source slot or writing a blocked report.
+- A deterministic thread/event regression reproduced the stale zero count before the fix and reconciles the completed reservation against the ledger afterward.
+- Full offline suite: 260 passed, 3 live skips. Runtime package remains unchanged. Next: exact-head CI and independent review, then merge to the existing target if clear.
