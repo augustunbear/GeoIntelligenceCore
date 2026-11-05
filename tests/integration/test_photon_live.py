@@ -1,7 +1,8 @@
-"""P13 gate: live Photon checks need an approved endpoint and labeled samples."""
+"""Photon live activation requires a frozen sample and explicit approval."""
 import pytest
+from .live_gate import require_live_activation
 
 
-@pytest.mark.skip(reason='P13 approved endpoint, terms, quota and labeled samples not supplied')
 def test_photon_live_quality_gate():
-    pass
+    record = require_live_activation("photon")
+    pytest.fail("approved Photon record detected; implement and independently review labeled German candidate, ambiguity and failure measurements before activation")
