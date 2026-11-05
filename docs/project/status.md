@@ -15,3 +15,22 @@ Current low-volume trials prefer Photon demo, Private.coffee Overpass and free O
 ## Current implementation entrypoint (2026-11-05)
 
 Baseline main `b7fb468b1122260251b5ef051a1a5fc9219e1878` includes PR #22. The [incremental trial plan](../superpowers/plans/2026-11-05-free-first-trial.md) orders FF-01 configuration, FF-02 budget integration contract, FF-03 switching regressions, FF-04 per-provider measured runners and FF-05 consumer handoff. These are planned, not implemented by the documentation update. P01–P12 are not restarted; P13 remains preflight-only. No standalone core deployment is required. Published public permission can suffice for account-free providers; ORS account/key evidence applies only to ORS. FF-05 checks existing E07 work before changing the consumer.
+
+## FF-01 configuration branch (2026-11-05)
+
+Based on main `ab60d2e83502959230448da81635fce790406ed5` (PR #23), the FF-01
+branch adds `TrialSettings.public(...)` and `build_trial_provider(..., budget=...,
+headers=...)`, reusing PhotonResolver, OverpassPlaceProvider and OrsRoutingProvider
+with one gateway per instance. Construction and the example are offline.
+Defaults cap each gateway at 5 attempts, concurrency 1 and zero cost; missing
+ORS Authorization leaves only ORS unconfigured. Settings preserve policy/terms
+and attribution references without credentials. Shared daily enforcement remains
+FF-02, custom ORS switching FF-03, live measurements FF-04. No live requests,
+provider activation, package publication or consumer changes are part of FF-01.
+
+FF-01 verification: full offline suite **176 passed, 3 live skips**, including
+clean wheel/extras/sdist installation. Focused trial/live-config/consumer suite
+**45 passed**. Independent review found one structured validation-error credential
+leak; its failing regression now passes for direct construction, model validation
+and copying. Full suite reran after the fix. This is branch verification, not a
+merged/released/live status.

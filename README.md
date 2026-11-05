@@ -91,3 +91,9 @@ For `location-comparison@1`, supply at least two confirmed locations, the same s
 ## Low-volume trial providers
 
 Use the [free-first provider policy](docs/operations/free-first-providers.md): Photon and Private.coffee Overpass require no account/key; ORS Standard uses a free key. Compatible public, paid and self-hosted instances use configurable endpoints and credentials behind the same adapters. Live quality remains unverified; no paid subscription is required to install or trial the library.
+
+Select an instance with `TrialSettings.public(...)` and construct it with
+`build_trial_provider(..., budget=...)` from `geo_intelligence_core.providers.trial`.
+See the [offline dry-run example](examples/python/free_trial.py). Defaults are 5
+attempts per gateway, concurrency 1 and zero cost; shared daily budgets remain
+caller-owned. ORS custom-instance switching remains FF-03.
