@@ -1,14 +1,18 @@
 # GeoIntelligenceCore project status
 
+## P13 controlled acceptance preflight (2026-11-05)
+
+P12 PR #20 merged into main `2b656b3df0a190040d7b54c1c85afa0ebd8c226d`. The local candidate wheel SHA-256 is `3398d79eec5c68530c098f7ec9dc2338ea1cc743ac79b1e2f7c4baab0ffc6c3c`; it was not published. P13 offline regression: 130 passed, three live skips. [Provider activation](../verification/provider-activation.md) and [first-release decision](../verification/first-release.md) record exact remaining gates. Photon, Overpass and ORS have no approved live instance/credential and frozen consumer sample/threshold set here; ORS current complete HeiGIT account terms and actual account quotas are unreadable in this review. No provider live quality, production readiness, deployment or release is claimed.
+
 Updated: 2026-11-04.
 
 - **Decision confirmed**: independent shared private repository `augustunbear/GeoIntelligenceCore`, separate from RestaurantTrafficDiagnosis.
 - **Delivered**: initial documentation-only foundation: README, contributor instructions, architecture, ADR, open-source inventory, provider/data handling policy, draft contract, roadmap.
-- **Implementation under review**: P01–P04 provide the offline core, geometry and bounded HTTP primitives in stacked draft PRs #3–#7. P05 Photon candidate resolution and P06 Overpass/places are in separate draft PRs #8–#9 and combined here. No release, activated live adapter, hosted infrastructure or consumer wiring has been delivered.
+- **Implementation under review**: P01 contains an installable offline Python package, manual location confirmation, CI and synthetic tests in unmerged PR #3; P02 contains configuration preflight, model contracts and schemas in stacked unmerged PR #4. P03 adds optional local geometry in draft PR #5; P04 adds bounded HTTP access, budget and cache in draft PR #6. The integration branch combines their independent changes. No release, live provider adapter, hosted infrastructure or consumer wiring has been delivered.
 - **Known risks**: German address match and POI coverage unverified; public OSM API operational restrictions; commercial geodata redistribution; PostGIS availability in target Neon not checked; census grids are historical.
 - **Design baseline merged in main (PR #1)**: complete functional design F-01–F-13, shared rules G-01–G-10, food-service templates T-01–T-03, cross-industry scenarios V-01–V-08, ADR-0002 and planning handoff. This describes intended behavior, not implemented functionality.
 - **Planning delivered in this change**: [step-by-step plan](../superpowers/plans/2026-11-04-core-implementation.md), [traceability](../plans/REQUIREMENTS_TRACEABILITY.md), reconciled roadmap and target V1 contract, based on main `99bce3d90186acf8a431896341ab95fc66708ac7`.
-- **Next executable task after P07 integration review**: P08 local region and administrative boundary work, subject to the stacked P01–P07 dependencies. P08–P13, E and POP work items remain unimplemented.
+- **Next executable task after integration review**: P05 location provider adapter, subject to the stacked P01–P04 dependencies. P05–P13, E and POP work items remain unimplemented.
 - **Consumer boundary**: RestaurantTrafficDiagnosis retains consultant UI, case isolation, domain-specific reasons and evidence approval. GeoIntelligenceCore provides geospatial facts only.
 
 ## Open-source selection research (2026-11-04, merged in main)
@@ -43,15 +47,12 @@ P03 is based on P02 head `904bc3405169d94ef464193d39f575b60ba35d24`. Offline dis
 
 ## P03/P04 integration (unmerged)
 
-P04 head `3a2ee379b729f06334025dbc1d8fe48dd3ba1b5f` and P03 head `76a3cd415d24f1704e1159285a82bebc50183d71` independently build on P02. Integration PR #7 places the complete P03 geometry change on P04, preserving both optional extras and hashed Python 3.12 locks. CI installs all lock sets and runs the combined offline test suite. The HTTP gateway remains a guarded infrastructure primitive.
+P04 head `3a2ee379b729f06334025dbc1d8fe48dd3ba1b5f` and P03 head `76a3cd415d24f1704e1159285a82bebc50183d71` independently build on P02. This branch places the complete P03 geometry change on P04, preserving both optional extras and hashed Python 3.12 locks. CI installs all lock sets and runs the combined offline test suite. The HTTP gateway remains a guarded infrastructure primitive; Photon, Overpass and ORS adapters have not been delivered.
 
-## P05/P06 integration (unmerged)
+## P07 stacked ORS adapter (unmerged)
 
-P05 Photon PR #8 independently builds on P04; P06 Overpass/places PR #9 builds on P03/P04 integration. This branch combines their published source changes, with synthetic offline tests. Photon and Overpass remain opt-in; live source terms, quotas, data quality and production activation are unverified.
+P07 builds on the P03/P04 integration branch. It adds mocked route and directed matrix requests through the bounded gateway, explicit distance units and per-cell null handling. Offline tests pass; the live test is skipped until current ORS terms, quotas, attribution, and permissible endpoint use are verified. This does not activate a provider or imply release/deployment.
 
-## P07 integration (unmerged)
-
-P07 route and matrix changes from draft PR #10 are combined with the P05/P06 integration head. JSON POST remains bounded by the P04 gateway. The live ORS test is skipped pending current terms, quotas, attribution and permitted endpoint use.
 ## P08 stacked network catchments (unmerged)
 
 P08 builds on P07 and adds mocked ORS isochrones with separately gated inbound direction, explicit time semantics, geometry limits and topology validation. Non-nested polygons are reported partial; malformed data is unknown; no circle fallback occurs. The offline tests do not establish live graph coverage, rights or endpoint readiness. P08 remains an unmerged draft and does not activate real credentials.
