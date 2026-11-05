@@ -94,6 +94,12 @@ class OverpassPlaceProvider:
                 return fail(Status.unconfigured, "missing_hard_limit")
             if request.mapping_version != "osm-v1" or request.boundary_rule != request.region.boundary_rule:
                 return fail(Status.invalid_input, "mapping_or_boundary")
+            # `out body center` returns a representative point for ways and
+            # relations, not their footprint. A crossing feature can therefore
+            # be missed by a center-based filter. Do not claim an intersection
+            # search until this adapter retrieves and validates full geometry.
+            if request.boundary_rule == "geometry_intersects":
+                return fail(Status.unsupported, "geometry_intersects_unavailable")
             selectors = _selectors(request.category_ids)
             known = set(json.loads(files("geo_intelligence_core").joinpath("data/categories/v1.json").read_text())["categories"])
             if not request.category_ids or not set(request.category_ids).issubset(known) or not selectors or len(selectors) > 50:
