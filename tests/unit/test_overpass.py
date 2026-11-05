@@ -7,6 +7,9 @@ from geo_intelligence_core.models.common import Result, Status
 from geo_intelligence_core.models.policy import ProviderConfig, UsagePolicy
 from geo_intelligence_core.models.requests import RequestContext
 from geo_intelligence_core.providers.overpass import OverpassPlaceProvider
+from geo_intelligence_core.places import normalize_places
+from geo_intelligence_core.models.location import Point
+from geo_intelligence_core.models.places import Place, SourceKey
 from test_places import query
 
 FIXTURE = json.loads((Path(__file__).parents[1] / "fixtures/overpass/places.json").read_text())
@@ -87,3 +90,24 @@ def test_empty_clean_response_is_no_results_and_malformed_is_unavailable():
     empty = search(Gateway({"elements": []}))
     assert empty.status == Status.no_results and empty.data.unique_count == 0
     assert search(Gateway({"elements": "malformed"})).status == Status.unavailable
+
+
+def test_geometry_intersects_cannot_use_overpass_center_only():
+    # This way crosses the search region's east edge, but its representative
+    # center is outside. The local operation can see the actual footprint.
+    crossing = Place(source_key=SourceKey(source_id="osm", entity_type="way", entity_id="900"),
+                     point=Point(longitude=.012, latitude=.005), point_role="representative",
+                     geometry={"type": "Polygon", "coordinates": [[
+                         [.009, .004], [.014, .004], [.014, .006], [.009, .006], [.009, .004]]]},
+                     categories=("food_service",))
+    intersects = query("geometry_intersects", categories=("food_service",))
+    assert normalize_places([crossing], intersects).data.unique_count == 1
+    assert normalize_places([crossing], query(categories=("food_service",))).status == Status.no_results
+
+    # Overpass `out body center` omits this footprint. Refuse the requested
+    # rule before making a misleading center-only network query.
+    gateway = Gateway()
+    result = asyncio.run(OverpassPlaceProvider(gateway).search(intersects, CONTEXT))
+    assert result.status == Status.unsupported
+    assert result.data is None and result.issues[0].code == "geometry_intersects_unavailable"
+    assert gateway.calls == []
