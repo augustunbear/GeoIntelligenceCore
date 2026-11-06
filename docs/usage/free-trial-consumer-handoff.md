@@ -60,10 +60,4 @@ export, provenance, PostgreSQL audit and idempotency corrections. Its exact-head
 passed, including Chromium desktop/mobile and PostgreSQL 17 checks. See its
 [status record at that commit](https://github.com/augustunbear/RestaurantTrafficDiagnosis/blob/53ffdcef24714acd338f0852a7a300944c4dac5b/docs/project/status.md).
 
-Read-only Neon inspection on 2026-11-06 found the restauranttrafficdiagnosis-dev
-project's production branch/neondb at Alembic **0005**. The consumer needs **0007**;
-its development branch is documented as auto-publishing through Cloud Build.
-Do not merge that consumer increment into an active deployment path until a
-controlled migration completes or automatic publication is confirmed disabled.
-This is a technical schema compatibility gate, not missing merge authorization.
-No live source approval, target migration or deployment is claimed.
+Target schema compatibility and publication ordering remain an uncompleted consumer rollout gate. Keep the consumer PR open until controlled migration and release-order verification are complete, or automatic publication is confirmed disabled. Merge authorization alone is not evidence of schema compatibility. No target migration, deployment or live-source activation is claimed.
