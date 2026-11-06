@@ -1,5 +1,15 @@
 # FF-05 free-source consumer handoff
 
+The [latest FF-04 public smoke replay](../verification/2026-11-06-public-smoke-replay.md)
+produced failed Photon and Overpass reports with zero Runner HTTP attempts and
+no ORS report. **Do not enable any source** from these results. The reported
+source commit is `d8cb37c4f261fc83f723dfec8c2943a7b6b10321`, while the
+consumer pins `27ee290a7b51e245414d18ff681603c1c99decf6`. Future passing
+measurements must first clear their own source gate and then match the deployed
+consumer wheel, instance, complete settings digest, frozen inputs, rights and
+time; a deliberate consumer pin update and its regression/rollout checks are
+required for a different core source. No production configuration was changed.
+
 Current checkpoint: RestaurantTrafficDiagnosis PR #38 has since merged into
 `development`, which still pins core `27ee290a7b51e245414d18ff681603c1c99decf6`
 and wheel SHA-256 `e722028af51030cf3408a9ffe5b550fc2dc203bb21a22c55f8044b766e1cf314`.

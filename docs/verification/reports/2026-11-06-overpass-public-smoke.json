@@ -1,0 +1,119 @@
+{
+  "status": "failed",
+  "cases": [
+    {
+      "id": "berlin-instanz-restaurant",
+      "status": "unconfigured",
+      "quality_passed": false,
+      "latency_s": 0.3717441570000801
+    }
+  ],
+  "p50_s": 0.3717441570000801,
+  "p95_s": 0.3717441570000801,
+  "peak_bytes": 8172116,
+  "sample_count": 1,
+  "small_sample": true,
+  "measured_at": "2026-11-06T13:04:48.937377+00:00",
+  "provider": "overpass",
+  "instance_id": "overpass-private-coffee",
+  "endpoint": "https://overpass.private.coffee",
+  "package_version": "0.1.0a1",
+  "calls": 0,
+  "samples_sha256": "b6e8b4972e5565947823184de779f7204821ab10f46a7740fd56c2041a7de454",
+  "thresholds_sha256": "1fa9757d4024431b5c0e739a9a68540d05d9e1fd25fa0d75c012b6bbc826c707",
+  "rights_ref": "https://www.openstreetmap.org/copyright",
+  "quota_ref": "local:50-attempts/protocol/UTC-day;operator numeric quota unpublished",
+  "purpose": "controlled_public_restaurant_smoke",
+  "instance_owner": "Private.coffee",
+  "instance_version": "unknown",
+  "terms_ref": "https://overpass.private.coffee/",
+  "pricing_ref": "https://overpass.private.coffee/",
+  "currency": "EUR",
+  "effective_limits": {
+    "allowed_endpoints": [
+      "https://overpass.private.coffee"
+    ],
+    "allowed_capabilities": [
+      "places"
+    ],
+    "max_calls_per_run": 5,
+    "max_concurrency": 1,
+    "max_area_m2": 100000.0,
+    "max_geometry_vertices": 1000,
+    "max_items": 100,
+    "deadline_s": 40.0,
+    "max_response_bytes": 1000000,
+    "cost_ceiling": "0",
+    "currency": "EUR",
+    "pricing_ref": "https://overpass.private.coffee/",
+    "period_limits": {},
+    "cache_policy": "disabled"
+  },
+  "effective_settings": {
+    "protocol": "overpass",
+    "instance_id": "overpass-private-coffee",
+    "endpoint": "https://overpass.private.coffee",
+    "policy": {
+      "allowed_endpoints": [
+        "https://overpass.private.coffee"
+      ],
+      "allowed_capabilities": [
+        "places"
+      ],
+      "max_calls_per_run": 5,
+      "max_concurrency": 1,
+      "max_area_m2": 100000.0,
+      "max_geometry_vertices": 1000,
+      "max_items": 100,
+      "deadline_s": 40.0,
+      "max_response_bytes": 1000000,
+      "cost_ceiling": "0",
+      "currency": "EUR",
+      "pricing_ref": "https://overpass.private.coffee/",
+      "period_limits": {},
+      "cache_policy": "disabled"
+    },
+    "authentication_required": false,
+    "authentication_header": "Authorization",
+    "capability_flags": {
+      "places": true
+    },
+    "photon_capabilities": {
+      "api_version": "v1",
+      "supports_countrycode": true,
+      "supports_bbox": true,
+      "supported_languages": [
+        "de",
+        "en"
+      ],
+      "fallback_language": "de"
+    },
+    "cost_per_call": "0",
+    "terms_ref": "https://overpass.private.coffee/",
+    "rights_ref": "https://www.openstreetmap.org/copyright",
+    "attribution": "\u00a9 OpenStreetMap contributors",
+    "user_agent": "GeoIntelligenceCore-FF04/2026-11-06 (+https://github.com/augustunbear/GeoIntelligenceCore)",
+    "daily_budget_requirement": "caller_shared_budget_required"
+  },
+  "settings_sha256": "8a5c57e9daa70f459fa4276cff2486ec3b1b02615235763b8e0243a1dbc9265d",
+  "code_identity": {
+    "verified": true,
+    "source_commit": "d8cb37c4f261fc83f723dfec8c2943a7b6b10321",
+    "code_sha256": "f19d31c1ac93e712d468e1d21d8f1bad330ac859599657aa43d0dd7d863280a4",
+    "dependencies": {
+      "pydantic": "2.14.2",
+      "httpx": "0.28.1",
+      "shapely": "2.2.0",
+      "pyproj": "3.8.0"
+    },
+    "runner_sha256": "fe9c02be832cdf250f67bc3b48255ea02be8ff9e4480e627d58b129fadadd2bc"
+  },
+  "configuration_sha256": "c47a217fc7fb720cc3bb85f7ff7ca9ebf9bd8e71ac359cc7eac87bd64c256330",
+  "gates": {
+    "quality": "failed",
+    "latency": "passed",
+    "memory": "passed",
+    "budget": "failed"
+  },
+  "source_commit": "d8cb37c4f261fc83f723dfec8c2943a7b6b10321"
+}
