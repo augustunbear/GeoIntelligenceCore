@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — FF-01
+
+- Add explicit free-only `TrialSettings` presets and `build_trial_provider` over
+  the existing Photon, Overpass and ORS adapters; construction is offline.
+- Keep runtime authentication outside settings, isolate per-instance gateways,
+  and enforce a local run cap in addition to the injected shared Budget.
+- Add an always-dry-run example and synthetic factory contracts. Daily persistent
+  budgets, custom ORS switching and live quality remain pending.
+
 ## P12 consumer packaging candidate — unreleased
 
 - Export the public consumer facade and exercise manual confirmation, all three synthetic templates, disabled population, comparison, snapshot and JSON export through it.
