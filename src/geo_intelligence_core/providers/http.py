@@ -31,9 +31,25 @@ class HttpGateway:
     def __init__(self, providers: dict[str, ProviderConfig], policy: UsagePolicy, budget: Budget, *,
                  clock=time.monotonic, transport: httpx.AsyncBaseTransport | None = None,
                  resolver=None, allowed_redirect_hosts: tuple[str, ...] = (),
-                 cost_per_call: Decimal | None = None, headers: dict[str, str] | None = None):
+                 cost_per_call: Decimal | None = None, headers: dict[str, str] | None = None,
+                 trusted_proxy_url: str | None = None, ca_bundle: str | None = None):
+        if trusted_proxy_url is not None:
+            if transport is not None:
+                raise ValueError('invalid trusted proxy')
+            try:
+                proxy = urlsplit(trusted_proxy_url)
+                valid_proxy = (proxy.scheme == 'http' and bool(proxy.hostname)
+                               and proxy.username is None and proxy.password is None
+                               and proxy.path in ('', '/') and not proxy.query and not proxy.fragment
+                               and proxy.port is not None
+                               and not any(c.isspace() or ord(c) < 32 for c in trusted_proxy_url))
+            except ValueError:
+                valid_proxy = False
+            if not valid_proxy:
+                raise ValueError('invalid trusted proxy') from None
         self.providers, self.policy, self.budget = providers, policy, budget
         self.clock, self.transport, self.resolver = clock, transport, resolver
+        self.trusted_proxy_url, self.ca_bundle = trusted_proxy_url, ca_bundle
         self.redirect_hosts = frozenset(allowed_redirect_hosts)
         self.cost_per_call, self.headers = cost_per_call, headers or {}
         self._semaphore = asyncio.Semaphore(policy.max_concurrency)
@@ -48,6 +64,12 @@ class HttpGateway:
             pass
         else:
             raise UnsafeEndpoint()
+        if self.trusted_proxy_url is not None:
+            if '.' not in host or host.endswith(('.local', '.localhost', '.internal')):
+                raise UnsafeEndpoint()
+            # The explicitly trusted proxy resolves the approved hostname and
+            # enforces the destination IP policy; never pin a guessed address.
+            return host
         if self.resolver is None:
             records = await asyncio.get_running_loop().getaddrinfo(host, 443, type=socket.SOCK_STREAM)
             addresses = [r[4][0] for r in records]
@@ -102,6 +124,8 @@ class HttpGateway:
         cfg = self.providers.get(provider_id)
         if cfg is None or cfg.id != provider_id or not cfg.endpoint:
             return fail(Status.unconfigured, 'unconfigured')
+        if self.trusted_proxy_url is not None and self.transport is not None:
+            return fail(Status.unconfigured, 'unsafe_transport')
         p = self.policy
         if (p.max_calls_per_run < 1 or p.deadline_s is None or p.max_response_bytes is None or
                 p.cost_ceiling is None or not p.currency or not p.pricing_ref or self.cost_per_call is None):
@@ -142,7 +166,9 @@ class HttpGateway:
         end = self.clock() + p.deadline_s
         hops = 0
         async with self._semaphore:
-            async with httpx.AsyncClient(transport=self.transport, follow_redirects=False,
+            async with httpx.AsyncClient(transport=self.transport,
+                                         proxy=self.trusted_proxy_url,
+                                         verify=self.ca_bundle or True, follow_redirects=False,
                                          trust_env=False, timeout=httpx.Timeout(min(5.0, p.deadline_s))) as client:
                 while True:
                     remaining = end - self.clock()
@@ -162,7 +188,8 @@ class HttpGateway:
                         async with asyncio.timeout(remaining):
                             parsed = urlsplit(url)
                             netloc = f'[{pinned_ip}]' if ':' in pinned_ip else pinned_ip
-                            pinned = urlunsplit(('https', netloc, parsed.path, parsed.query, ''))
+                            pinned = (url if self.trusted_proxy_url is not None else
+                                      urlunsplit(('https', netloc, parsed.path, parsed.query, '')))
                             outbound_headers = {**self.headers, 'Host': parsed.hostname}
                             request = client.build_request(method, pinned,
                                                            params=params if method == 'GET' and hops == 0 else None,

@@ -39,6 +39,15 @@ provider = build_trial_provider(settings, budget=shared_budget)
 # Explicitly invoke search(...) / reverse(...) / route(...) when approved.
 ```
 
+For an explicitly trusted egress proxy, the factory also accepts runtime-only
+`trusted_proxy_url` and `ca_bundle`. This changes the transport trust boundary:
+the proxy must enforce DNS/IP destination safety for the configured origin.
+The URL and certificate path are not part of serializable `TrialSettings`, and
+the default remains direct public-DNS verification with IP pinning. The FF-04
+[Runner instructions](../verification/free-trial-measurements.md) define the
+additional Codex cloud policy check; ordinary consumers should not enable
+proxy mode without an equivalent reviewed egress policy.
+
 `shared_budget` implements the existing async `Budget.reserve` / `Budget.record`
 port. Supply the caller's shared daily budget for actual use; FF-02 defines that
 integration contract. The factory adds a local per-gateway run cap, so even an

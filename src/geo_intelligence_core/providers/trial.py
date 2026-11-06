@@ -160,7 +160,9 @@ class _RunBudget:
 
 
 def build_trial_provider(settings: TrialSettings, *, budget: Budget,
-                         headers: dict[str, str] | None = None) -> LocationResolver | PlaceProvider | RoutingProvider:
+                         headers: dict[str, str] | None = None,
+                         trusted_proxy_url: str | None = None,
+                         ca_bundle: str | None = None) -> LocationResolver | PlaceProvider | RoutingProvider:
     """Build one existing adapter with a dedicated gateway; never perform I/O.
 
     Missing required authentication leaves the adapter unconfigured. A new
@@ -189,7 +191,8 @@ def build_trial_provider(settings: TrialSettings, *, budget: Budget,
                          credential_handle='runtime-header' if auth else None)
     gateway = HttpGateway({cfg.id: cfg}, settings.policy,
                           _RunBudget(budget, settings.policy.max_calls_per_run),
-                          headers=runtime_headers, cost_per_call=settings.cost_per_call)
+                          headers=runtime_headers, cost_per_call=settings.cost_per_call,
+                          trusted_proxy_url=trusted_proxy_url, ca_bundle=ca_bundle)
     if settings.protocol == 'photon':
         return PhotonResolver(gateway, provider_id=cfg.id, capabilities=settings.photon_capabilities)
     if settings.protocol == 'overpass':

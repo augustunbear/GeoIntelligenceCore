@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — FF-04 Codex cloud transport
+
+- Add explicit trusted-proxy transport to the existing bounded gateway and
+  trial factory for proxy-only managed environments. Default direct DNS/IP
+  validation remains unchanged; the managed proxy must enforce destination
+  safety, and the FF-04 Runner checks the selected host against Codex's
+  restricted network policy before use.
+- Read proxy and CA paths only at runtime. No source is activated by the
+  transport change; real quality and FF-05 version/rights gates remain separate.
+
 ## Unreleased — FF-01
 
 - Add explicit free-only `TrialSettings` presets and `build_trial_provider` over

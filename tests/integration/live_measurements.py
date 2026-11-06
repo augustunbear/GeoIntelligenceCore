@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from decimal import Decimal
 import fcntl
+import httpx
 from importlib.metadata import version, PackageNotFoundError
 import hashlib
 import json
@@ -16,11 +17,13 @@ import os
 from pathlib import Path
 import re
 import sqlite3
+import ssl
 import statistics
 import subprocess
 import time
 import tracemalloc
 import uuid
+from urllib.parse import urlsplit
 
 from geo_intelligence_core import __version__
 from geo_intelligence_core.provenance import package_fingerprint
@@ -31,7 +34,48 @@ from geo_intelligence_core.models.requests import RequestContext, SearchRequest,
 from geo_intelligence_core.models.places import PlaceQuery
 from geo_intelligence_core.models.spatial import RouteRequest, MatrixRequest, CatchmentRequest
 from geo_intelligence_core.providers.budget import BudgetUnavailable
+from geo_intelligence_core.providers.http import UnsafeEndpoint, origin
 from geo_intelligence_core.providers.trial import TrialSettings, build_trial_provider
+
+CLOUD_NETWORK_POLICY_PATH = Path('/etc/codex/network-policy.json')
+
+
+def cloud_proxy_config(record):
+    """Require Codex's declared restricted proxy for the selected origin."""
+    try:
+        if record.get('transport_mode') != 'codex_proxy':
+            raise ValueError()
+        approved = record['approved_origin']
+        host = urlsplit(approved).hostname
+        if not host or approved != origin(approved):
+            raise ValueError()
+        policy_raw = CLOUD_NETWORK_POLICY_PATH.read_bytes()
+        policy = json.loads(policy_raw)
+        proxy = os.environ.get('HTTPS_PROXY')
+        ca_bundle = os.environ.get('SSL_CERT_FILE')
+        rules = policy['http_network_policy']['egress_rules']
+        if (policy['version'] != 1 or policy['http_network_policy']['type'] != 'restricted'
+                or policy['http_proxy'] != proxy or not proxy or not ca_bundle
+                or not Path(ca_bundle).is_file()
+                or host not in {rule['host'] for rule in rules}):
+            raise ValueError()
+        ssl.create_default_context(cafile=ca_bundle)
+        return proxy, ca_bundle, hashlib.sha256(policy_raw).hexdigest()
+    except (OSError, ValueError, KeyError, TypeError, UnsafeEndpoint, ssl.SSLError):
+        raise ValueError('trusted cloud proxy policy unavailable') from None
+
+
+async def cloud_proxy_denies_private(proxy_url, ca_bundle):
+    """Fail closed unless the selected proxy explicitly denies private CONNECT."""
+    try:
+        async with httpx.AsyncClient(proxy=proxy_url, verify=ca_bundle, trust_env=False,
+                                     follow_redirects=False, timeout=5.0) as client:
+            await client.head('https://127.0.0.1/')
+    except httpx.ProxyError as exc:
+        return str(exc).startswith('403')
+    except httpx.HTTPError:
+        pass
+    return False
 
 
 def _number(value):
@@ -293,9 +337,12 @@ def package_identity():
             'runner_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
 
 
-async def run_provider(provider, record, *, budget, headers=None, transport=None, resolver=None):
+async def run_provider(provider, record, *, budget, headers=None, transport=None, resolver=None,
+                       trusted_proxy_url=None, ca_bundle=None):
     """Run each operation through its real adapter. All inputs freeze before I/O."""
     try:
+        if trusted_proxy_url is not None and (transport is not None or resolver is not None):
+            raise ValueError('trusted proxy cannot use test transport or resolver')
         if (record.get('approved') is not True or not 0 < record['max_calls'] <= 5 or record['max_concurrency'] != 1
                 or not all(isinstance(record.get(k), str) and record[k].strip()
                            for k in ('rights_ref', 'quota_ref', 'purpose', 'pricing_ref', 'currency', 'terms_ref', 'instance_owner', 'instance_version'))):
@@ -338,7 +385,8 @@ async def run_provider(provider, record, *, budget, headers=None, transport=None
             required = {'outbound', 'inbound'} if s.capability_flags.get('catchment_inbound') else {'outbound'}
             if not required.issubset(directions):
                 raise ValueError('positive coverage of enabled catchment directions required')
-        port = build_trial_provider(s, budget=budget, headers=headers)
+        port = build_trial_provider(s, budget=budget, headers=headers,
+                                    trusted_proxy_url=trusted_proxy_url, ca_bundle=ca_bundle)
         port.gateway.transport, port.gateway.resolver = transport, resolver
     except (OSError, ValueError, KeyError, TypeError):
         return {'status': 'blocked', 'reason': 'frozen_inputs_or_limits_missing', 'cases': [], 'calls': 0}
@@ -393,6 +441,12 @@ def run_live_test(provider):
     identity = package_identity()
     if not output or not identity['verified']:
         pytest.skip('report destination or verified clean source identity missing; live measurement blocked')
+    proxy_url, ca_bundle, network_policy_sha256 = None, None, None
+    if record.get('transport_mode') is not None:
+        try:
+            proxy_url, ca_bundle, network_policy_sha256 = cloud_proxy_config(record)
+        except ValueError:
+            pytest.skip('trusted cloud proxy policy unavailable; live measurement blocked')
     try:
         folder = Path(output)
         folder.mkdir(parents=True, exist_ok=True)
@@ -405,11 +459,15 @@ def run_live_test(provider):
     requires_auth = record.get('authentication_required', (record.get('settings') or {}).get('authentication_required', provider == 'ors'))
     async def run():
         budget = LiveBudget(path, provider, uuid.uuid4().hex)
+        if proxy_url and not await cloud_proxy_denies_private(proxy_url, ca_bundle):
+            return {'status': 'blocked', 'reason': 'trusted_proxy_not_enforced',
+                    'provider': provider, 'calls': 0}
         try:
             async with asyncio.timeout(float(record['deadline_s'])):
                 async with budget.source_slot():
                     return await run_provider(provider, record, budget=budget,
-                        headers={auth_header: key} if key and requires_auth else {})
+                        headers={auth_header: key} if key and requires_auth else {},
+                        trusted_proxy_url=proxy_url, ca_bundle=ca_bundle)
         except (TimeoutError, BudgetUnavailable):
             return {'status': 'blocked', 'reason': 'shared_budget_or_deadline_unavailable',
                     'provider': provider, 'calls': budget.calls}
@@ -417,6 +475,20 @@ def run_live_test(provider):
     after = package_identity()
     report['source_commit'] = identity['source_commit']
     report['code_identity'] = identity
+    report['transport_mode'] = record.get('transport_mode', 'direct')
+    if network_policy_sha256:
+        report['network_policy_sha256'] = network_policy_sha256
+        report['proxy_private_target_denied'] = report.get('reason') != 'trusted_proxy_not_enforced'
+        if report['proxy_private_target_denied']:
+            try:
+                after_proxy = cloud_proxy_config(record)
+                stable = after_proxy == (proxy_url, ca_bundle, network_policy_sha256)
+                stable = stable and asyncio.run(cloud_proxy_denies_private(proxy_url, ca_bundle))
+            except ValueError:
+                stable = False
+            if not stable:
+                report['status'] = 'failed'
+                report['reason'] = 'measurement_environment_changed'
     if after != identity:
         report['status'] = 'failed'
         report['reason'] = 'measured_code_changed'

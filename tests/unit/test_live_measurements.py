@@ -148,6 +148,72 @@ def test_real_adapter_runner_uses_frozen_inputs_and_counted_budget(tmp_path, pro
     assert report['provider'] == provider and 'synthetic' not in json.dumps(report.get('headers', {}))
 
 
+def test_cloud_proxy_requires_selected_host_in_enforced_policy(tmp_path, monkeypatch):
+    import certifi
+    policy = tmp_path / 'network-policy.json'
+    policy.write_text(json.dumps({'version': 1, 'http_proxy': 'http://proxy:8080',
+        'http_network_policy': {'type': 'restricted',
+                                'egress_rules': [{'host': 'photon.komoot.io'}]}}))
+    monkeypatch.setattr(m, 'CLOUD_NETWORK_POLICY_PATH', policy, raising=False)
+    monkeypatch.setenv('HTTPS_PROXY', 'http://proxy:8080')
+    monkeypatch.setenv('SSL_CERT_FILE', certifi.where())
+    record = {'transport_mode': 'codex_proxy', 'approved_origin': 'https://photon.komoot.io'}
+    proxy_url, ca_bundle, digest = m.cloud_proxy_config(record)
+    assert proxy_url == 'http://proxy:8080' and ca_bundle == certifi.where() and len(digest) == 64
+    with pytest.raises(ValueError, match='trusted cloud proxy policy unavailable'):
+        m.cloud_proxy_config({'transport_mode': 'codex_proxy',
+                              'approved_origin': 'https://overpass.private.coffee'})
+    invalid_ca = tmp_path / 'invalid-ca.pem'
+    invalid_ca.write_text('invalid')
+    monkeypatch.setenv('SSL_CERT_FILE', str(invalid_ca))
+    with pytest.raises(ValueError, match='trusted cloud proxy policy unavailable'):
+        m.cloud_proxy_config(record)
+
+
+def test_cloud_proxy_probe_requires_explicit_private_connect_denial(monkeypatch):
+    class ProbeClient:
+        deny = True
+        def __init__(self, **kwargs):
+            assert kwargs['trust_env'] is False and kwargs['proxy'] == 'http://proxy:8080'
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, *_):
+            pass
+        async def head(self, url):
+            assert url == 'https://127.0.0.1/'
+            if self.deny:
+                raise httpx.ProxyError('403 Forbidden')
+            return httpx.Response(200)
+    monkeypatch.setattr(m.httpx, 'AsyncClient', ProbeClient)
+    assert asyncio.run(m.cloud_proxy_denies_private('http://proxy:8080', '/certs.pem'))
+    ProbeClient.deny = False
+    assert not asyncio.run(m.cloud_proxy_denies_private('http://proxy:8080', '/certs.pem'))
+
+
+def test_live_runner_stops_before_provider_when_proxy_probe_fails(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(Path(__file__).parents[1]))
+    import integration.live_gate as gate
+    record = {'transport_mode': 'codex_proxy', 'credential_env': None,
+              'authentication_required': False, 'deadline_s': 5.0,
+              'application_name': 'Synthetic', 'contact_url': 'https://app.example.org'}
+    monkeypatch.setattr(gate, 'require_live_activation', lambda _: record)
+    monkeypatch.setattr(m, '__package__', 'integration')
+    monkeypatch.setattr(m, '__spec__', importlib.util.spec_from_file_location('integration.measurements', PATH))
+    monkeypatch.setattr(m, 'package_identity', lambda: {'verified': True, 'source_commit': 'a'*40})
+    monkeypatch.setattr(m, 'cloud_proxy_config', lambda _: ('http://proxy:8080', '/ca.pem', 'b'*64))
+    async def probe(*_): return False
+    async def must_not_call(*_, **__): raise AssertionError('provider called')
+    monkeypatch.setattr(m, 'cloud_proxy_denies_private', probe)
+    monkeypatch.setattr(m, 'run_provider', must_not_call)
+    monkeypatch.setenv('GEO_LIVE_BUDGET_DB', str(tmp_path/'quota.sqlite'))
+    monkeypatch.setenv('GEO_LIVE_REPORT_DIR', str(tmp_path/'reports'))
+    with pytest.raises(pytest.skip.Exception):
+        m.run_live_test('photon')
+    reports = list((tmp_path/'reports').glob('*.json'))
+    assert len(reports) == 1
+    assert json.loads(reports[0].read_text())['calls'] == 0
+
+
 def test_persistent_ledger_shared_across_objects_and_run_ids(tmp_path):
     async def run():
         db = tmp_path/'quota.sqlite'
