@@ -34,7 +34,7 @@
 
 | 顺序 | 工作项 | 执行仓库 | 状态与独立交付 |
 | --- | --- | --- | --- |
-| 1 | FF-01 免费试用配置入口 | GeoIntelligenceCore | 待做；显式选择实例即可构造既有适配器，不硬编码进业务 |
+| 1 | FF-01 免费试用配置入口 | GeoIntelligenceCore | PR #24 已合并 main；离线构造既有适配器，不代表现场启用 |
 | 2 | FF-02 跨请求预算接入契约 | 本库定义契约/示例；调用方实现持久化 | 功能分支实现合成共享存储契约/示例；实际持久化与跨 worker 验证仍由调用方完成 |
 | 3 | FF-03 同协议切换验收 | GeoIntelligenceCore | 部分已有；Photon 已测，补 Overpass/ORS、认证隔离与实例身份 |
 | 4 | FF-04 分来源现场验证 | GeoIntelligenceCore | 待做；先实现可测 runner，再分别验证免费来源 |
@@ -48,11 +48,11 @@
 
 **Interfaces:** 新增 `TrialSettings`（Pydantic 配置模型）和 `build_trial_provider(settings: TrialSettings, *, budget: Budget, headers: dict[str, str] | None = None) -> LocationResolver | PlaceProvider | RoutingProvider`。配置包括 protocol（photon/overpass/ors）、唯一 instance_id、endpoint、UsagePolicy、认证要求与能力声明；沿用现有 ProviderConfig 和既有适配器，认证值只在 headers 运行时注入。构造不得联网。每个实例一个 gateway，调用方可注入共享 Budget。
 
-- [ ] 写 `test_trial_defaults_and_opt_in`：未显式调用不出网；三个模板的地址/路径前缀正确；有明确的 5 次运行上限、并发 1 和零费用；日额度标为需 FF-02 注入，而非假装内存已持久化。
-- [ ] 写 `test_auth_and_zero_cost`：Photon/Overpass 无 key 可构造；已知 hosted ORS 缺 key 阻止请求；自建无 key 配置需明确声明（ORS 实际支持待 FF-03，FF-01 不假装已支持）；非零单价在零费用配置下不能发起调用，密钥不出现在序列化配置/异常中。
-- [ ] 运行 `python -m pytest tests/unit/test_trial.py -q`，确认新行为未实现时失败；随后实现上述模型/工厂及离线可执行示例。条款/价格/归属引用随实例配置，User-Agent 支持应用名与公开联系地址；未知缓存/导出权利仍关闭。
-- [ ] 同命令通过，并运行 `python -m pytest tests/integration/test_live_gate_config.py tests/contract/test_consumer.py -q`；示例默认 dry-run，缺 ORS key 不影响其他实例。
-- [ ] 独立 PR，注明新接口/配置字段与适配器的对应关系，不声称在线已可用。
+- [x] 写 `test_trial_defaults_and_opt_in`：未显式调用不出网；三个模板的地址/路径前缀正确；有明确的 5 次运行上限、并发 1 和零费用；日额度标为需 FF-02 注入，而非假装内存已持久化。
+- [x] 写 `test_auth_and_zero_cost`：Photon/Overpass 无 key 可构造；已知 hosted ORS 缺 key 阻止请求；自建无 key 配置需明确声明（ORS 实际支持待 FF-03，FF-01 不假装已支持）；非零单价在零费用配置下不能发起调用，密钥不出现在序列化配置/异常中。
+- [x] 运行 `python -m pytest tests/unit/test_trial.py -q`，确认新行为未实现时失败；随后实现上述模型/工厂及离线可执行示例。条款/价格/归属引用随实例配置，User-Agent 支持应用名与公开联系地址；未知缓存/导出权利仍关闭。
+- [x] 同命令通过，并运行 `python -m pytest tests/integration/test_live_gate_config.py tests/contract/test_consumer.py -q`；示例默认 dry-run，缺 ORS key 不影响其他实例。
+- [x] 独立 PR，注明新接口/配置字段与适配器的对应关系，不声称在线已可用。
 
 ## FF-02：有限预算与调用方日额度
 
