@@ -61,6 +61,18 @@ def test_candidates_distinct_and_no_entrance_claim():
     assert run(street_only.search(SearchRequest(text='Hauptstraße'), CTX)).data[0].precision == 'street'
 
 
+def test_duplicate_photon_identity_is_normalized_only_if_identical():
+    item = feature(5, 'Rathaus', street='Landsberger Straße', housenumber='486')
+    resolver, _ = setup(httpx.Response(200, json={'features': [item, item]}))
+    result = run(resolver.search(SearchRequest(text='Rathaus'), CTX))
+    assert result.status == Status.ok and [c.id for c in result.data] == ['photon:osm:N:5']
+
+    changed = feature(5, 'Other', street='Landsberger Straße', housenumber='486')
+    resolver, _ = setup(httpx.Response(200, json={'features': [item, changed]}))
+    result = run(resolver.search(SearchRequest(text='Rathaus'), CTX))
+    assert result.status == Status.unavailable and result.data is None
+
+
 def test_language_fallback_and_original_name():
     resolver, seen = setup(httpx.Response(200, json={'features': [
         feature(3, 'München', city='München', extra={'name': 'München'})]}))

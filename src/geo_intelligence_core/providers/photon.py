@@ -118,6 +118,13 @@ class PhotonResolver:
                           if (not countries or candidate.address.country_code in countries)
                           and (not bbox or bbox[0] <= candidate.point.longitude <= bbox[2]
                                and bbox[1] <= candidate.point.latitude <= bbox[3])]
+            unique = {}
+            for candidate in candidates:
+                previous = unique.get(candidate.id)
+                if previous is not None and previous != candidate:
+                    raise ValueError('conflicting candidate identity')
+                unique[candidate.id] = candidate
+            candidates = list(unique.values())
         except (KeyError, TypeError, ValueError, ValidationError):
             return self._result(Status.unavailable, context, 'invalid_response', issues=issues)
         return self._result(Status.ok if candidates else Status.no_results, context,
