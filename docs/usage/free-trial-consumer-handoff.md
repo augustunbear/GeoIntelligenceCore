@@ -61,3 +61,36 @@ passed, including Chromium desktop/mobile and PostgreSQL 17 checks. See its
 [status record at that commit](https://github.com/augustunbear/RestaurantTrafficDiagnosis/blob/53ffdcef24714acd338f0852a7a300944c4dac5b/docs/project/status.md).
 
 Target schema compatibility and publication ordering remain an uncompleted consumer rollout gate. Keep the consumer PR open until controlled migration and release-order verification are complete, or automatic publication is confirmed disabled. Merge authorization alone is not evidence of schema compatibility. No target migration, deployment or live-source activation is claimed.
+
+## FF-04 field measurement checkpoint (2026-11-06)
+
+[The first public sample record](../verification/2026-11-06-first-batch.md) and its
+[redacted reports](../verification/reports/2026-11-06-first-batch.json) belong to
+core main `46f64c8bae01e717ddab7dfb33c83286cd4ff5b4` (package `0.1.0a1`,
+code SHA-256 `f19d31c1ac93e712d468e1d21d8f1bad330ac859599657aa43d0dd7d863280a4`,
+runner SHA-256 `fe9c02be832cdf250f67bc3b48255ea02be8ff9e4480e627d58b129fadadd2bc`).
+These are actual runner invocations with **zero provider HTTP attempts**:
+Photon search/reverse and Overpass places returned `unconfigured` because
+public-host DNS failed before reservation. Their quality and budget gates failed;
+there is no accepted provider data or representative German field result.
+ORS was not run and its runtime key is unavailable here.
+
+The consumer's fixed wheel derives from `27ee290a7b51e245414d18ff681603c1c99decf6`
+with wheel SHA-256 `e722028af51030cf3408a9ffe5b550fc2dc203bb21a22c55f8044b766e1cf314`.
+The new source commit and code fingerprint are **not** that pinned consumer
+artifact. No FF-05 activation report matches its exact source commit, wheel,
+instance, settings and frozen input hashes. Even a successful replay of the
+current main report would require a deliberate consumer version update and
+consumer regression/target-rollout checks; it cannot automatically authorize
+that wheel. Do not alter RestaurantTrafficDiagnosis production configuration.
+
+For each source, replay the frozen inputs on an approved host with normal public
+DNS/HTTPS, one persistent same-host quota ledger and the exact clean core source
+selected for the consumer. Keep the existing 5/run, 50/source/UTC-day, concurrency
+1 and zero-cost caps. Review the independently labeled quality thresholds before
+HTTP and retain `samples_sha256`, `thresholds_sha256`, `settings_sha256`, source
+commit, code/runner fingerprints, instance/endpoint, timestamps and rights/quota
+references. Extend the German address strata and independently surveyed POI
+references before field acceptance. ORS needs its runtime secret, verified account
+quota/terms, and separate route, directed matrix and catchment labels. A failed or
+blocked source stays disabled while other sources can be evaluated independently.
