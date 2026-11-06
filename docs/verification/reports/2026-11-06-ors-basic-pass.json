@@ -1,0 +1,141 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "id": "berlin-gate-to-potsdamer-walk-route",
+      "status": "ok",
+      "quality_passed": true,
+      "latency_s": 0.6894843259997288
+    },
+    {
+      "id": "berlin-gate-to-potsdamer-walk-matrix",
+      "status": "ok",
+      "quality_passed": true,
+      "latency_s": 1.0914660309999817
+    },
+    {
+      "id": "berlin-gate-walk-300s-outbound",
+      "status": "ok",
+      "quality_passed": true,
+      "latency_s": 0.9025897120000081
+    }
+  ],
+  "p50_s": 0.9025897120000081,
+  "p95_s": 1.0914660309999817,
+  "peak_bytes": 7685309,
+  "sample_count": 3,
+  "small_sample": true,
+  "measured_at": "2026-11-06T14:29:13.491951+00:00",
+  "provider": "ors",
+  "instance_id": "ors-heigit-standard",
+  "endpoint": "https://api.heigit.org/openrouteservice",
+  "package_version": "0.1.0a1",
+  "calls": 3,
+  "samples_sha256": "05a5868f6a9adb9abd62d7974f6dab4a92d8f417152c49ae0a65bc4e25a1c3c7",
+  "thresholds_sha256": "3837570c6eb898d0318a2111eb16d38d676ffb0de9a24d0e8dbfddba4ffeb080",
+  "rights_ref": "https://account.heigit.org/info/tos",
+  "quota_ref": "owner-provided HeiGIT Basic dashboard screenshot 2026-11-06: Directions V2 2000/2000, 40/min; basic plan confirmed by owner; local cap 50/source/UTC-day",
+  "purpose": "controlled_public_berlin_walking_smoke",
+  "instance_owner": "HeiGIT",
+  "instance_version": "unknown",
+  "terms_ref": "https://account.heigit.org/info/tos",
+  "pricing_ref": "https://account.heigit.org/info/plans",
+  "currency": "EUR",
+  "effective_limits": {
+    "allowed_endpoints": [
+      "https://api.heigit.org"
+    ],
+    "allowed_capabilities": [
+      "route",
+      "travelmatrix",
+      "catchment"
+    ],
+    "max_calls_per_run": 5,
+    "max_concurrency": 1,
+    "max_area_m2": 10000000.0,
+    "max_geometry_vertices": 1000,
+    "max_items": 100,
+    "deadline_s": 45.0,
+    "max_response_bytes": 1000000,
+    "cost_ceiling": "0",
+    "currency": "EUR",
+    "pricing_ref": "https://account.heigit.org/info/plans",
+    "period_limits": {},
+    "cache_policy": "disabled"
+  },
+  "effective_settings": {
+    "protocol": "ors",
+    "instance_id": "ors-heigit-standard",
+    "endpoint": "https://api.heigit.org/openrouteservice",
+    "policy": {
+      "allowed_endpoints": [
+        "https://api.heigit.org"
+      ],
+      "allowed_capabilities": [
+        "route",
+        "travelmatrix",
+        "catchment"
+      ],
+      "max_calls_per_run": 5,
+      "max_concurrency": 1,
+      "max_area_m2": 10000000.0,
+      "max_geometry_vertices": 1000,
+      "max_items": 100,
+      "deadline_s": 45.0,
+      "max_response_bytes": 1000000,
+      "cost_ceiling": "0",
+      "currency": "EUR",
+      "pricing_ref": "https://account.heigit.org/info/plans",
+      "period_limits": {},
+      "cache_policy": "disabled"
+    },
+    "authentication_required": true,
+    "authentication_header": "Authorization",
+    "capability_flags": {
+      "route": true,
+      "travelmatrix": true,
+      "catchment": true,
+      "catchment_inbound": false
+    },
+    "photon_capabilities": {
+      "api_version": "v1",
+      "supports_countrycode": true,
+      "supports_bbox": true,
+      "supported_languages": [
+        "de",
+        "en"
+      ],
+      "fallback_language": "de"
+    },
+    "cost_per_call": "0",
+    "terms_ref": "https://api.heigit.org/",
+    "rights_ref": "https://www.openstreetmap.org/copyright",
+    "attribution": "\u00a9 OpenStreetMap contributors; openrouteservice / HeiGIT",
+    "user_agent": "GeoIntelligenceCore-FF04/2026-11-06 (+https://github.com/augustunbear/GeoIntelligenceCore)",
+    "daily_budget_requirement": "caller_shared_budget_required"
+  },
+  "settings_sha256": "d4660458ba19e26b3f0f731f5e999c3d70d39be9072e3a67ddd4b942fedeb774",
+  "code_identity": {
+    "verified": true,
+    "source_commit": "0002002a82cf48d670bc8182412f8073d4e454f5",
+    "code_sha256": "6bc3868a82853e3485ce06988c2f7e6a997dbf176785a1bd61bdf5809d8fd815",
+    "dependencies": {
+      "pydantic": "2.14.2",
+      "httpx": "0.28.1",
+      "shapely": "2.2.0",
+      "pyproj": "3.8.0"
+    },
+    "runner_sha256": "9f6925365723630d9d5992dbcf4d6d8a0afca0dfccdcb06f2042c792035faff2"
+  },
+  "configuration_sha256": "356a7ef783769cb1f431c34fc8e476d7d63a2e100fbed946ada9b4799723e7ce",
+  "gates": {
+    "quality": "passed",
+    "latency": "passed",
+    "memory": "passed",
+    "budget": "passed"
+  },
+  "source_commit": "0002002a82cf48d670bc8182412f8073d4e454f5",
+  "transport_mode": "codex_proxy",
+  "network_policy_sha256": "736f277a38cf433be721df66e6a45382ad187a4052141add28f25d95d4f94744",
+  "proxy_private_target_denied": true
+}

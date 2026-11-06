@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — FF-04 bounded acceptance follow-up
+
+- Investigate six public German location subjects. Preserve the Photon suburb
+  duplicate-ID quality failure; revert candidate deduplication after independent
+  review found it contradicted the existing acceptance rule.
+- Accept integral float seconds in real ORS isochrone responses, rejecting
+  fractional thresholds. The unchanged Basic route, matrix and outbound
+  catchment smoke sample then passed; Overpass API remained unavailable.
+
 ## Unreleased — FF-04 measured follow-up
 
 - Let provider response reads use the approved operation deadline while

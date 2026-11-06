@@ -1,0 +1,56 @@
+[
+  {
+    "id": "pasing-suburban-search",
+    "operation": "search",
+    "request": {
+      "text": "Bürgerzentrum Pasinger Rathaus, Landsberger Straße 486, München",
+      "language": "de",
+      "country_codes": [
+        "DE"
+      ],
+      "near": {
+        "longitude": 11.46216,
+        "latitude": 48.14695
+      },
+      "limit": 5
+    }
+  },
+  {
+    "id": "pasing-suburban-reverse",
+    "operation": "reverse",
+    "request": {
+      "point": {
+        "longitude": 11.46216,
+        "latitude": 48.14695
+      },
+      "language": "de"
+    }
+  },
+  {
+    "id": "rattelsdorf-rural-search",
+    "operation": "search",
+    "request": {
+      "text": "Rathaus Markt Rattelsdorf, Grabenstraße 26, Rattelsdorf",
+      "language": "de",
+      "country_codes": [
+        "DE"
+      ],
+      "near": {
+        "longitude": 10.88973,
+        "latitude": 50.01505
+      },
+      "limit": 5
+    }
+  },
+  {
+    "id": "rattelsdorf-rural-reverse",
+    "operation": "reverse",
+    "request": {
+      "point": {
+        "longitude": 10.88973,
+        "latitude": 50.01505
+      },
+      "language": "de"
+    }
+  }
+]

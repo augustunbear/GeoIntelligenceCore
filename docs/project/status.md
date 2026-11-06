@@ -1,5 +1,16 @@
 # Current FF-04 execution checkpoint — 2026-11-06
 
+The [latest bounded measurements](../verification/2026-11-06-ff04-completion.md)
+found a real Photon duplicate-ID quality failure in a public suburb case;
+independent review rejected adapter deduplication as contrary to the frozen
+quality rule, so it was reverted. The six public locations are smoke subjects,
+not completed ambiguous/missing-number address strata. On clean source
+`0002002a82cf48d670bc8182412f8073d4e454f5`, ORS Basic passed positive
+route, directed matrix and outbound catchment smoke cases after an integral
+float-second response fix. Its route-negative/field coverage and consumer
+workflow remain absent. Overpass API still times out. All three remain closed
+to FF-05 activation; no consumer production configuration changed.
+
 The [root-cause follow-up](../verification/2026-11-06-ff04-root-cause-followup.md)
 fixed a 5 s HTTP read timeout that contradicted the approved 40 s operation
 deadline. A newly frozen, independently referenced **single-landmark Photon

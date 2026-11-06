@@ -1,5 +1,17 @@
 # FF-05 free-source consumer handoff
 
+## Latest bounded FF-04 results — 2026-11-06
+
+The [public-location and ORS Basic measurements](../verification/2026-11-06-ff04-completion.md)
+preserve Photon quality failures from duplicate returned IDs, a narrow passing
+ORS route/matrix/outbound-catchment smoke report, and continued Overpass API
+timeouts. The public locations do not establish the planned ambiguous and
+missing-number address strata. ORS lacks a no-route control, wider route
+coverage and a consumer route workflow. The consumer still pins
+`27ee290a7b51e245414d18ff681603c1c99decf6`; none of these reports
+authorizes its present wheel. Keep all sources disabled and do not directly
+change the consumer production configuration.
+
 ## 2026-11-06 FF-04 follow-up
 
 The [root-cause follow-up](../verification/2026-11-06-ff04-root-cause-followup.md)

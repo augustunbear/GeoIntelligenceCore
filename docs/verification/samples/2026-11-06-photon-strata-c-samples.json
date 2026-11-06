@@ -1,0 +1,29 @@
+[
+  {
+    "id": "olympiadorf-no-number-search",
+    "operation": "search",
+    "request": {
+      "text": "Marienplatz (Olympiadorf), München",
+      "language": "de",
+      "country_codes": [
+        "DE"
+      ],
+      "near": {
+        "longitude": 11.55202,
+        "latitude": 48.17924
+      },
+      "limit": 5
+    }
+  },
+  {
+    "id": "olympiadorf-no-number-reverse",
+    "operation": "reverse",
+    "request": {
+      "point": {
+        "longitude": 11.55202,
+        "latitude": 48.17924
+      },
+      "language": "de"
+    }
+  }
+]
