@@ -116,3 +116,5 @@
 完成定义：所选来源有可追溯试用结论、实际调用方限额和明确关闭路径；未选来源允许 disabled。发布包、生产可用与消费者已接入各自凭证据标记，计划文件更新本身不改变任何验收门状态。
 
 执行记录：FF-04 runner 的独立审查及离线回归已完成（221 passed/3 skips）；上列真实样本准备、逐源实测和实际启用保持未勾选。FF-05 已读取调用方 development 并实现持久预算与顾问流程增量，真实目标数据库/来源启用仍未执行。
+
+2026-11-06 FF-04 execution checkpoint: first 3 public smoke cases frozen outside git, both existing runners invoked, but approved-host DNS failed before HTTP (0 attempts each). [Evidence](../../verification/2026-11-06-first-batch.md). Representative strata and actual source acceptance remain unchecked; do not treat this input preparation or failed attempt as a live pass.

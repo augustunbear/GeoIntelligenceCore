@@ -24,3 +24,7 @@ P13 regression on the synchronized P12 source: `PYTHONPATH=src /workspace/scratc
 [Measured runners](free-trial-measurements.md) now exist; their synthetic tests
 are separate from field acceptance. No approved samples/thresholds and persistent
 runner budget configuration were supplied, so no source is marked live-passed.
+
+## First bounded public-sample attempt (2026-11-06)
+
+[Execution record](2026-11-06-first-batch.md): both runners invoked, zero provider HTTP attempts due to environment DNS failure. Inputs frozen, but no live quality pass. Offline/preview status and provider activation gates remain unchanged.
