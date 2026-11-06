@@ -1,0 +1,56 @@
+[
+  {
+    "id": "duesseldorf-umlaut-search",
+    "operation": "search",
+    "request": {
+      "text": "Isabella Glutenfreie Patisserie, Königsallee 60, Düsseldorf",
+      "language": "de",
+      "country_codes": [
+        "DE"
+      ],
+      "near": {
+        "longitude": 6.78076,
+        "latitude": 51.22199
+      },
+      "limit": 5
+    }
+  },
+  {
+    "id": "duesseldorf-umlaut-reverse",
+    "operation": "reverse",
+    "request": {
+      "point": {
+        "longitude": 6.78076,
+        "latitude": 51.22199
+      },
+      "language": "de"
+    }
+  },
+  {
+    "id": "potsdam-homonym-search",
+    "operation": "search",
+    "request": {
+      "text": "Brandenburger Tor, Potsdam",
+      "language": "de",
+      "country_codes": [
+        "DE"
+      ],
+      "near": {
+        "longitude": 13.04807,
+        "latitude": 52.39955
+      },
+      "limit": 5
+    }
+  },
+  {
+    "id": "potsdam-homonym-reverse",
+    "operation": "reverse",
+    "request": {
+      "point": {
+        "longitude": 13.04807,
+        "latitude": 52.39955
+      },
+      "language": "de"
+    }
+  }
+]

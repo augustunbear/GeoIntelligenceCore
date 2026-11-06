@@ -1,0 +1,46 @@
+{
+  "cases": {
+    "olympiadorf-no-number-search": {
+      "status": "ok",
+      "candidate_ids": [
+        "photon:osm:W:1033347395"
+      ],
+      "candidate_points": {
+        "photon:osm:W:1033347395": [
+          11.55202,
+          48.17924
+        ]
+      },
+      "max_error_m": 100,
+      "precisions": {
+        "photon:osm:W:1033347395": [
+          "locality"
+        ]
+      },
+      "min_candidates": 1,
+      "max_candidates": 20
+    },
+    "olympiadorf-no-number-reverse": {
+      "status": "ok",
+      "candidate_ids": [
+        "photon:osm:W:1033347395"
+      ],
+      "candidate_points": {
+        "photon:osm:W:1033347395": [
+          11.55202,
+          48.17924
+        ]
+      },
+      "max_error_m": 100,
+      "precisions": {
+        "photon:osm:W:1033347395": [
+          "locality"
+        ]
+      },
+      "min_candidates": 1,
+      "max_candidates": 20
+    }
+  },
+  "max_p95_s": 8,
+  "max_peak_bytes": 100000000
+}

@@ -68,6 +68,20 @@ def test_barrier_multipolygon_holes_and_sorted_ranges():
     assert seen[0].url.path == '/openrouteservice/v2/isochrones/foot-walking'
 
 
+def test_integral_float_isochrone_values_from_live_api():
+    raw = fixture()
+    for feature in raw['features']:
+        feature['properties']['value'] = float(feature['properties']['value'])
+    raw['metadata']['query']['range'] = [300.0, 600.0, 900.0]
+    p, _ = provider(raw)
+    result = run(p.catchments(request(), CTX))
+    assert result.status == Status.ok
+    assert [c.duration_s for c in result.data] == [300, 600, 900]
+    raw['features'][0]['properties']['value'] = 300.5
+    p, _ = provider(raw)
+    assert run(p.catchments(request(), CTX)).status == Status.unknown
+
+
 def test_inbound_requires_capability_and_echoed_direction():
     p, seen = provider(fixture())
     result = run(p.catchments(request('inbound'), CTX))

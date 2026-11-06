@@ -1,0 +1,86 @@
+{
+  "cases": {
+    "duesseldorf-umlaut-search": {
+      "status": "ok",
+      "candidate_ids": [
+        "photon:osm:W:498263715"
+      ],
+      "candidate_points": {
+        "photon:osm:W:498263715": [
+          6.78076,
+          51.22199
+        ]
+      },
+      "max_error_m": 100,
+      "precisions": {
+        "photon:osm:W:498263715": [
+          "house"
+        ]
+      },
+      "min_candidates": 1,
+      "max_candidates": 20
+    },
+    "duesseldorf-umlaut-reverse": {
+      "status": "ok",
+      "candidate_ids": [
+        "photon:osm:W:498263715"
+      ],
+      "candidate_points": {
+        "photon:osm:W:498263715": [
+          6.78076,
+          51.22199
+        ]
+      },
+      "max_error_m": 100,
+      "precisions": {
+        "photon:osm:W:498263715": [
+          "house"
+        ]
+      },
+      "min_candidates": 1,
+      "max_candidates": 20
+    },
+    "potsdam-homonym-search": {
+      "status": "ok",
+      "candidate_ids": [
+        "photon:osm:W:50637691"
+      ],
+      "candidate_points": {
+        "photon:osm:W:50637691": [
+          13.04807,
+          52.39955
+        ]
+      },
+      "max_error_m": 100,
+      "precisions": {
+        "photon:osm:W:50637691": [
+          "locality"
+        ]
+      },
+      "min_candidates": 1,
+      "max_candidates": 20
+    },
+    "potsdam-homonym-reverse": {
+      "status": "ok",
+      "candidate_ids": [
+        "photon:osm:W:50637691"
+      ],
+      "candidate_points": {
+        "photon:osm:W:50637691": [
+          13.04807,
+          52.39955
+        ]
+      },
+      "max_error_m": 100,
+      "precisions": {
+        "photon:osm:W:50637691": [
+          "locality"
+        ]
+      },
+      "min_candidates": 1,
+      "max_candidates": 20
+    }
+  },
+  "max_p95_s": 8,
+  "max_peak_bytes": 100000000
+}

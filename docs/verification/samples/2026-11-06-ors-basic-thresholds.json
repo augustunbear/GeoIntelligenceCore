@@ -1,0 +1,37 @@
+{
+  "cases": {
+    "berlin-gate-to-potsdamer-walk-route": {
+      "status": "ok",
+      "distance_m": [
+        840,
+        2000
+      ],
+      "duration_s": [
+        500,
+        1500
+      ]
+    },
+    "berlin-gate-to-potsdamer-walk-matrix": {
+      "status": "ok",
+      "cells": {
+        "gate>potsdamer": [
+          500,
+          1500
+        ]
+      }
+    },
+    "berlin-gate-walk-300s-outbound": {
+      "status": "ok",
+      "durations_s": [
+        300
+      ],
+      "direction": "outbound",
+      "area_m2": [
+        100000,
+        800000
+      ]
+    }
+  },
+  "max_p95_s": 10,
+  "max_peak_bytes": 100000000
+}

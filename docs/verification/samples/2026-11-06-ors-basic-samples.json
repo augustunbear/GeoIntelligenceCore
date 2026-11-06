@@ -1,0 +1,62 @@
+[
+  {
+    "id": "berlin-gate-to-potsdamer-walk-route",
+    "operation": "route",
+    "request": {
+      "origin": {
+        "longitude": 13.3777,
+        "latitude": 52.51628
+      },
+      "destination": {
+        "longitude": 13.3752,
+        "latitude": 52.5089
+      },
+      "mode": "walking"
+    }
+  },
+  {
+    "id": "berlin-gate-to-potsdamer-walk-matrix",
+    "operation": "matrix",
+    "request": {
+      "origins": {
+        "gate": {
+          "longitude": 13.3777,
+          "latitude": 52.51628
+        }
+      },
+      "destinations": {
+        "potsdamer": {
+          "longitude": 13.3752,
+          "latitude": 52.5089
+        }
+      },
+      "mode": "walking"
+    }
+  },
+  {
+    "id": "berlin-gate-walk-300s-outbound",
+    "operation": "catchments",
+    "request": {
+      "location": {
+        "id": "berlin-gate-public",
+        "version": 1,
+        "point": {
+          "longitude": 13.3777,
+          "latitude": 52.51628
+        },
+        "confirmation": {
+          "method": "manual",
+          "at": "2026-11-06T14:00:00Z",
+          "evidence_ids": [
+            "public-mapcarta-gate"
+          ]
+        }
+      },
+      "direction": "outbound",
+      "mode": "walking",
+      "durations_s": [
+        300
+      ]
+    }
+  }
+]
