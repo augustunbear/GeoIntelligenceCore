@@ -20,6 +20,23 @@ The first [real Runner attempt](reports/2026-11-06-ors-basic-initial-fail.json) 
 
 ## Overpass and FF-05 handoff
 
+The public Berlin restaurant [sample](samples/2026-11-06-overpass-public-samples.json)
+and [thresholds](samples/2026-11-06-overpass-public-thresholds.json) used by
+the earlier Runner attempts are now retained in the repository. Their byte
+SHA-256 values match the frozen input hashes in the original sanitized report:
+`b6e8b4972e5565947823184de779f7204821ab10f46a7740fd56c2041a7de454`
+and `1fa9757d4024431b5c0e739a9a68540d05d9e1fd25fa0d75c012b6bbc826c707`.
+These files contain a public OSM restaurant ID and bounded Berlin rectangle;
+they contain no contributor metadata or private reference extract. The original
+reference extract remains separate. Reusing these labels on a different
+Overpass instance is a new measurement, not an inherited quality pass.
+The [Europe-instance activation record](samples/2026-11-06-overpass-europe-activation.json)
+references the same frozen files and keeps the five-attempt run cap, shared
+50-attempt UTC-day cap, one-request concurrency and zero-EUR ceiling. It is a
+test configuration, not an FF-05 consumer activation. The Runner still requires
+an enforced allowlist entry for `ovp.dresel.systems` and a persistent same-host
+ledger carrying earlier protocol attempts.
+
 The Private.coffee landing page was reachable while `/api/interpreter` and minimal GET/POST queries timed out in the [root-cause record](2026-11-06-ff04-root-cause-followup.md). Later counted probes returned 403 for `/api/status` and another interpreter timeout. No POI quality pass exists; Overpass stays disabled. Do not rotate endpoints to evade a limit or interpret an unavailable response as an empty place list.
 
 The one private quota ledger counted, at this checkpoint on 2026-11-06 UTC, Photon 33, Overpass 10 and ORS 16 attempts; all remained below 50/source/day. RestaurantTrafficDiagnosis still pins a different core wheel. **No source may be enabled through FF-05 from this handoff**: Photon fails its duplicate-ID quality rule, Overpass lacks a reachable API, and ORS has only narrow smoke coverage with no consumer route workflow. Source-specific failed and passing reports remain available for the next controlled decision. No consumer production configuration was changed.

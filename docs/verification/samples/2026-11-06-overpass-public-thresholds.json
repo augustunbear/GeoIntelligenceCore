@@ -1,0 +1,14 @@
+{
+  "cases": {
+    "berlin-instanz-restaurant": {
+      "status": "ok",
+      "source_keys": [
+        "osm:node:411728139"
+      ],
+      "min_precision": 1.0,
+      "min_recall": 1.0
+    }
+  },
+  "max_p95_s": 20,
+  "max_peak_bytes": 100000000
+}
