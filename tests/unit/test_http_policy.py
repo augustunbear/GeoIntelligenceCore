@@ -138,6 +138,41 @@ def test_dns_pinned_and_scope_not_on_wire():
     assert 'opaque-secret' not in str(seen[0].url) and 'opaque-secret' not in str(seen[0].headers)
 
 
+def test_explicit_trusted_proxy_uses_approved_hostname_without_local_dns():
+    g = HttpGateway({'p': ProviderConfig(id='p', endpoint='https://api.example.com')},
+                    policy(), InMemoryBudget(2, Decimal('0')),
+                    resolver=lambda _: (_ for _ in ()).throw(AssertionError('local DNS called')),
+                    trusted_proxy_url='http://proxy:8080',
+                    cost_per_call=Decimal('0'))
+    assert run(g._validate_url('https://api.example.com/v1/query')) == 'api.example.com'
+
+
+def test_trusted_proxy_cannot_bypass_dns_with_custom_transport(monkeypatch):
+    with pytest.raises(ValueError, match='invalid trusted proxy'):
+        HttpGateway({'p': ProviderConfig(id='p', endpoint='https://api.example.com')},
+                    policy(), InMemoryBudget(2, Decimal('0')),
+                    transport=FakeTransport([httpx.Response(200, json={'ok': True})]),
+                    trusted_proxy_url='http://proxy:8080',
+                    cost_per_call=Decimal('0'))
+
+    transport = FakeTransport([httpx.Response(200, json={'ok': True})])
+    g = HttpGateway({'p': ProviderConfig(id='p', endpoint='https://api.example.com')},
+                    policy(), InMemoryBudget(2, Decimal('0')),
+                    trusted_proxy_url='http://proxy:8080', cost_per_call=Decimal('0'))
+    g.transport = transport
+    monkeypatch.setattr(httpx, 'AsyncClient', lambda **_: (_ for _ in ()).throw(AssertionError('client opened')))
+    result = run(g.request('p', 'GET', '/v1/query', {}, context()))
+    assert result.status == Status.unconfigured and transport.calls == 0
+
+
+def test_trusted_proxy_rejects_embedded_credentials_before_requests():
+    with pytest.raises(ValueError, match='invalid trusted proxy'):
+        HttpGateway({'p': ProviderConfig(id='p', endpoint='https://api.example.com')},
+                    policy(), InMemoryBudget(2, Decimal('0')),
+                    trusted_proxy_url='http://user:secret@proxy:8080',
+                    cost_per_call=Decimal('0'))
+
+
 def test_private_dns_and_auth_do_not_retry():
     transport = FakeTransport([httpx.Response(200, json={'ok': 1})])
     g = gateway(transport)

@@ -1,5 +1,9 @@
 # FF-04 controlled provider measurements
 
+Current cloud execution and failed source gates are recorded in
+[the 2026-11-06 Codex cloud report](2026-11-06-codex-cloud-proxy.md). The
+historical paragraph below describes the original Runner implementation PR.
+
 The real Photon, Overpass and ORS adapter runners are implemented. **No live
 measurement has been performed by this change.** No approved representative
 sample/threshold files or persistent runner quota path were supplied. Existing
@@ -16,6 +20,24 @@ python -m pytest tests/integration/test_photon_live.py -q
 python -m pytest tests/integration/test_overpass_live.py -q
 python -m pytest tests/integration/test_ors_live.py -q
 ```
+
+For an approved Codex cloud environment that has an enforced restricted HTTP
+sidecar policy but no local public DNS/direct route, an individual activation
+record may set `"transport_mode": "codex_proxy"`. The Runner checks
+`/etc/codex/network-policy.json` for the exact approved source host and proxy,
+then reads the inherited `HTTPS_PROXY` and `SSL_CERT_FILE` at runtime. The
+proxy URL and CA path do not belong in the activation record or report. The
+report records `transport_mode` and the network-policy SHA-256. Proxy mode is
+explicit and source-specific; the default direct mode still validates public
+DNS and pins its IP. Codex's sidecar must enforce the destination host and IP
+policy, including denial of private destinations. The Runner sends a credential-free
+private-target CONNECT probe through that proxy before and after the source run;
+it refuses the run unless the proxy explicitly denies it with 403. It also
+rechecks the proxy, CA and policy snapshot after the run. A local policy file
+is a configuration snapshot, so also confirm current enforcement through the
+environment status before a real run. Do not use this mode with an arbitrary untrusted
+proxy, DNS override, or different host to bypass a rate limit. The same frozen
+inputs, rights, quotas, clean checkout and quality gates apply.
 
 Live runs require a clean source checkout with an editable install of that exact
 package. The runner verifies imported package location, relevant tracked/untracked

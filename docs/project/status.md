@@ -1,5 +1,15 @@
 # Current FF-04 execution checkpoint — 2026-11-06
 
+The [Codex cloud proxy execution](../verification/2026-11-06-codex-cloud-proxy.md)
+removed the previous local-DNS blocker with an explicit trusted
+sidecar transport and a narrowly opt-in live-test socket allowance. On clean
+source `74c94d842db4cb81df27da17630afda2992d7442`, the existing Runner
+reserved 2 real Photon attempts (search/reverse both `ok` but frozen quality
+failed) and 1 real Overpass attempt (`unavailable`, quality failed). Individual
+sanitized reports retain policy, source, Runner, settings and input fingerprints.
+ORS stayed unmeasured pending account-specific rights/quota and labeled inputs.
+All sources remain disabled; no FF-05 activation or consumer config change.
+
 The [new public smoke replay](../verification/2026-11-06-public-smoke-replay.md)
 used clean main `d8cb37c4f261fc83f723dfec8c2943a7b6b10321` and the existing
 Runner. Photon search/reverse and Overpass places each failed before provider
