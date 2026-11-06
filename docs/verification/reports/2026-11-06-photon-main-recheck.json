@@ -1,0 +1,143 @@
+{
+  "status": "failed",
+  "cases": [
+    {
+      "id": "pasing-suburban-search",
+      "status": "ok",
+      "quality_passed": false,
+      "latency_s": 4.063744848999704
+    },
+    {
+      "id": "pasing-suburban-reverse",
+      "status": "ok",
+      "quality_passed": false,
+      "latency_s": 3.6457425089993194
+    },
+    {
+      "id": "rattelsdorf-rural-search",
+      "status": "ok",
+      "quality_passed": true,
+      "latency_s": 3.4649327379993338
+    },
+    {
+      "id": "rattelsdorf-rural-reverse",
+      "status": "ok",
+      "quality_passed": true,
+      "latency_s": 2.850614178998512
+    }
+  ],
+  "p50_s": 3.5553376234993266,
+  "p95_s": 4.063744848999704,
+  "peak_bytes": 7991098,
+  "sample_count": 4,
+  "small_sample": true,
+  "measured_at": "2026-11-06T15:28:33.078514+00:00",
+  "provider": "photon",
+  "instance_id": "photon-komoot-demo",
+  "endpoint": "https://photon.komoot.io",
+  "package_version": "0.1.0a1",
+  "calls": 4,
+  "samples_sha256": "4580b823233c4c5552d7beacb61f87f35882efcd5f0722ae55e24df37a65cece",
+  "thresholds_sha256": "3b15b723103828a010e78e5bd18b30fbaeec5bee7045f2e0ab6cad379b4ca807",
+  "rights_ref": "https://www.openstreetmap.org/copyright",
+  "quota_ref": "local:50-attempts/protocol/UTC-day;operator numeric quota unpublished",
+  "purpose": "controlled_public_german_address_strata_a",
+  "instance_owner": "komoot",
+  "instance_version": "unknown",
+  "terms_ref": "https://github.com/komoot/photon/blob/master/README.md#demo-server",
+  "pricing_ref": "https://github.com/komoot/photon/blob/master/README.md#demo-server",
+  "currency": "EUR",
+  "effective_limits": {
+    "allowed_endpoints": [
+      "https://photon.komoot.io"
+    ],
+    "allowed_capabilities": [
+      "search",
+      "reverse"
+    ],
+    "max_calls_per_run": 5,
+    "max_concurrency": 1,
+    "max_area_m2": 10000000.0,
+    "max_geometry_vertices": 1000,
+    "max_items": 100,
+    "deadline_s": 40.0,
+    "max_response_bytes": 1000000,
+    "cost_ceiling": "0",
+    "currency": "EUR",
+    "pricing_ref": "https://github.com/komoot/photon/blob/master/README.md#demo-server",
+    "period_limits": {},
+    "cache_policy": "disabled"
+  },
+  "effective_settings": {
+    "protocol": "photon",
+    "instance_id": "photon-komoot-demo",
+    "endpoint": "https://photon.komoot.io",
+    "policy": {
+      "allowed_endpoints": [
+        "https://photon.komoot.io"
+      ],
+      "allowed_capabilities": [
+        "search",
+        "reverse"
+      ],
+      "max_calls_per_run": 5,
+      "max_concurrency": 1,
+      "max_area_m2": 10000000.0,
+      "max_geometry_vertices": 1000,
+      "max_items": 100,
+      "deadline_s": 40.0,
+      "max_response_bytes": 1000000,
+      "cost_ceiling": "0",
+      "currency": "EUR",
+      "pricing_ref": "https://github.com/komoot/photon/blob/master/README.md#demo-server",
+      "period_limits": {},
+      "cache_policy": "disabled"
+    },
+    "authentication_required": false,
+    "authentication_header": "Authorization",
+    "capability_flags": {
+      "search": true,
+      "reverse": true
+    },
+    "photon_capabilities": {
+      "api_version": "v1",
+      "supports_countrycode": true,
+      "supports_bbox": true,
+      "supported_languages": [
+        "de",
+        "en"
+      ],
+      "fallback_language": "de"
+    },
+    "cost_per_call": "0",
+    "terms_ref": "https://github.com/komoot/photon",
+    "rights_ref": "https://www.openstreetmap.org/copyright",
+    "attribution": "\u00a9 OpenStreetMap contributors",
+    "user_agent": "GeoIntelligenceCore-FF04/2026-11-06 (+https://github.com/augustunbear/GeoIntelligenceCore)",
+    "daily_budget_requirement": "caller_shared_budget_required"
+  },
+  "settings_sha256": "d3c214b3eb795d1a120de1d7ff290dc9789ae41f56de4841b7182a8fe0bdac33",
+  "code_identity": {
+    "verified": true,
+    "source_commit": "d46f0e0dcbf71ab8902763edbdbca05109f90714",
+    "code_sha256": "6bc3868a82853e3485ce06988c2f7e6a997dbf176785a1bd61bdf5809d8fd815",
+    "dependencies": {
+      "pydantic": "2.14.3",
+      "httpx": "0.28.1",
+      "shapely": "2.2.0",
+      "pyproj": "3.8.0"
+    },
+    "runner_sha256": "9f6925365723630d9d5992dbcf4d6d8a0afca0dfccdcb06f2042c792035faff2"
+  },
+  "configuration_sha256": "5448060bca4b15920f0e261d4e4d15f82b5a0d832391d9e85a21e44a612f2637",
+  "gates": {
+    "quality": "failed",
+    "latency": "passed",
+    "memory": "passed",
+    "budget": "passed"
+  },
+  "source_commit": "d46f0e0dcbf71ab8902763edbdbca05109f90714",
+  "transport_mode": "codex_proxy",
+  "network_policy_sha256": "736f277a38cf433be721df66e6a45382ad187a4052141add28f25d95d4f94744",
+  "proxy_private_target_denied": true
+}

@@ -1,0 +1,22 @@
+{
+  "status": "blocked",
+  "reason": "shared_budget_or_deadline_unavailable",
+  "provider": "overpass",
+  "calls": 1,
+  "source_commit": "d46f0e0dcbf71ab8902763edbdbca05109f90714",
+  "code_identity": {
+    "verified": true,
+    "source_commit": "d46f0e0dcbf71ab8902763edbdbca05109f90714",
+    "code_sha256": "6bc3868a82853e3485ce06988c2f7e6a997dbf176785a1bd61bdf5809d8fd815",
+    "dependencies": {
+      "pydantic": "2.14.3",
+      "httpx": "0.28.1",
+      "shapely": "2.2.0",
+      "pyproj": "3.8.0"
+    },
+    "runner_sha256": "9f6925365723630d9d5992dbcf4d6d8a0afca0dfccdcb06f2042c792035faff2"
+  },
+  "transport_mode": "codex_proxy",
+  "network_policy_sha256": "736f277a38cf433be721df66e6a45382ad187a4052141add28f25d95d4f94744",
+  "proxy_private_target_denied": true
+}

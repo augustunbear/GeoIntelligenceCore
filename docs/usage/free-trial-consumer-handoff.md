@@ -2,6 +2,13 @@
 
 ## Latest bounded FF-04 results — 2026-11-06
 
+Post-merge `main` `d46f0e0dcbf71ab8902763edbdbca05109f90714` was
+rechecked with the frozen [Photon](../verification/reports/2026-11-06-photon-main-recheck.json)
+and [Overpass](../verification/reports/2026-11-06-overpass-main-recheck.json)
+inputs and unchanged gates. Photon still failed Pasing quality while Rattelsdorf
+passed; Overpass still exceeded the approved 40 s deadline. No new source is
+eligible for FF-05 activation.
+
 The [public-location and ORS Basic measurements](../verification/2026-11-06-ff04-completion.md)
 preserve Photon quality failures from duplicate returned IDs, a narrow passing
 ORS route/matrix/outbound-catchment smoke report, and continued Overpass API

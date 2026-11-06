@@ -1,5 +1,16 @@
 # Current FF-04 execution checkpoint — 2026-11-06
 
+After PR #35 merged, the existing Runner was repeated on clean `main`
+`d46f0e0dcbf71ab8902763edbdbca05109f90714` with the same frozen inputs,
+thresholds and persistent ledger. [Photon's Pasing/Rattelsdorf report](../verification/reports/2026-11-06-photon-main-recheck.json)
+again failed quality for both Pasing cases while both Rattelsdorf cases passed;
+latency, memory and budget passed. Four HTTP attempts were counted.
+[Overpass's report](../verification/reports/2026-11-06-overpass-main-recheck.json)
+again ended blocked at the approved 40 s deadline, with one counted attempt and
+no POI quality conclusion. At this checkpoint the ledger recorded Photon 37,
+Overpass 11 and ORS 16 attempts on 2026-11-06 UTC. These observations do not
+change FF-05 eligibility or the consumer pin.
+
 The [latest bounded measurements](../verification/2026-11-06-ff04-completion.md)
 found a real Photon duplicate-ID quality failure in a public suburb case;
 independent review rejected adapter deduplication as contrary to the frozen
