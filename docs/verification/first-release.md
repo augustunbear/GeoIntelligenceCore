@@ -18,3 +18,9 @@ P13 regression on the synchronized P12 source: `PYTHONPATH=src /workspace/scratc
 | A07 | not_applicable | Deferred until E01 temporal capability. |
 
 `pass` requires a linked raw evidence path and reviewer, `fail` records unmet criteria, and `blocked` means no valid measurement. Mock/CI success does not resolve a live gate. If P12 passes while providers remain blocked or fail, label the artifact **offline/preview only**, enumerate disabled capabilities and do not call it production ready. Release/version tagging and deployment require a separate decision.
+
+## FF-04 runner increment
+
+[Measured runners](free-trial-measurements.md) now exist; their synthetic tests
+are separate from field acceptance. No approved samples/thresholds and persistent
+runner budget configuration were supplied, so no source is marked live-passed.

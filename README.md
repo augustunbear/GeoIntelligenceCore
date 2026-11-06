@@ -96,4 +96,6 @@ Select an instance with `TrialSettings.public(...)` and construct it with
 `build_trial_provider(..., budget=...)` from `geo_intelligence_core.providers.trial`.
 See the [offline dry-run example](examples/python/free_trial.py). Defaults are 5
 attempts per gateway, concurrency 1 and zero cost; shared daily budgets remain
-caller-owned. ORS custom-instance switching remains FF-03.
+caller-owned. FF-03 implements explicit ORS custom-instance switching and
+synthetic instance-isolation checks; FF-04 measured runners are implemented.
+Live quality/activation remains blocked until approved measurements pass.

@@ -23,7 +23,7 @@ class ResponseTooLarge(Exception):
 
 def origin(url):
     u = urlsplit(url)
-    if u.scheme != 'https' or not u.hostname or u.username or u.password or u.fragment or u.port not in (None, 443):
+    if u.scheme != 'https' or not u.hostname or u.username or u.password or u.fragment or u.port not in (None, 443) or u.hostname.endswith('.'):
         raise UnsafeEndpoint()
     return f'https://{u.hostname.lower()}'
 

@@ -66,9 +66,8 @@ independently of zero price. Supply values only via runtime `headers`, e.g.
 headers={'Authorization': key_from_secret_store})`. The factory copies the
 headers and adds the configured User-Agent; keys never enter settings. Missing
 or blank required authentication leaves the adapter `unconfigured` without any
-request. Hosted ORS always requires `Authorization`. Custom ORS settings can
-declare no authentication, but the factory explicitly rejects ORS host/path
-switching until FF-03. Public Photon and Overpass need no credentials.
+request. Hosted ORS always requires `Authorization`. Custom ORS instances may explicitly declare no authentication. FF-03 supports
+configurable HTTPS base paths under the existing origin/DNS safety policy. Public Photon and Overpass need no credentials.
 
 `terms_ref`, `policy.pricing_ref`, `rights_ref` and `attribution` accompany the
 serializable configuration. These are references, not grants of cache/export
@@ -88,7 +87,7 @@ and validator context are removed from `str(error)`, `error.errors()` and
 
 ## Switching instances without changing business logic
 
-The existing ports separate consumer logic from provider protocol. Photon instance switching is regression-tested. ORS currently restricts host/path to HeiGIT and requires `credential_handle`; removing those fixed instance assumptions safely is a planned FF-03 change, not an already delivered capability. See the [incremental implementation plan](../superpowers/plans/2026-11-05-free-first-trial.md). The target for the **same supported protocol** is to change only provider composition/configuration:
+The existing ports separate consumer logic from provider protocol. Photon, Overpass and ORS same-protocol switching has synthetic coverage. ORS uses explicit instance authentication requirements; hosted HeiGIT still requires Authorization. Private/IP/non-HTTPS endpoints remain rejected. See the [incremental implementation plan](../superpowers/plans/2026-11-05-free-first-trial.md). The target for the **same supported protocol** is to change only provider composition/configuration:
 
 1. Select a distinct instance ID, base URL (including any reverse-proxy prefix), matching HTTPS origin allowlist and supported capability flags.
 2. Supply credentials as runtime headers only if required. Build a separate gateway per authenticated provider so headers cannot leak to another provider; inject a shared budget where the application needs a total across gateways.
@@ -102,4 +101,13 @@ Switching to a different API protocol (e.g. a non-Photon commercial geocoder) re
 
 ## Verification boundary
 
-Zero-cost/no-key records are valid activation inputs. Missing required terms/budget/sample references still block a live run; keyed providers still require their key. ORS defaults to required authentication; an approved no-key self-hosted instance explicitly sets `authentication_required=false`. Hosted ORS Standard must retain required authentication. Version may be explicitly recorded as unknown where the operator does not publish one, with the reproducibility limitation retained. Current live tests deliberately fail on a complete activation record until measured runners are implemented; passing the offline configuration tests is not a provider-quality result. No public instance is silently enabled at import time.
+Zero-cost/no-key records are valid activation inputs. Missing required terms/budget/sample references still block a live run; keyed providers still require their key. ORS defaults to required authentication; an approved no-key self-hosted instance explicitly sets `authentication_required=false`. Hosted ORS Standard must retain required authentication. Version may be explicitly recorded as unknown where the operator does not publish one, with the reproducibility limitation retained. Current live tests run measured, label-driven adapter gates only with complete approved inputs; passing the offline configuration tests is not a provider-quality result. No public instance is silently enabled at import time.
+
+FF-03 adds `ProviderConfig.authentication_required` (default true) and
+`authentication_header` (default Authorization). The factory copies these from
+TrialSettings. Known hosted ORS requires Authorization regardless of an attempted
+no-key override. Adapter results retain `provider_instance` and a credential-free
+`provider_endpoint` in effective conditions; historical results remain immutable.
+Cache keys must use the serving instance ID. Synthetic switching tests cover
+search/reverse, places, routes, directed matrices and catchments; no live quality
+or commercial vendor certification is implied.

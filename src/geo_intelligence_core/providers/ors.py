@@ -13,6 +13,8 @@ from geo_intelligence_core.models.spatial import (Catchment, CatchmentRequest, G
 from geo_intelligence_core.catchments import checked_network_polygon, nesting_violations
 from geo_intelligence_core.geometry import _GeometryProblem
 from .http import HttpGateway
+from .http import origin, UnsafeEndpoint
+from .context import instance_context
 
 _PROFILES = {'walking': 'foot-walking', 'cycling': 'cycling-regular', 'driving': 'driving-car'}
 _HOST = 'api.heigit.org'
@@ -36,7 +38,7 @@ def _endpoint_distance_m(coordinate, point):
 
 
 class OrsRoutingProvider:
-    """Requires an explicitly permitted HeiGIT endpoint and gateway credentials.
+    """Requires an explicitly permitted ORS-protocol instance and declared authentication.
 
     The gateway owns budgets, DNS pinning, retry, limits and authorization headers.
     No public endpoint is activated merely by constructing this adapter.
@@ -49,11 +51,20 @@ class OrsRoutingProvider:
 
     def _preflight(self, mode, context, kind, *, time=None, time_kind='depart_at'):
         cfg: ProviderConfig | None = self.gateway.providers.get(self.provider_id)
-        if cfg is None or not cfg.endpoint or not cfg.credential_handle:
+        if cfg is None or not cfg.endpoint:
             return _failure(Status.unconfigured, 'credentials_or_endpoint', context, kind=kind)
         url = urlsplit(cfg.endpoint)
-        if url.scheme != 'https' or url.hostname != _HOST or url.path.rstrip('/') not in ('', '/openrouteservice'):
+        try:
+            permitted = origin(cfg.endpoint) in self.gateway.policy.allowed_endpoints
+        except (ValueError, UnsafeEndpoint):
+            permitted = False
+        if not permitted or url.query or url.fragment:
             return _failure(Status.unconfigured, 'unapproved_endpoint', context, kind=kind)
+        required = cfg.authentication_required or url.hostname == _HOST
+        header = 'authorization' if url.hostname == _HOST else cfg.authentication_header.lower()
+        present = any(k.lower() == header and v.strip() for k, v in self.gateway.headers.items())
+        if required and (not cfg.credential_handle or not present):
+            return _failure(Status.unconfigured, 'credentials_or_endpoint', context, kind=kind)
         if not cfg.capability_flags.get(kind.__name__.lower(), False) or kind.__name__.lower() not in self.gateway.policy.allowed_capabilities:
             return _failure(Status.disabled, 'capability_disabled', context, kind=kind)
         if mode not in _PROFILES:
@@ -64,6 +75,7 @@ class OrsRoutingProvider:
         return None
 
     async def route(self, request: RouteRequest, context: RequestContext) -> Result[Route]:
+        context = instance_context(context, self.gateway, self.provider_id)
         failure = self._preflight(request.mode, context, Route, time=request.time,
                                   time_kind=request.time_kind)
         if failure is not None:
@@ -103,6 +115,7 @@ class OrsRoutingProvider:
             return _failure(Status.unknown, 'invalid_route_response', context, kind=Route)
 
     async def matrix(self, request: MatrixRequest, context: RequestContext) -> Result[TravelMatrix]:
+        context = instance_context(context, self.gateway, self.provider_id)
         failure = self._preflight(request.mode, context, TravelMatrix, time=request.time,
                                   time_kind=request.time_kind)
         if failure is not None:
@@ -142,6 +155,7 @@ class OrsRoutingProvider:
             return _failure(Status.unknown, 'invalid_matrix_response', context, kind=TravelMatrix)
 
     async def catchments(self, request: CatchmentRequest, context: RequestContext) -> Result[list[Catchment]]:
+        context = instance_context(context, self.gateway, self.provider_id)
         failure = self._preflight(request.mode, context, Catchment, time=request.time,
                                   time_kind=request.time_kind)
         if failure is not None:

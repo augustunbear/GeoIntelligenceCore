@@ -27,3 +27,5 @@ class ProviderConfig(FrozenModel):
     capability_flags: dict[str, bool] = Field(default_factory=dict)
     rights_ref: str | None = None
     credential_handle: str | None = None
+    authentication_required: bool = True
+    authentication_header: str = 'Authorization'

@@ -13,6 +13,7 @@ from geo_intelligence_core.models.location import Address, Point
 from geo_intelligence_core.models.places import Place, PlaceQuery, PlaceSet, SourceKey
 from geo_intelligence_core.models.requests import RequestContext
 from geo_intelligence_core.places import normalize_places
+from .context import instance_context
 
 
 def _mapping():
@@ -84,6 +85,7 @@ class OverpassPlaceProvider:
         self.gateway, self.provider_id, self.clock = gateway, provider_id, clock
 
     async def search(self, request: PlaceQuery, context: RequestContext) -> Result[PlaceSet]:
+        context = instance_context(context, self.gateway, self.provider_id)
         def fail(status, code):
             return Result[PlaceSet](status=status, data=None,
                                     issues=(Issue(code=code, message_key=f"overpass.{code}"),), context=context)

@@ -169,10 +169,6 @@ def build_trial_provider(settings: TrialSettings, *, budget: Budget,
     """
     # Revalidate rather than trusting model_construct or the factory caller.
     settings = TrialSettings.model_validate(settings.model_dump())
-    if settings.protocol == 'ors':
-        u = urlsplit(settings.endpoint)
-        if u.hostname != 'api.heigit.org' or u.path.rstrip('/') not in ('', '/openrouteservice'):
-            raise ValueError('ORS instance switching requires FF-03')
     runtime_headers = dict(headers or {})
     if (any(not isinstance(k, str) or not isinstance(v, str) or
             not re.fullmatch(r"[!#$%&'*+.^_`|~0-9A-Za-z-]+", k) or
@@ -188,6 +184,8 @@ def build_trial_provider(settings: TrialSettings, *, budget: Budget,
     configured = not settings.authentication_required or bool(auth)
     cfg = ProviderConfig(id=settings.instance_id, endpoint=settings.endpoint if configured else None,
                          capability_flags=settings.capability_flags, rights_ref=settings.rights_ref,
+                         authentication_required=settings.authentication_required,
+                         authentication_header=settings.authentication_header,
                          credential_handle='runtime-header' if auth else None)
     gateway = HttpGateway({cfg.id: cfg}, settings.policy,
                           _RunBudget(budget, settings.policy.max_calls_per_run),

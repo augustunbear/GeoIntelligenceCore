@@ -18,7 +18,7 @@ Models are immutable; updates return new values. IDs are opaque strings; caller 
 | places.py | Place(source_key, native_names, point, geometry, point_role, address, categories, raw_tags, hours_raw, contacts, evidence_ids); PlaceQuery(region, category_ids, mapping_version, boundary_rule); PlaceSet(places, retrieved_count, unique_count, coverage, duplicate_candidates); CompanySite(place, site_role, legal_entity_ref, workforce) |
 | configuration.py | Profile(id, version, category_ids, defaults, display_groups); Template(id, version, profile_ref, required_inputs, required_topics, optional_topics, defaults); TopicSelection(id, required); AnalyzeRequest(locations, topics: list[TopicSelection], regions, time, explicit_parameters, profile_ref, template_ref, scope_token nullable); EffectiveConfig(values, provenance_by_field, profile_ref, template_ref); TimeCondition(kind, instant/start/end, timezone, label) |
 | analysis.py | Analysis(request_context, topic_results: mapping[str, Result], selected_topics); Comparison(rows with location_version, metric_id, value nullable, difference nullable, unit, evidence_ids and comparability_issues); Snapshot(schema_version, analysis, canonical_hash, retained_evidence_ids, redactions); Correction(target_ref, action, replacement: Place or Metric or null, attachments: list[Evidence], evidence_ids, reason, scope_token, at); Metric(value nullable, unit, nature, numerator, denominator, evidence_ids) |
-| policy.py | UsagePolicy(allowed_endpoints, allowed_capabilities, max_calls_per_run, max_concurrency, max_area_m2, max_geometry_vertices, max_items, deadline_s, max_response_bytes, cost_ceiling, currency, pricing_ref, period_limits, cache_policy); ProviderConfig(id, endpoint, capability_flags, rights_ref, credential_handle); Budget reservation interface defined below |
+| policy.py | UsagePolicy(allowed_endpoints, allowed_capabilities, max_calls_per_run, max_concurrency, max_area_m2, max_geometry_vertices, max_items, deadline_s, max_response_bytes, cost_ceiling, currency, pricing_ref, period_limits, cache_policy); ProviderConfig(id, endpoint, capability_flags, rights_ref, credential_handle, authentication_required=true, authentication_header="Authorization"); Budget reservation interface defined below |
 
 `Rights` has separate permissions for use, retain, cache, display, export and redistribute, each allowed/denied/unknown, attribution text, license/source URL, checked_at and permitted purpose. Unknown is not permission. Evidence `Quality` separates precision, coverage, freshness, source reliability, uncertainty, verification; no single confidence score.
 `Metric.nature` is measured/derived/estimated/unverified; numeric zero needs evidence and valid semantics. Suppressed, missing and unknown remain distinguishable through status/issue and nullable value.
@@ -114,3 +114,22 @@ Canonical JSON for hashes sorts keys and normalizes units/time; semantically ord
 For first implementation choose a single canonical_hash over all retained snapshot content except canonical_hash itself; snapshot comparisons ignore retrieval metadata through explicit comparability rules, not hash equality alone.
 Do not retain prohibited fields to achieve reproduction. Record redactions and reduced reproducibility. Export checks each contributing source; derived output does not erase source rights.
 Schema changes update generated schemas, fixtures and changelog; breaking published shape requires a new schema version. Pre-release package consumers pin commit/tag. Adopt no implicit production compatibility until first tested release.
+
+## FF-03 unreleased ProviderConfig compatibility decision (2026-11-06)
+
+The two authentication fields are additive inputs with defaults: older five-field
+configurations remain readable by the updated model. New serialized payloads
+include both fields; older strict readers reject them. Upgrade readers before
+exchanging these configurations, preserve the fields when forwarding, and do not
+strip them to bypass an authentication requirement. Known hosted ORS still needs
+Authorization regardless of an anonymous-instance setting.
+
+This is an explicitly revised **unreleased V1 target**, not a change to a released
+V1 contract. Schema identifier 1.0 and source-candidate package 0.1.0a1 remain
+unchanged for this unpublished development series; they are not sufficient
+artifact identities. Use the exact commit, wheel SHA and package fingerprint.
+A subsequent published distribution must use a new pre-release version instead
+of replacing any previously distributed wheel under the same version. Existing
+consumer pins are immutable and require their own reviewed upgrade; no new core
+commit silently updates them. This decision does not assert that old readers can
+consume new serialized configurations or that any source is live-approved.

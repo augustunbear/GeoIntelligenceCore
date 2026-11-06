@@ -9,6 +9,7 @@ from geo_intelligence_core.models.common import Issue, Result, Status
 from geo_intelligence_core.models.location import Address, Candidate, Point
 from geo_intelligence_core.models.requests import RequestContext, ReverseRequest, SearchRequest
 from geo_intelligence_core.providers.http import HttpGateway
+from .context import instance_context
 
 
 @dataclass(frozen=True)
@@ -60,8 +61,9 @@ class PhotonResolver:
 
     async def search(self, request: SearchRequest, context: RequestContext) -> Result[list[Candidate]]:
         try:
-            request = SearchRequest.model_validate(request)
             context = RequestContext.model_validate(context)
+            context = instance_context(context, self.gateway, self.provider_id)
+            request = SearchRequest.model_validate(request)
         except (ValidationError, ValueError, TypeError):
             return self._result(Status.invalid_input, context, 'invalid_request')
         if (len(request.text.strip()) < self.min_query_length or len(request.text) > 256
@@ -89,8 +91,9 @@ class PhotonResolver:
 
     async def reverse(self, request: ReverseRequest, context: RequestContext) -> Result[list[Candidate]]:
         try:
-            request = ReverseRequest.model_validate(request)
             context = RequestContext.model_validate(context)
+            context = instance_context(context, self.gateway, self.provider_id)
+            request = ReverseRequest.model_validate(request)
         except (ValidationError, ValueError, TypeError):
             return self._result(Status.invalid_input, context, 'invalid_request')
         language, context, issues = self._language(request.language, context)
@@ -100,6 +103,7 @@ class PhotonResolver:
                                  self.max_candidates, (), None, language)
 
     async def _query(self, path, params, context, issues, limit, countries, bbox, language):
+        context = instance_context(context, self.gateway, self.provider_id)
         # Cancellation propagates through the gateway and stops subsequent retry attempts.
         response = await self.gateway.request(self.provider_id, 'GET', path, params, context)
         if response.status != Status.ok:

@@ -85,3 +85,13 @@ This pre-release does not include search, provider adapters, geometry operations
 - Prefer permitted public Photon/Overpass and free ORS Standard before paid or self-hosted services. Document same-protocol instance migration and remaining live-validation boundaries.
 - Accept explicit zero cost and credential-free public services in the offline-tested P13 activation gate; retain required evidence and positive operational limits.
 - Add synthetic Photon instance/prefix/auth switching regression coverage.
+
+## FF-03–FF-05 source increments — unreleased
+
+- Configurable ORS-protocol HTTPS instances with explicit authentication;
+  known hosted ORS still requires Authorization. Preserve safe serving-instance
+  provenance and cache isolation without relaxing DNS/SSRF checks.
+- Add label-driven Photon/Overpass/ORS measured runners and sanitized, per-source
+  quality/latency/memory/budget reports. Live quality remains blocked pending inputs.
+- Record consumer adoption boundaries; existing SQL storage and case policy remain
+  caller-owned. No deployment, live activation or release is implied.
