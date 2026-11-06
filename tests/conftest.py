@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import os
 import socket
 
 import pytest
@@ -8,7 +9,12 @@ from geo_intelligence_core.models.location import Confirmation, Point
 
 
 @pytest.fixture(autouse=True)
-def forbid_network(monkeypatch):
+def forbid_network(monkeypatch, request):
+    live_files = {'test_photon_live.py', 'test_overpass_live.py', 'test_ors_live.py'}
+    if (os.environ.get('GEO_LIVE_TESTS') == '1'
+            and request.node.path.parent.name == 'integration'
+            and request.node.path.name in live_files):
+        return
     def blocked(*args, **kwargs):
         raise AssertionError("offline tests must not access the network")
     monkeypatch.setattr(socket.socket, "connect", blocked)

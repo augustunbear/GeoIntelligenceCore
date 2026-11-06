@@ -171,6 +171,7 @@ def test_cloud_proxy_requires_selected_host_in_enforced_policy(tmp_path, monkeyp
 
 
 def test_cloud_proxy_probe_requires_explicit_private_connect_denial(monkeypatch):
+    import certifi
     class ProbeClient:
         deny = True
         def __init__(self, **kwargs):
@@ -185,9 +186,10 @@ def test_cloud_proxy_probe_requires_explicit_private_connect_denial(monkeypatch)
                 raise httpx.ProxyError('403 Forbidden')
             return httpx.Response(200)
     monkeypatch.setattr(m.httpx, 'AsyncClient', ProbeClient)
-    assert asyncio.run(m.cloud_proxy_denies_private('http://proxy:8080', '/certs.pem'))
+    assert asyncio.run(m.cloud_proxy_denies_private('http://proxy:8080', certifi.where()))
     ProbeClient.deny = False
-    assert not asyncio.run(m.cloud_proxy_denies_private('http://proxy:8080', '/certs.pem'))
+    assert not asyncio.run(m.cloud_proxy_denies_private('http://proxy:8080', certifi.where()))
+    assert not asyncio.run(m.cloud_proxy_denies_private('http://proxy:8080', '/missing-ca.pem'))
 
 
 def test_live_runner_stops_before_provider_when_proxy_probe_fails(tmp_path, monkeypatch):

@@ -6,6 +6,7 @@ import inspect
 import ipaddress
 import json
 import socket
+import ssl
 import time
 from urllib.parse import urljoin, urlsplit, urlunsplit
 import httpx
@@ -168,7 +169,8 @@ class HttpGateway:
         async with self._semaphore:
             async with httpx.AsyncClient(transport=self.transport,
                                          proxy=self.trusted_proxy_url,
-                                         verify=self.ca_bundle or True, follow_redirects=False,
+                                         verify=ssl.create_default_context(cafile=self.ca_bundle) if self.ca_bundle else True,
+                                         follow_redirects=False,
                                          trust_env=False, timeout=httpx.Timeout(min(5.0, p.deadline_s))) as client:
                 while True:
                     remaining = end - self.clock()

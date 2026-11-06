@@ -68,12 +68,12 @@ def cloud_proxy_config(record):
 async def cloud_proxy_denies_private(proxy_url, ca_bundle):
     """Fail closed unless the selected proxy explicitly denies private CONNECT."""
     try:
-        async with httpx.AsyncClient(proxy=proxy_url, verify=ca_bundle, trust_env=False,
+        async with httpx.AsyncClient(proxy=proxy_url, verify=ssl.create_default_context(cafile=ca_bundle), trust_env=False,
                                      follow_redirects=False, timeout=5.0) as client:
             await client.head('https://127.0.0.1/')
     except httpx.ProxyError as exc:
         return str(exc).startswith('403')
-    except httpx.HTTPError:
+    except (httpx.HTTPError, OSError, ssl.SSLError):
         pass
     return False
 
@@ -316,7 +316,7 @@ def package_identity():
     package = Path(imported.__file__).resolve().parent
     root = Path(__file__).resolve().parents[2]
     verified, commit = False, 'unverified'
-    paths = ['src', 'tests/integration']
+    paths = ['src', 'tests/integration', 'tests/conftest.py']
     try:
         if package == root / 'src/geo_intelligence_core':
             clean = subprocess.run(['git', '-C', str(root), 'diff', '--quiet', 'HEAD', '--', *paths], capture_output=True).returncode == 0
