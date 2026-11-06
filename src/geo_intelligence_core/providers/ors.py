@@ -197,8 +197,12 @@ class OrsRoutingProvider:
             by_duration = {}
             for feature in features:
                 properties = feature['properties']
-                duration = properties['value']
-                if (type(duration) is not int or duration not in durations or
+                raw_duration = properties['value']
+                if (type(raw_duration) not in (int, float) or not math.isfinite(raw_duration)
+                        or raw_duration != int(raw_duration)):
+                    raise ValueError('non-integral threshold')
+                duration = int(raw_duration)
+                if (duration not in durations or
                     duration in by_duration or properties['group_index'] != 0):
                     raise ValueError('unexpected threshold or group')
                 geometry = feature['geometry']
