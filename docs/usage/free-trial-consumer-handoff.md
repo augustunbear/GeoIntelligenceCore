@@ -39,7 +39,7 @@ The library's synthetic tests are not consumer persistence proof. See the
 consumer's FF-05 PR and status record for actual SQL/process/browser/CI evidence.
 Keep Neon/cloud target validation distinct from disposable PostgreSQL CI results.
 
-Pinned consumer runtime candidate: core commit `0f2cfa370c60ef65f13c19bfec82dddc8f64c77f`
+Pinned consumer runtime candidate (PR #38 head below): core commit `27ee290a7b51e245414d18ff681603c1c99decf6`
 ([FF-04 PR #27](https://github.com/augustunbear/GeoIntelligenceCore/pull/27));
 wheel SHA-256 `e722028af51030cf3408a9ffe5b550fc2dc203bb21a22c55f8044b766e1cf314`,
 package fingerprint `c638904f363336bbbe912168c0d61877b68d2698d5bbce749648c46a5dca652c`.
@@ -50,3 +50,20 @@ confirmation, immutable location source context and attribution; approved area
 limits also constrain the radius menu and server validation. Empty results remain
 explicit rather than inheriting a successful orchestration status. Migration
 0007 preserves older candidates with empty evidence/context defaults.
+
+## Verified consumer evidence (2026-11-06)
+
+[RestaurantTrafficDiagnosis PR #38](https://github.com/augustunbear/RestaurantTrafficDiagnosis/pull/38)
+head `53ffdcef24714acd338f0852a7a300944c4dac5b` contains the increment and follow-up rights,
+export, provenance, PostgreSQL audit and idempotency corrections. Its exact-head
+[CI run 42110668016](https://github.com/augustunbear/RestaurantTrafficDiagnosis/actions/runs/42110668016)
+passed, including Chromium desktop/mobile and PostgreSQL 17 checks. See its
+[status record at that commit](https://github.com/augustunbear/RestaurantTrafficDiagnosis/blob/53ffdcef24714acd338f0852a7a300944c4dac5b/docs/project/status.md).
+
+Read-only Neon inspection on 2026-11-06 found the restauranttrafficdiagnosis-dev
+project's production branch/neondb at Alembic **0005**. The consumer needs **0007**;
+its development branch is documented as auto-publishing through Cloud Build.
+Do not merge that consumer increment into an active deployment path until a
+controlled migration completes or automatic publication is confirmed disabled.
+This is a technical schema compatibility gate, not missing merge authorization.
+No live source approval, target migration or deployment is claimed.
