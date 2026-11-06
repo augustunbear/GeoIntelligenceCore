@@ -2,6 +2,29 @@
 
 ## Latest bounded FF-04 results — 2026-11-06
 
+The distinct Dresel Overpass instance now has a real **single-sample smoke pass**,
+not FF-05 activation approval. Its [report](../verification/reports/2026-11-06-overpass-dresel-pass.json)
+passed quality, latency, memory and budget at 16:58:49 UTC on clean core
+`24a138194044790c38638fc130a85d3cfac71e0a`, instance
+`overpass-europe-dresel`, origin `https://ovp.dresel.systems` (adapter path
+`/api/interpreter`). `settings_sha256` is
+`a8e09040e6859b920a2415fc184930bcfa3d9f5090e6966a4ea7c6ea5d8eb307`.
+The unchanged frozen input hashes, terms/rights references and reconciled
+14/50 UTC-day attempts are detailed in the [FF-04 completion record](../verification/2026-11-06-ff04-completion.md#dresel-europe-instance-real-smoke-pass-ff-05-remains-blocked).
+The initial report inherited another instance's terms inside effective settings;
+it is diagnostic only. Use the final report for further review.
+
+Keep production sources disabled. FF-05 must match the deployed core source and
+wheel to this measurement, validate the exact instance/settings digest, frozen
+inputs, time and gates, approve internal use/retention/display rights with OSM
+attribution, and verify durable source-wide quotas/concurrency, authorization,
+notices and controlled rollout. One public rectangle does not establish broader
+inventory completeness or no-results behavior. The historical consumer wheel
+below differs from the measured source and cannot inherit its pass. No consumer
+production change or FF-06 is included.
+
+### Earlier main and source checkpoints
+
 Post-merge `main` `d46f0e0dcbf71ab8902763edbdbca05109f90714` was
 rechecked with the frozen [Photon](../verification/reports/2026-11-06-photon-main-recheck.json)
 and [Overpass](../verification/reports/2026-11-06-overpass-main-recheck.json)

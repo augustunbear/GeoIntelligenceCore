@@ -1,0 +1,34 @@
+{
+  "status": "verified",
+  "measurement_report": "2026-11-06-overpass-dresel-pass.json",
+  "measured_at": "2026-11-06T16:58:49.281726+00:00",
+  "settings_sha256": "a8e09040e6859b920a2415fc184930bcfa3d9f5090e6966a4ea7c6ea5d8eb307",
+  "source_commit": "24a138194044790c38638fc130a85d3cfac71e0a",
+  "code_sha256": "6bc3868a82853e3485ce06988c2f7e6a997dbf176785a1bd61bdf5809d8fd815",
+  "runner_sha256": "9f6925365723630d9d5992dbcf4d6d8a0afca0dfccdcb06f2042c792035faff2",
+  "frozen_input_hashes_match": true,
+  "settings_digest_recomputed": true,
+  "instance_terms_consistent": true,
+  "network_policy_current_enforced_and_host_allowed": true,
+  "proxy_private_target_denied": true,
+  "quota": {
+    "utc_day": "2026-11-06",
+    "user_reported_prior_attempts": 12,
+    "new_attempts": 2,
+    "daily_after": 14,
+    "daily_cap": 50,
+    "per_run_cap": 5,
+    "concurrency": 1,
+    "cost_eur": 0,
+    "original_ledger_available": false,
+    "carry_forward_basis": "User-provided prior count; original private ledger absent on this host. Monotonic continuation ledger at /workspace/ff04-work/quota.sqlite; historical per-run rows not reconstructed.",
+    "other_provider_counts_restored": false
+  },
+  "ff05_activation_approved": false,
+  "limitations": [
+    "One public rectangle and one labeled OSM restaurant; not representative inventory or independent field survey",
+    "Initial report passed measured gates but inherited wrong instance terms in effective_settings; retained as diagnostic, not activation evidence",
+    "Consumer wheel/settings/rights/storage/authorization/rollout still require FF-05 verification"
+  ],
+  "report_sha256": "47660cbdce8fa0c61a011a9234e6c46074597c09eff621a482edd32577a48a8e"
+}
