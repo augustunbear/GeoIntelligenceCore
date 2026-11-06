@@ -1,5 +1,22 @@
 # Current FF-04 execution checkpoint — 2026-11-06
 
+The [Dresel Overpass report](../verification/reports/2026-11-06-overpass-dresel-pass.json)
+now passes the unchanged public smoke gates on clean source `24a1381`, after
+main `2ce0309` restored the original public inputs. One real attempt returned
+`ok`; batch p95 was 1.979 s and traced peak memory 7,983,898 bytes. Explicit
+activation settings corrected an inherited Private.coffee terms reference;
+the initial report is preserved as diagnostic evidence. No runtime code or
+frozen threshold changed. The same continuation ledger carries the owner's
+12 historical Overpass attempts plus two new attempts, totaling **14/50** for
+2026-11-06 UTC. Original historical run rows were unavailable, not reconstructed.
+
+FF-04 has a narrow Dresel POI smoke pass; FF-05 activation remains blocked by
+representative coverage and exact consumer package/settings/rights/storage and
+rollout validation. [Completion and evidence](../verification/2026-11-06-ff04-completion.md#dresel-europe-instance-real-smoke-pass-ff-05-remains-blocked).
+No consumer production configuration changed; no FF-06 was created.
+
+## Historical checkpoints
+
 After PR #35 merged, the existing Runner was repeated on clean `main`
 `d46f0e0dcbf71ab8902763edbdbca05109f90714` with the same frozen inputs,
 thresholds and persistent ledger. [Photon's Pasing/Rattelsdorf report](../verification/reports/2026-11-06-photon-main-recheck.json)

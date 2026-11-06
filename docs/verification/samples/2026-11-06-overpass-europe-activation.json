@@ -22,6 +22,52 @@
     "contact_url": "https://github.com/augustunbear/GeoIntelligenceCore",
     "transport_mode": "codex_proxy",
     "endpoint": "https://ovp.dresel.systems",
-    "instance_id": "overpass-europe-dresel"
+    "instance_id": "overpass-europe-dresel",
+    "settings": {
+      "protocol": "overpass",
+      "instance_id": "overpass-europe-dresel",
+      "endpoint": "https://ovp.dresel.systems",
+      "policy": {
+        "allowed_endpoints": [
+          "https://ovp.dresel.systems"
+        ],
+        "allowed_capabilities": [
+          "places"
+        ],
+        "max_calls_per_run": 5,
+        "max_concurrency": 1,
+        "max_area_m2": 100000.0,
+        "max_geometry_vertices": 1000,
+        "max_items": 100,
+        "deadline_s": 40.0,
+        "max_response_bytes": 1000000,
+        "cost_ceiling": "0",
+        "currency": "EUR",
+        "pricing_ref": "https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances",
+        "period_limits": {},
+        "cache_policy": "disabled"
+      },
+      "authentication_required": false,
+      "authentication_header": "Authorization",
+      "capability_flags": {
+        "places": true
+      },
+      "photon_capabilities": {
+        "api_version": "v1",
+        "supports_countrycode": true,
+        "supports_bbox": true,
+        "supported_languages": [
+          "de",
+          "en"
+        ],
+        "fallback_language": "de"
+      },
+      "cost_per_call": "0",
+      "terms_ref": "https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances",
+      "rights_ref": "https://www.openstreetmap.org/copyright",
+      "attribution": "\u00a9 OpenStreetMap contributors",
+      "user_agent": "GeoIntelligenceCore-FF04/2026-11-06 (+https://github.com/augustunbear/GeoIntelligenceCore)",
+      "daily_budget_requirement": "caller_shared_budget_required"
+    }
   }
 }

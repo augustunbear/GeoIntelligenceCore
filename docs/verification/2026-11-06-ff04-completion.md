@@ -20,6 +20,61 @@ The first [real Runner attempt](reports/2026-11-06-ors-basic-initial-fail.json) 
 
 ## Overpass and FF-05 handoff
 
+### Dresel Europe instance: real smoke pass, FF-05 remains blocked
+
+On 2026-11-06 at 16:58:49 UTC the existing Runner passed the unchanged public
+sample and frozen thresholds against `https://ovp.dresel.systems/api/interpreter`.
+The [final report](reports/2026-11-06-overpass-dresel-pass.json) binds clean source
+`24a138194044790c38638fc130a85d3cfac71e0a`, package fingerprint
+`6bc3868a82853e3485ce06988c2f7e6a997dbf176785a1bd61bdf5809d8fd815`
+and Runner fingerprint
+`9f6925365723630d9d5992dbcf4d6d8a0afca0dfccdcb06f2042c792035faff2`.
+The instance ID is `overpass-europe-dresel`; its hosted version is unknown.
+The endpoint setting is the origin; the existing adapter appends `/api/interpreter`.
+Quality, latency, memory and budget passed: one attempt, 1.979 s batch p95 against
+20 s, and 7,983,898 traced Python bytes against 100,000,000. The single labeled
+OSM restaurant met precision and recall 1.0. This is not a representative POI
+inventory or independent field survey; no negative control was measured.
+
+The [initial report](reports/2026-11-06-overpass-dresel-initial.json), measured on
+main `2ce0309`, also passed its measured gates but inherited Private.coffee's
+terms URL inside `effective_settings`. It is retained as diagnostic evidence,
+not an activation artifact. The activation now supplies explicit supported
+`TrialSettings` with consistent instance terms; no runtime code, sample labels,
+quality or performance threshold was changed. The final settings digest is
+`a8e09040e6859b920a2415fc184930bcfa3d9f5090e6966a4ea7c6ea5d8eb307`.
+The [verification record](reports/2026-11-06-overpass-dresel-verification.json)
+records recomputed settings/input/report hashes and quota reconciliation.
+
+Before HTTP, current cloud status reported an enforced restricted policy allowing
+`ovp.dresel.systems`. The Runner used the declared proxy and CA and verified
+private-target denial before and after measurement. The original private quota
+database was absent in this environment. The owner's explicit 12-attempt history
+was carried forward into `/workspace/ff04-work/quota.sqlite`; historical run rows
+were not reconstructed. Both runs used this same monotonic ledger: 12 + 1 + 1 =
+**14/50 Overpass attempts on 2026-11-06 UTC**. Each run retained the five-attempt
+cap, concurrency one and zero-EUR ceiling. No other source was called; their
+historical counters were not restored in this continuation database.
+
+The report retains OSM ODbL/attribution rights and public-instance terms/quota
+references. Those references and the unknown hosted version do not establish
+consumer caching, redistribution or customer-export permission. FF-05 must
+verify its exact deployed source/wheel, instance, complete effective settings
+and digest, frozen inputs, report time and all gates; approve internal use,
+retention and display rights; and verify consumer durable counters, source lock,
+authorization, notices and controlled rollout. Keep Overpass disabled until
+those checks and representative coverage are approved. No consumer production
+configuration was changed and no FF-06 was created.
+
+Local verification: 105 focused configuration/measurement regressions passed;
+the full Python 3.12 suite passed 297 tests with three opt-in live skips. The
+two source-specific opt-in executions are separate real runs, each passing
+its single case. Commands required the environment's socket permission for
+async thread wakeups; restricted-command attempts stalled in the synthetic
+ledger test and were stopped, without consuming provider requests.
+
+### Earlier Private.coffee checkpoint
+
 The public Berlin restaurant [sample](samples/2026-11-06-overpass-public-samples.json)
 and [thresholds](samples/2026-11-06-overpass-public-thresholds.json) used by
 the earlier Runner attempts are now retained in the repository. Their byte
@@ -37,6 +92,6 @@ test configuration, not an FF-05 consumer activation. The Runner still requires
 an enforced allowlist entry for `ovp.dresel.systems` and a persistent same-host
 ledger carrying earlier protocol attempts.
 
-The Private.coffee landing page was reachable while `/api/interpreter` and minimal GET/POST queries timed out in the [root-cause record](2026-11-06-ff04-root-cause-followup.md). Later counted probes returned 403 for `/api/status` and another interpreter timeout. No POI quality pass exists; Overpass stays disabled. Do not rotate endpoints to evade a limit or interpret an unavailable response as an empty place list.
+The Private.coffee landing page was reachable while `/api/interpreter` and minimal GET/POST queries timed out in the [root-cause record](2026-11-06-ff04-root-cause-followup.md). Later counted probes returned 403 for `/api/status` and another interpreter timeout. At that earlier checkpoint no POI quality pass existed. The distinct Dresel smoke result above does not establish Private.coffee availability. Do not rotate endpoints to evade a limit or interpret an unavailable response as an empty place list.
 
 The one private quota ledger counted, at this checkpoint on 2026-11-06 UTC, Photon 33, Overpass 10 and ORS 16 attempts; all remained below 50/source/day. RestaurantTrafficDiagnosis still pins a different core wheel. **No source may be enabled through FF-05 from this handoff**: Photon fails its duplicate-ID quality rule, Overpass lacks a reachable API, and ORS has only narrow smoke coverage with no consumer route workflow. Source-specific failed and passing reports remain available for the next controlled decision. No consumer production configuration was changed.
