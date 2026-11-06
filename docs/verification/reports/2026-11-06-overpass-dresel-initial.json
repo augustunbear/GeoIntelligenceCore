@@ -1,0 +1,122 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "id": "berlin-instanz-restaurant",
+      "status": "ok",
+      "quality_passed": true,
+      "latency_s": 2.3412485839999135
+    }
+  ],
+  "p50_s": 2.3412485839999135,
+  "p95_s": 2.3412485839999135,
+  "peak_bytes": 7984732,
+  "sample_count": 1,
+  "small_sample": true,
+  "measured_at": "2026-11-06T16:56:32.176206+00:00",
+  "provider": "overpass",
+  "instance_id": "overpass-europe-dresel",
+  "endpoint": "https://ovp.dresel.systems",
+  "package_version": "0.1.0a1",
+  "calls": 1,
+  "samples_sha256": "b6e8b4972e5565947823184de779f7204821ab10f46a7740fd56c2041a7de454",
+  "thresholds_sha256": "1fa9757d4024431b5c0e739a9a68540d05d9e1fd25fa0d75c012b6bbc826c707",
+  "rights_ref": "https://www.openstreetmap.org/copyright",
+  "quota_ref": "https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances; local:50-attempts/protocol/UTC-day",
+  "purpose": "controlled_public_restaurant_smoke_on_distinct_europe_instance",
+  "instance_owner": "dresel.systems",
+  "instance_version": "unknown",
+  "terms_ref": "https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances",
+  "pricing_ref": "https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances",
+  "currency": "EUR",
+  "effective_limits": {
+    "allowed_endpoints": [
+      "https://ovp.dresel.systems"
+    ],
+    "allowed_capabilities": [
+      "places"
+    ],
+    "max_calls_per_run": 5,
+    "max_concurrency": 1,
+    "max_area_m2": 100000.0,
+    "max_geometry_vertices": 1000,
+    "max_items": 100,
+    "deadline_s": 40.0,
+    "max_response_bytes": 1000000,
+    "cost_ceiling": "0",
+    "currency": "EUR",
+    "pricing_ref": "https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances",
+    "period_limits": {},
+    "cache_policy": "disabled"
+  },
+  "effective_settings": {
+    "protocol": "overpass",
+    "instance_id": "overpass-europe-dresel",
+    "endpoint": "https://ovp.dresel.systems",
+    "policy": {
+      "allowed_endpoints": [
+        "https://ovp.dresel.systems"
+      ],
+      "allowed_capabilities": [
+        "places"
+      ],
+      "max_calls_per_run": 5,
+      "max_concurrency": 1,
+      "max_area_m2": 100000.0,
+      "max_geometry_vertices": 1000,
+      "max_items": 100,
+      "deadline_s": 40.0,
+      "max_response_bytes": 1000000,
+      "cost_ceiling": "0",
+      "currency": "EUR",
+      "pricing_ref": "https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances",
+      "period_limits": {},
+      "cache_policy": "disabled"
+    },
+    "authentication_required": false,
+    "authentication_header": "Authorization",
+    "capability_flags": {
+      "places": true
+    },
+    "photon_capabilities": {
+      "api_version": "v1",
+      "supports_countrycode": true,
+      "supports_bbox": true,
+      "supported_languages": [
+        "de",
+        "en"
+      ],
+      "fallback_language": "de"
+    },
+    "cost_per_call": "0",
+    "terms_ref": "https://overpass.private.coffee/",
+    "rights_ref": "https://www.openstreetmap.org/copyright",
+    "attribution": "\u00a9 OpenStreetMap contributors",
+    "user_agent": "GeoIntelligenceCore-FF04/2026-11-06 (+https://github.com/augustunbear/GeoIntelligenceCore)",
+    "daily_budget_requirement": "caller_shared_budget_required"
+  },
+  "settings_sha256": "7dac271c82e464f93067ea86c27c6d2224594e2d42aa2606317c034fd987c430",
+  "code_identity": {
+    "verified": true,
+    "source_commit": "2ce0309c46095a5f4ab20d6e2db4af97208dc93b",
+    "code_sha256": "6bc3868a82853e3485ce06988c2f7e6a997dbf176785a1bd61bdf5809d8fd815",
+    "dependencies": {
+      "pydantic": "2.14.2",
+      "httpx": "0.28.1",
+      "shapely": "2.2.0",
+      "pyproj": "3.8.0"
+    },
+    "runner_sha256": "9f6925365723630d9d5992dbcf4d6d8a0afca0dfccdcb06f2042c792035faff2"
+  },
+  "configuration_sha256": "87572c21eb4efae3e0e8165b8369e9a0e8ae0900f50f3229b0820aa1712947c5",
+  "gates": {
+    "quality": "passed",
+    "latency": "passed",
+    "memory": "passed",
+    "budget": "passed"
+  },
+  "source_commit": "2ce0309c46095a5f4ab20d6e2db4af97208dc93b",
+  "transport_mode": "codex_proxy",
+  "network_policy_sha256": "e5314f2636fcc0abc4a5d894ff82cd21b86b2dc2df9361ba1032bb69f974afbe",
+  "proxy_private_target_denied": true
+}
