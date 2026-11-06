@@ -1,5 +1,19 @@
 # Current FF-04 execution checkpoint — 2026-11-06
 
+The [current-environment preflight](../verification/2026-11-06-current-environment-preflight.md)
+checked GitHub main `0e062f793da5d2428a0f00852bb8917ea0d95a92`, its
+successful CI and the existing Runner's clean source identity. Python 3.12
+offline tests: **288 passed, 3 opt-in live skips**. An enforced outbound policy
+denied CONNECT to all three selected service hosts even after turn-scoped
+network permission. The earlier frozen private inputs are absent from this
+workspace. `ORS_API_KEY` is now present as a ready runtime binding, but no ORS
+call or account-quota/rights check occurred. This preflight made **0 provider
+HTTP attempts for each source** and generated no new FF-05 acceptance report.
+Photon, Overpass and ORS remain independently unverified and disabled. The
+consumer remains pinned to `27ee290a7b51e245414d18ff681603c1c99decf6`;
+its PR #38 is merged, but current-main measurements would require an explicit
+pin/update review before activation. Historical checkpoint text below is retained.
+
 Main baseline `46f64c8bae01e717ddab7dfb33c83286cd4ff5b4` includes FF-01–FF-05 core PRs #24–#28; combined offline verification was 288 passed/3 live skips. Historical sections below retain their original branch-time context.
 
 The [first public-sample attempt](../verification/2026-11-06-first-batch.md) prepared/froze 3 cases and ran both existing source runners. Both failed before provider HTTP because this execution environment could not resolve the approved public hosts: **Photon 0 HTTP attempts, Overpass 0**. No provider payload/quality was observed. Raw runner failures remain unchanged; operational status is **environment blocked**, never source acceptance. Private labels/reference extracts remain outside git; redacted reports and hashes are linked above. ORS was not tested; sources remain disabled by this increment.

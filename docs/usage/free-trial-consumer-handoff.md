@@ -1,5 +1,23 @@
 # FF-05 free-source consumer handoff
 
+Current checkpoint: RestaurantTrafficDiagnosis PR #38 has since merged into
+`development`, which still pins core `27ee290a7b51e245414d18ff681603c1c99decf6`
+and wheel SHA-256 `e722028af51030cf3408a9ffe5b550fc2dc203bb21a22c55f8044b766e1cf314`.
+The [2026-11-06 current-environment preflight](../verification/2026-11-06-current-environment-preflight.md)
+found no new live provider measurements: all three selected hosts were denied
+by the environment's outbound policy, and the frozen private input bundle was
+not available. ORS has a ready runtime key binding here; this is not a source
+approval. No provider may be enabled from the preflight or earlier failed
+first-batch reports. Before FF-05 enables an independently passed source, the
+consumer must explicitly verify the report's exact source/package identity,
+serving instance, `effective_settings` and `settings_sha256`, frozen input
+hashes, rights, time and all gates against its deployed wheel/configuration.
+Current-main and fixed-consumer fingerprints differ; update and reverify the
+consumer pin if a future passing report is produced on current main.
+
+Historical handoff and branch-time statements below retain their original
+context.
+
 RestaurantTrafficDiagnosis development was checked at
 `1bd11719ec24204359a6fc180890317adf2c3dcb`: E07's case-scoped location confirmation,
 offline preview and historical snapshots already exist. Do not rebuild them.
@@ -60,7 +78,12 @@ export, provenance, PostgreSQL audit and idempotency corrections. Its exact-head
 passed, including Chromium desktop/mobile and PostgreSQL 17 checks. See its
 [status record at that commit](https://github.com/augustunbear/RestaurantTrafficDiagnosis/blob/53ffdcef24714acd338f0852a7a300944c4dac5b/docs/project/status.md).
 
-Target schema compatibility and publication ordering remain an uncompleted consumer rollout gate. Keep the consumer PR open until controlled migration and release-order verification are complete, or automatic publication is confirmed disabled. Merge authorization alone is not evidence of schema compatibility. No target migration, deployment or live-source activation is claimed.
+At this earlier checkpoint, target schema compatibility and publication ordering
+were uncompleted consumer rollout gates and PR #38 was to remain open until
+controlled migration and release-order verification, or confirmation that
+automatic publication was disabled. PR #38 has since merged; this core record
+does not verify target migration, deployment or live-source activation. Merge
+alone is not evidence of schema compatibility.
 
 ## FF-04 field measurement checkpoint (2026-11-06)
 
@@ -73,7 +96,7 @@ These are actual runner invocations with **zero provider HTTP attempts**:
 Photon search/reverse and Overpass places returned `unconfigured` because
 public-host DNS failed before reservation. Their quality and budget gates failed;
 there is no accepted provider data or representative German field result.
-ORS was not run and its runtime key is unavailable here.
+ORS was not run; the key was unavailable in that earlier execution environment.
 
 The consumer's fixed wheel derives from `27ee290a7b51e245414d18ff681603c1c99decf6`
 with wheel SHA-256 `e722028af51030cf3408a9ffe5b550fc2dc203bb21a22c55f8044b766e1cf314`.
