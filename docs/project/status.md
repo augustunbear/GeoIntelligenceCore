@@ -1,5 +1,16 @@
 # Current FF-04 execution checkpoint — 2026-11-06
 
+The [new public smoke replay](../verification/2026-11-06-public-smoke-replay.md)
+used clean main `d8cb37c4f261fc83f723dfec8c2943a7b6b10321` and the existing
+Runner. Photon search/reverse and Overpass places each failed before provider
+HTTP because this proxy-only runtime cannot resolve provider DNS locally; the
+Runner recorded **0 attempts per source** and separate failed, sanitized
+reports with settings digests. One separately budgeted Overpass reference lookup
+timed out and consumed one daily reservation. The small public labels do not
+establish representative coverage. ORS was not invoked: a ready key binding
+does not establish current account quota, usage rights or independent labels.
+All three sources remain disabled for FF-05; no consumer config changed.
+
 The [current-environment preflight](../verification/2026-11-06-current-environment-preflight.md)
 checked GitHub main `0e062f793da5d2428a0f00852bb8917ea0d95a92`, its
 successful CI and the existing Runner's clean source identity. Python 3.12
