@@ -17,6 +17,11 @@
 
 ## 0.1.0a1 — unreleased
 
+- FF-02: add synthetic caller-owned shared-budget/slot contracts and an offline
+  executable example. Add `BudgetUnavailable` and a fail-closed gateway result
+  for unavailable shared reservations; existing Budget signatures and schemas
+  stay unchanged. Actual durable cross-worker enforcement remains consumer work.
+
 - Add installable Python 3.12 core and immutable Pydantic v1 target models for manual location confirmation.
 - Confirm one explicitly selected candidate or manual WGS84 point offline, with provenance, result status, and incrementing location version.
 - Add synthetic offline tests, package build, hashed Python 3.12 dependency lock, and CI.

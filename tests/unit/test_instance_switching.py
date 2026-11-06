@@ -148,3 +148,35 @@ def test_terminal_dot_host_cannot_bypass_hosted_authentication():
     with pytest.raises(ValueError):
         s.model_copy(update={'endpoint':'https://api.heigit.org./openrouteservice',
             'authentication_required':False,'policy':s.policy.model_copy(update={'allowed_endpoints':('https://api.heigit.org.',)})})
+
+
+@pytest.mark.parametrize('query,options', [
+    (SearchRequest(text='x'), {}),
+    (SearchRequest(text='Synthetic', country_codes=['DE','FR']), {}),
+    (SearchRequest(text='Synthetic', bbox=[1,2,0,3]), {}),
+    (SearchRequest(text='Synthetic', bbox=[0,0,1,1]), {'supports_bbox':False}),
+])
+def test_photon_local_rejection_has_current_instance(query,options):
+    from geo_intelligence_core.providers.photon import PhotonCapabilities
+    provider,settings=make('photon','owned')
+    provider.capabilities=PhotonCapabilities(**options)
+    old=CTX.model_copy(update={'effective_conditions':{'provider_instance':'previous','provider_endpoint':'https://previous.example'}})
+    result=asyncio.run(provider.search(query,old))
+    assert result.status in (Status.invalid_input,Status.unsupported)
+    assert result.context.effective_conditions['provider_instance']==settings.instance_id
+    assert result.context.effective_conditions['provider_endpoint']==settings.endpoint
+    assert old.effective_conditions['provider_instance']=='previous'
+
+
+@pytest.mark.parametrize('operation,payload', [
+    ('search', {'text':''}),
+    ('reverse', {'point':{'longitude':181,'latitude':50}}),
+])
+def test_photon_invalid_request_has_current_instance(operation,payload):
+    provider,settings=make('photon','owned')
+    old=CTX.model_copy(update={'effective_conditions':{'provider_instance':'previous','provider_endpoint':'https://previous.example'}})
+    result=asyncio.run(getattr(provider,operation)(payload,old))
+    assert result.status==Status.invalid_input
+    assert result.context.effective_conditions['provider_instance']==settings.instance_id
+    assert result.context.effective_conditions['provider_endpoint']==settings.endpoint
+    assert old.effective_conditions['provider_instance']=='previous'

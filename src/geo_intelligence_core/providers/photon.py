@@ -61,8 +61,9 @@ class PhotonResolver:
 
     async def search(self, request: SearchRequest, context: RequestContext) -> Result[list[Candidate]]:
         try:
-            request = SearchRequest.model_validate(request)
             context = RequestContext.model_validate(context)
+            context = instance_context(context, self.gateway, self.provider_id)
+            request = SearchRequest.model_validate(request)
         except (ValidationError, ValueError, TypeError):
             return self._result(Status.invalid_input, context, 'invalid_request')
         if (len(request.text.strip()) < self.min_query_length or len(request.text) > 256
@@ -90,8 +91,9 @@ class PhotonResolver:
 
     async def reverse(self, request: ReverseRequest, context: RequestContext) -> Result[list[Candidate]]:
         try:
-            request = ReverseRequest.model_validate(request)
             context = RequestContext.model_validate(context)
+            context = instance_context(context, self.gateway, self.provider_id)
+            request = ReverseRequest.model_validate(request)
         except (ValidationError, ValueError, TypeError):
             return self._result(Status.invalid_input, context, 'invalid_request')
         language, context, issues = self._language(request.language, context)

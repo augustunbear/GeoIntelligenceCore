@@ -8,6 +8,29 @@ P13's [provider activation record](../verification/provider-activation.md) and [
 
 Population calculations A06/A08 are outside the first scope; temporal A07 waits for E01. Later E and POP work remains separately scoped. RestaurantTrafficDiagnosis owns consultant UI, case isolation and domain decisions; this library only provides geospatial facts.
 
+## FF-02 shared-budget contract branch (2026-11-05)
+
+Based on main `ab60d2e83502959230448da81635fce790406ed5`. FF-01 PR #24 is still
+open with successful CI at the start of this task; FF-02 reuses the already-merged
+Budget/HttpGateway interfaces and does not duplicate FF-01. A separate branch
+adds a synthetic shared service with independent clients, run-bound budgets,
+stable source quota domains, atomic 5/run + 50/source/UTC-day + zero-cost checks,
+and separate shared concurrency slots. Tests distinguish client reconstruction
+from actual storage restart and check slot release after success, error, timeout
+and cancellation. The contract exposed a gateway gap: `BudgetUnavailable` now
+returns explicit unavailable/null results before the pending attempt, without
+leaking backend exception details. No public Budget signature/schema changes.
+
+FF-02 branch verification: **22 new contract cases**, **35 focused checks passed**
+(contract + HTTP policy + budget replay), and the full offline suite **170 passed,
+3 opt-in live skips**, including isolated wheel/extras/sdist installations.
+Independent whole-change review found no Critical/Important/Minor findings.
+These are branch results, not a merged, released or activated status.
+
+Actual durable storage, distributed locks and two real workers remain consumer
+FF-05 acceptance work. No database/infrastructure, live requests, source activation,
+consumer modifications or package publication are included.
+
 ## Free-first trial policy (2026-11-05)
 
 Current low-volume trials prefer Photon demo, Private.coffee Overpass and free ORS Standard; see [provider policy](../operations/free-first-providers.md). Public services need no subscription or mandatory individual operator grant where published permission applies. Activation validation now accepts zero cost and no-key providers. Same-protocol Photon instance switching has synthetic regression coverage. These changes do not enable providers or implement measured live runners; daily shared quotas, live quality and consumer activation remain separate gates.
@@ -25,7 +48,7 @@ with one gateway per instance. Construction and the example are offline.
 Defaults cap each gateway at 5 attempts, concurrency 1 and zero cost; missing
 ORS Authorization leaves only ORS unconfigured. Settings preserve policy/terms
 and attribution references without credentials. Shared daily enforcement remains
-FF-02, custom ORS switching FF-03, live measurements FF-04. No live requests,
+FF-02; custom ORS switching is implemented by FF-03 and live runners by FF-04. No live requests,
 provider activation, package publication or consumer changes are part of FF-01.
 
 FF-01 verification: full offline suite **176 passed, 3 live skips**, including
@@ -77,3 +100,26 @@ Direction/documentation review follow-up: ORS always needs a positive outbound c
 - Cancelling a SQLite reservation now waits for its bounded worker transaction to settle and updates the consumed count before releasing the source slot or writing a blocked report.
 - A deterministic thread/event regression reproduced the stale zero count before the fix and reconciles the completed reservation against the ledger afterward.
 - Full offline suite: 260 passed, 3 live skips. Runtime package remains unchanged. Next: exact-head CI and independent review, then merge to the existing target if clear.
+
+## FF integration review (2026-11-06)
+
+FF-01 PR #24 merged main. FF-04 PR #27 merged its FF-03 parent, not main.
+Photon now attaches current-instance context before local query rejection; six
+regressions first failed with the previous instance and pass after correction.
+ProviderConfig authentication additions are documented with explicit unreleased
+V1 compatibility/migration rules; README historical pending language corrected.
+The consumer remains pinned to its reviewed wheel; this core source correction
+does not silently replace that artifact or approve old measurement fingerprints.
+
+Focused independent correction review caught the model-validation failure paths
+as well; search/reverse invalid-request regressions were observed failing before
+context attribution was moved ahead of request validation.
+
+Integration verification: the focused Photon correction suite passed 31 cases;
+the corrected FF-03/04 tree passed 266 tests, 3 live skips. Merging FF-02 preserves
+its separate shared-budget examples/contracts and both completed plan entries;
+only the plan table required manual conflict resolution. The combined suite is
+verified before upload/merge. Consumer #38 remains technically blocked by the
+uncompleted target schema compatibility and publication-order verification.
+
+Combined FF-01–FF-04 tree after conflict resolution: **288 passed, 3 live skips**.
