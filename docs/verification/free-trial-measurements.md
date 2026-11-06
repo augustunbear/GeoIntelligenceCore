@@ -2,6 +2,9 @@
 
 Current cloud execution and failed source gates are recorded in
 [the 2026-11-06 Codex cloud report](2026-11-06-codex-cloud-proxy.md). The
+subsequent [root-cause follow-up](2026-11-06-ff04-root-cause-followup.md)
+records a bounded Photon landmark smoke pass and continuing Overpass API
+timeout; neither completes representative source acceptance. The
 historical paragraph below describes the original Runner implementation PR.
 
 The real Photon, Overpass and ORS adapter runners are implemented. **No live

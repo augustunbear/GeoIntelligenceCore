@@ -1,0 +1,47 @@
+{
+  "kind": "non_runner_diagnostic_summary",
+  "provider": "overpass",
+  "endpoint": "https://overpass.private.coffee",
+  "utc_day": "2026-11-06",
+  "source_commit": "4de0a1255a9cd0f976de91b21d25d8b750d0237b",
+  "transport_mode": "codex_proxy",
+  "attempts": [
+    {
+      "method": "GET",
+      "path": "/api/status",
+      "result": "ReadTimeout",
+      "elapsed_s": 8.78,
+      "quota_reservations": 1
+    },
+    {
+      "method": "HEAD",
+      "path": "/",
+      "http_status": 200,
+      "elapsed_s": 1.72,
+      "quota_reservations": 1
+    },
+    {
+      "method": "GET",
+      "path": "/api/interpreter",
+      "query_class": "minimal_public_osm_node",
+      "result": "ReadTimeout",
+      "elapsed_s": 10.59,
+      "quota_reservations": 1
+    },
+    {
+      "method": "POST",
+      "path": "/api/interpreter",
+      "query_class": "same_minimal_public_osm_node",
+      "result": "ReadTimeout",
+      "elapsed_s": 10.47,
+      "quota_reservations": 1
+    }
+  ],
+  "quota_ledger_ref": "private:/workspace/ff04-work/quota.sqlite",
+  "quota_ledger_sha256_after": "a038bf192dd168a8a54fe5e6dd2cd4689e43d81608e90665414a7aba66ed4f5f",
+  "quota_daily_total_after": {
+    "photon": 7,
+    "overpass": 8
+  },
+  "quality_gate": "not_evaluated"
+}
