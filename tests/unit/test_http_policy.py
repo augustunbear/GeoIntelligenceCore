@@ -62,6 +62,22 @@ def test_retry_budget():
     assert delayed.calls == 1 and result.status == Status.rate_limited
 
 
+def test_read_timeout_can_use_remaining_provider_deadline(monkeypatch):
+    original = httpx.AsyncClient
+    captured = []
+
+    def client(**kwargs):
+        captured.append(kwargs['timeout'])
+        return original(**kwargs)
+
+    monkeypatch.setattr(httpx, 'AsyncClient', client)
+    result = run(gateway(FakeTransport([httpx.Response(200, json={'ok': True})]),
+                         limits=policy(deadline=40)).request('p', 'GET', '/v1/query', {}, context()))
+    assert result.status == Status.ok
+    assert captured[0].read == 40
+    assert captured[0].connect == 5
+
+
 def test_concurrent_reservation():
     transport = FakeTransport([httpx.Response(200, json={'ok': True})])
     async def two():

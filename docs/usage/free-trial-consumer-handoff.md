@@ -1,5 +1,14 @@
 # FF-05 free-source consumer handoff
 
+## 2026-11-06 FF-04 follow-up
+
+The [root-cause follow-up](../verification/2026-11-06-ff04-root-cause-followup.md)
+passed only a newly frozen public Photon landmark smoke batch after independent
+OSM identity refresh. The six representative German address strata remain
+unmeasured. Overpass API queries still timed out and ORS was not called.
+None has an FF-05 activation-quality report for the fixed consumer package;
+keep all three disabled and do not change production configuration.
+
 The [Codex cloud FF-04 execution](../verification/2026-11-06-codex-cloud-proxy.md)
 now contains real HTTP attempts for Photon (2) and Overpass (1), but both
 frozen quality gates **failed**; ORS was not measured. No source can be enabled

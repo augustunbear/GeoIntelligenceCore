@@ -1,0 +1,29 @@
+[
+  {
+    "id": "berlin-gate-search",
+    "operation": "search",
+    "request": {
+      "text": "Brandenburger Tor, Berlin",
+      "language": "de",
+      "country_codes": [
+        "DE"
+      ],
+      "near": {
+        "longitude": 13.3777,
+        "latitude": 52.5163
+      },
+      "limit": 5
+    }
+  },
+  {
+    "id": "berlin-gate-reverse",
+    "operation": "reverse",
+    "request": {
+      "point": {
+        "longitude": 13.3777343,
+        "latitude": 52.5162024
+      },
+      "language": "de"
+    }
+  }
+]

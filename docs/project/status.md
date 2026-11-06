@@ -1,5 +1,15 @@
 # Current FF-04 execution checkpoint — 2026-11-06
 
+The [root-cause follow-up](../verification/2026-11-06-ff04-root-cause-followup.md)
+fixed a 5 s HTTP read timeout that contradicted the approved 40 s operation
+deadline. A newly frozen, independently referenced **single-landmark Photon
+smoke batch** passed search/reverse quality and resource gates in two real
+requests. It does not establish the required representative German strata.
+The unchanged Overpass query then exceeded 40 s, while its landing page worked
+and even tiny GET/POST API queries timed out in counted probes. Its POI quality
+remains unmeasured. ORS remains unmeasured. No FF-05 source activation or
+consumer production change follows from this checkpoint.
+
 The [Codex cloud proxy execution](../verification/2026-11-06-codex-cloud-proxy.md)
 removed the previous local-DNS blocker with an explicit trusted
 sidecar transport and a narrowly opt-in live-test socket allowance. On clean

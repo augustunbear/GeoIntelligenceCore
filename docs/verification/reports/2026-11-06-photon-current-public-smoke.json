@@ -1,0 +1,131 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "id": "berlin-gate-search",
+      "status": "ok",
+      "quality_passed": true,
+      "latency_s": 1.9518590359998598
+    },
+    {
+      "id": "berlin-gate-reverse",
+      "status": "ok",
+      "quality_passed": true,
+      "latency_s": 1.4702572599999257
+    }
+  ],
+  "p50_s": 1.7110581479998928,
+  "p95_s": 1.9518590359998598,
+  "peak_bytes": 8001169,
+  "sample_count": 2,
+  "small_sample": true,
+  "measured_at": "2026-11-06T13:54:20.059773+00:00",
+  "provider": "photon",
+  "instance_id": "photon-komoot-demo",
+  "endpoint": "https://photon.komoot.io",
+  "package_version": "0.1.0a1",
+  "calls": 2,
+  "samples_sha256": "3ec980c4762ccb62c961783a767964937956f01cc5a4463fafc2904575e3ad33",
+  "thresholds_sha256": "b560f6b2d47654ce7a552cf6550919f6ddeacc2d5d2aef3e5d985bed8ef66383",
+  "rights_ref": "https://www.openstreetmap.org/copyright",
+  "quota_ref": "local:50-attempts/protocol/UTC-day;operator numeric quota unpublished",
+  "purpose": "controlled_current_public_landmark_smoke",
+  "instance_owner": "komoot",
+  "instance_version": "unknown",
+  "terms_ref": "https://github.com/komoot/photon/blob/master/README.md#demo-server",
+  "pricing_ref": "https://github.com/komoot/photon/blob/master/README.md#demo-server",
+  "currency": "EUR",
+  "effective_limits": {
+    "allowed_endpoints": [
+      "https://photon.komoot.io"
+    ],
+    "allowed_capabilities": [
+      "search",
+      "reverse"
+    ],
+    "max_calls_per_run": 5,
+    "max_concurrency": 1,
+    "max_area_m2": 10000000.0,
+    "max_geometry_vertices": 1000,
+    "max_items": 100,
+    "deadline_s": 40.0,
+    "max_response_bytes": 1000000,
+    "cost_ceiling": "0",
+    "currency": "EUR",
+    "pricing_ref": "https://github.com/komoot/photon/blob/master/README.md#demo-server",
+    "period_limits": {},
+    "cache_policy": "disabled"
+  },
+  "effective_settings": {
+    "protocol": "photon",
+    "instance_id": "photon-komoot-demo",
+    "endpoint": "https://photon.komoot.io",
+    "policy": {
+      "allowed_endpoints": [
+        "https://photon.komoot.io"
+      ],
+      "allowed_capabilities": [
+        "search",
+        "reverse"
+      ],
+      "max_calls_per_run": 5,
+      "max_concurrency": 1,
+      "max_area_m2": 10000000.0,
+      "max_geometry_vertices": 1000,
+      "max_items": 100,
+      "deadline_s": 40.0,
+      "max_response_bytes": 1000000,
+      "cost_ceiling": "0",
+      "currency": "EUR",
+      "pricing_ref": "https://github.com/komoot/photon/blob/master/README.md#demo-server",
+      "period_limits": {},
+      "cache_policy": "disabled"
+    },
+    "authentication_required": false,
+    "authentication_header": "Authorization",
+    "capability_flags": {
+      "search": true,
+      "reverse": true
+    },
+    "photon_capabilities": {
+      "api_version": "v1",
+      "supports_countrycode": true,
+      "supports_bbox": true,
+      "supported_languages": [
+        "de",
+        "en"
+      ],
+      "fallback_language": "de"
+    },
+    "cost_per_call": "0",
+    "terms_ref": "https://github.com/komoot/photon",
+    "rights_ref": "https://www.openstreetmap.org/copyright",
+    "attribution": "\u00a9 OpenStreetMap contributors",
+    "user_agent": "GeoIntelligenceCore-FF04/2026-11-06 (+https://github.com/augustunbear/GeoIntelligenceCore)",
+    "daily_budget_requirement": "caller_shared_budget_required"
+  },
+  "settings_sha256": "d3c214b3eb795d1a120de1d7ff290dc9789ae41f56de4841b7182a8fe0bdac33",
+  "code_identity": {
+    "verified": true,
+    "source_commit": "4de0a1255a9cd0f976de91b21d25d8b750d0237b",
+    "code_sha256": "e608db5f94599c54ae35e0d5fe5cfd74f13aacd2e3d8ed2b1b3076c66f2820a7",
+    "dependencies": {
+      "pydantic": "2.14.2",
+      "httpx": "0.28.1",
+      "shapely": "2.2.0",
+      "pyproj": "3.8.0"
+    },
+    "runner_sha256": "9f6925365723630d9d5992dbcf4d6d8a0afca0dfccdcb06f2042c792035faff2"
+  },
+  "configuration_sha256": "ba3205e7c82f7092ceb322926a99131b4d40722103f32914877d6c89b44c4125",
+  "gates": {
+    "quality": "passed",
+    "latency": "passed",
+    "memory": "passed",
+    "budget": "passed"
+  },
+  "source_commit": "4de0a1255a9cd0f976de91b21d25d8b750d0237b",
+  "transport_mode": "codex_proxy",
+  "network_policy_sha256": "736f277a38cf433be721df66e6a45382ad187a4052141add28f25d95d4f94744",
+  "proxy_private_target_denied": true
+}

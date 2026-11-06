@@ -171,7 +171,11 @@ class HttpGateway:
                                          proxy=self.trusted_proxy_url,
                                          verify=ssl.create_default_context(cafile=self.ca_bundle) if self.ca_bundle else True,
                                          follow_redirects=False,
-                                         trust_env=False, timeout=httpx.Timeout(min(5.0, p.deadline_s))) as client:
+                                         trust_env=False,
+                                         timeout=httpx.Timeout(connect=min(5.0, p.deadline_s),
+                                                               read=p.deadline_s,
+                                                               write=min(5.0, p.deadline_s),
+                                                               pool=min(5.0, p.deadline_s))) as client:
                 while True:
                     remaining = end - self.clock()
                     if remaining <= 0:

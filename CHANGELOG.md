@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — FF-04 measured follow-up
+
+- Let provider response reads use the approved operation deadline while
+  retaining a five-second connect/write/pool bound. The whole gateway call
+  remains deadline-bound.
+- Record a new independently referenced, passing Photon landmark smoke run
+  without treating it as representative source acceptance. Record the unchanged
+  Overpass batch's 40-second deadline failure and counted API diagnostics.
+
 ## Unreleased — FF-04 Codex cloud transport
 
 - Add explicit trusted-proxy transport to the existing bounded gateway and
