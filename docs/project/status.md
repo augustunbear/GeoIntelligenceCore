@@ -8,6 +8,29 @@ P13's [provider activation record](../verification/provider-activation.md) and [
 
 Population calculations A06/A08 are outside the first scope; temporal A07 waits for E01. Later E and POP work remains separately scoped. RestaurantTrafficDiagnosis owns consultant UI, case isolation and domain decisions; this library only provides geospatial facts.
 
+## FF-02 shared-budget contract branch (2026-11-05)
+
+Based on main `ab60d2e83502959230448da81635fce790406ed5`. FF-01 PR #24 is still
+open with successful CI at the start of this task; FF-02 reuses the already-merged
+Budget/HttpGateway interfaces and does not duplicate FF-01. A separate branch
+adds a synthetic shared service with independent clients, run-bound budgets,
+stable source quota domains, atomic 5/run + 50/source/UTC-day + zero-cost checks,
+and separate shared concurrency slots. Tests distinguish client reconstruction
+from actual storage restart and check slot release after success, error, timeout
+and cancellation. The contract exposed a gateway gap: `BudgetUnavailable` now
+returns explicit unavailable/null results before the pending attempt, without
+leaking backend exception details. No public Budget signature/schema changes.
+
+FF-02 branch verification: **22 new contract cases**, **35 focused checks passed**
+(contract + HTTP policy + budget replay), and the full offline suite **170 passed,
+3 opt-in live skips**, including isolated wheel/extras/sdist installations.
+Independent whole-change review found no Critical/Important/Minor findings.
+These are branch results, not a merged, released or activated status.
+
+Actual durable storage, distributed locks and two real workers remain consumer
+FF-05 acceptance work. No database/infrastructure, live requests, source activation,
+consumer modifications or package publication are included.
+
 ## Free-first trial policy (2026-11-05)
 
 Current low-volume trials prefer Photon demo, Private.coffee Overpass and free ORS Standard; see [provider policy](../operations/free-first-providers.md). Public services need no subscription or mandatory individual operator grant where published permission applies. Activation validation now accepts zero cost and no-key providers. Same-protocol Photon instance switching has synthetic regression coverage. These changes do not enable providers or implement measured live runners; daily shared quotas, live quality and consumer activation remain separate gates.
