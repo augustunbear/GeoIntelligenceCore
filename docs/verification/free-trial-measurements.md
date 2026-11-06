@@ -1,5 +1,9 @@
 # FF-04 controlled provider measurements
 
+Current cloud execution and failed source gates are recorded in
+[the 2026-11-06 Codex cloud report](2026-11-06-codex-cloud-proxy.md). The
+historical paragraph below describes the original Runner implementation PR.
+
 The real Photon, Overpass and ORS adapter runners are implemented. **No live
 measurement has been performed by this change.** No approved representative
 sample/threshold files or persistent runner quota path were supplied. Existing

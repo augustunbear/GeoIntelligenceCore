@@ -1,5 +1,13 @@
 # FF-05 free-source consumer handoff
 
+The [Codex cloud FF-04 execution](../verification/2026-11-06-codex-cloud-proxy.md)
+now contains real HTTP attempts for Photon (2) and Overpass (1), but both
+frozen quality gates **failed**; ORS was not measured. No source can be enabled
+from these reports. Their measured source commit and code fingerprint also
+differ from the consumer's fixed `27ee290` wheel. Keep the existing production
+configuration closed while new independent labels, source-specific passing
+reports, exact package/settings matching and consumer rollout checks are done.
+
 The [latest FF-04 public smoke replay](../verification/2026-11-06-public-smoke-replay.md)
 produced failed Photon and Overpass reports with zero Runner HTTP attempts and
 no ORS report. **Do not enable any source** from these results. The reported

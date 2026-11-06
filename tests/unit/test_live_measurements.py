@@ -216,6 +216,31 @@ def test_live_runner_stops_before_provider_when_proxy_probe_fails(tmp_path, monk
     assert json.loads(reports[0].read_text())['calls'] == 0
 
 
+def test_live_runner_marks_post_probe_failure_in_report(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(Path(__file__).parents[1]))
+    import integration.live_gate as gate
+    record = {'transport_mode': 'codex_proxy', 'credential_env': None,
+              'authentication_required': False, 'deadline_s': 5.0,
+              'application_name': 'Synthetic', 'contact_url': 'https://app.example.org'}
+    monkeypatch.setattr(gate, 'require_live_activation', lambda _: record)
+    monkeypatch.setattr(m, '__package__', 'integration')
+    monkeypatch.setattr(m, '__spec__', importlib.util.spec_from_file_location('integration.measurements', PATH))
+    monkeypatch.setattr(m, 'package_identity', lambda: {'verified': True, 'source_commit': 'a'*40})
+    monkeypatch.setattr(m, 'cloud_proxy_config', lambda _: ('http://proxy:8080', '/ca.pem', 'b'*64))
+    probes = iter([True, False])
+    async def probe(*_): return next(probes)
+    async def provider(*_, **__): return {'status': 'passed', 'calls': 1}
+    monkeypatch.setattr(m, 'cloud_proxy_denies_private', probe)
+    monkeypatch.setattr(m, 'run_provider', provider)
+    monkeypatch.setenv('GEO_LIVE_BUDGET_DB', str(tmp_path/'quota.sqlite'))
+    monkeypatch.setenv('GEO_LIVE_REPORT_DIR', str(tmp_path/'reports'))
+    with pytest.raises(AssertionError, match='measured provider'):
+        m.run_live_test('photon')
+    report = json.loads(next((tmp_path/'reports').glob('*.json')).read_text())
+    assert report['status'] == 'failed' and report['reason'] == 'measurement_environment_changed'
+    assert report['proxy_private_target_denied'] is False
+
+
 def test_persistent_ledger_shared_across_objects_and_run_ids(tmp_path):
     async def run():
         db = tmp_path/'quota.sqlite'

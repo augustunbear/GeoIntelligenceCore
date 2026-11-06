@@ -487,6 +487,7 @@ def run_live_test(provider):
             except ValueError:
                 stable = False
             if not stable:
+                report['proxy_private_target_denied'] = False
                 report['status'] = 'failed'
                 report['reason'] = 'measurement_environment_changed'
     if after != identity:
