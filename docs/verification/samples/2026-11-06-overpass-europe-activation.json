@@ -1,0 +1,27 @@
+{
+  "overpass": {
+    "approved": true,
+    "approved_origin": "https://ovp.dresel.systems",
+    "instance_owner": "dresel.systems",
+    "instance_version": "unknown",
+    "terms_ref": "https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances",
+    "rights_ref": "https://www.openstreetmap.org/copyright",
+    "quota_ref": "https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances; local:50-attempts/protocol/UTC-day",
+    "pricing_ref": "https://wiki.openstreetmap.org/wiki/Overpass_API#Public_Overpass_API_instances",
+    "purpose": "controlled_public_restaurant_smoke_on_distinct_europe_instance",
+    "samples_ref": "docs/verification/samples/2026-11-06-overpass-public-samples.json",
+    "thresholds_ref": "docs/verification/samples/2026-11-06-overpass-public-thresholds.json",
+    "currency": "EUR",
+    "max_calls": 5,
+    "max_concurrency": 1,
+    "max_response_bytes": 1000000,
+    "deadline_s": 40,
+    "cost_ceiling": 0,
+    "max_area_m2": 100000,
+    "application_name": "GeoIntelligenceCore-FF04/2026-11-06",
+    "contact_url": "https://github.com/augustunbear/GeoIntelligenceCore",
+    "transport_mode": "codex_proxy",
+    "endpoint": "https://ovp.dresel.systems",
+    "instance_id": "overpass-europe-dresel"
+  }
+}
