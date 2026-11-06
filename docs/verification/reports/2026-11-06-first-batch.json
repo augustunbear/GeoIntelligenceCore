@@ -1,0 +1,265 @@
+{
+  "recorded_at": "2026-11-06T10:02:20.719602+00:00",
+  "measured_source_commit": "46f64c8bae01e717ddab7dfb33c83286cd4ff5b4",
+  "overall_status": "blocked",
+  "reason": "execution_environment_public_dns_unavailable",
+  "provider_http_attempts": {
+    "photon": 0,
+    "overpass": 0
+  },
+  "source_quality": "unverified; no provider HTTP response was received",
+  "original_runner_status": "failed; preserved without converting to pass",
+  "scope": "two landmark geocoding cases and one two-record POI reference; smoke only, not representative German acceptance",
+  "activation_decision": "keep sources disabled; no consumer deployment or approval",
+  "diagnostic": "socket.getaddrinfo raised gaierror for both approved provider hosts; gateway returned unconfigured with unsafe_endpoint before budget reservation; operator/reference pages were reachable via inherited HTTP proxy",
+  "safety": "No DNS override, IP substitution, proxy rewrite, endpoint rotation or relaxed SSRF checks used",
+  "reports": [
+    {
+      "status": "failed",
+      "cases": [
+        {
+          "id": "public-poi-rectangle",
+          "status": "unconfigured",
+          "quality_passed": false,
+          "latency_s": 0.4649083830000791
+        }
+      ],
+      "p50_s": 0.4649083830000791,
+      "p95_s": 0.4649083830000791,
+      "peak_bytes": 8173154,
+      "sample_count": 1,
+      "small_sample": true,
+      "measured_at": "2026-11-06T10:00:15.627481+00:00",
+      "provider": "overpass",
+      "instance_id": "overpass-private-coffee",
+      "endpoint": "https://overpass.private.coffee",
+      "package_version": "0.1.0a1",
+      "calls": 0,
+      "samples_sha256": "e029f272c239668ad3f00486ae7070657e7b58406038e9af326e375c3c2eca12",
+      "thresholds_sha256": "db2a8fcb853d84d5834f2816148f907ac649e25bcc9dc49963afb484cd3c63a1",
+      "rights_ref": "https://www.openstreetmap.org/copyright",
+      "quota_ref": "local:50-attempts/protocol/UTC-day; numeric provider limit unpublished",
+      "purpose": "controlled_public_sample_verification",
+      "instance_owner": "Private.coffee",
+      "instance_version": "unknown",
+      "terms_ref": "https://overpass.private.coffee/",
+      "pricing_ref": "https://overpass.private.coffee/",
+      "currency": "EUR",
+      "effective_limits": {
+        "allowed_endpoints": [
+          "https://overpass.private.coffee"
+        ],
+        "allowed_capabilities": [
+          "places"
+        ],
+        "max_calls_per_run": 5,
+        "max_concurrency": 1,
+        "max_area_m2": 100000.0,
+        "max_geometry_vertices": 1000,
+        "max_items": 100,
+        "deadline_s": 40.0,
+        "max_response_bytes": 1000000,
+        "cost_ceiling": "0",
+        "currency": "EUR",
+        "pricing_ref": "https://overpass.private.coffee/",
+        "period_limits": {},
+        "cache_policy": "disabled"
+      },
+      "effective_settings": {
+        "protocol": "overpass",
+        "instance_id": "overpass-private-coffee",
+        "endpoint": "https://overpass.private.coffee",
+        "policy": {
+          "allowed_endpoints": [
+            "https://overpass.private.coffee"
+          ],
+          "allowed_capabilities": [
+            "places"
+          ],
+          "max_calls_per_run": 5,
+          "max_concurrency": 1,
+          "max_area_m2": 100000.0,
+          "max_geometry_vertices": 1000,
+          "max_items": 100,
+          "deadline_s": 40.0,
+          "max_response_bytes": 1000000,
+          "cost_ceiling": "0",
+          "currency": "EUR",
+          "pricing_ref": "https://overpass.private.coffee/",
+          "period_limits": {},
+          "cache_policy": "disabled"
+        },
+        "authentication_required": false,
+        "authentication_header": "Authorization",
+        "capability_flags": {
+          "places": true
+        },
+        "photon_capabilities": {
+          "api_version": "v1",
+          "supports_countrycode": true,
+          "supports_bbox": true,
+          "supported_languages": [
+            "de",
+            "en"
+          ],
+          "fallback_language": "de"
+        },
+        "cost_per_call": "0",
+        "terms_ref": "https://overpass.private.coffee/",
+        "rights_ref": "https://www.openstreetmap.org/copyright",
+        "attribution": "\u00a9 OpenStreetMap contributors",
+        "user_agent": "GeoIntelligenceCore-controlled-verification/2026-11-06 (+https://github.com/augustunbear/GeoIntelligenceCore)",
+        "daily_budget_requirement": "caller_shared_budget_required"
+      },
+      "settings_sha256": "bcc76a103f50a3c5a925219509c6728987f9d3e0273cff66d84727a21ed8c32b",
+      "code_identity": {
+        "verified": true,
+        "source_commit": "46f64c8bae01e717ddab7dfb33c83286cd4ff5b4",
+        "code_sha256": "f19d31c1ac93e712d468e1d21d8f1bad330ac859599657aa43d0dd7d863280a4",
+        "dependencies": {
+          "pydantic": "2.14.2",
+          "httpx": "0.28.1",
+          "shapely": "2.2.0",
+          "pyproj": "3.8.0"
+        },
+        "runner_sha256": "fe9c02be832cdf250f67bc3b48255ea02be8ff9e4480e627d58b129fadadd2bc"
+      },
+      "configuration_sha256": "7d107165e581156ff572d45990f679a0165ebc09b68df00eedcf6285f77ce299",
+      "gates": {
+        "quality": "failed",
+        "latency": "passed",
+        "memory": "passed",
+        "budget": "failed"
+      },
+      "source_commit": "46f64c8bae01e717ddab7dfb33c83286cd4ff5b4"
+    },
+    {
+      "status": "failed",
+      "cases": [
+        {
+          "id": "public-landmark-forward",
+          "status": "unconfigured",
+          "quality_passed": false,
+          "latency_s": 0.015592044000015903
+        },
+        {
+          "id": "public-landmark-reverse",
+          "status": "unconfigured",
+          "quality_passed": false,
+          "latency_s": 0.001160122000044339
+        }
+      ],
+      "p50_s": 0.008376083000030121,
+      "p95_s": 0.015592044000015903,
+      "peak_bytes": 510597,
+      "sample_count": 2,
+      "small_sample": true,
+      "measured_at": "2026-11-06T09:58:24.851826+00:00",
+      "provider": "photon",
+      "instance_id": "photon-komoot-demo",
+      "endpoint": "https://photon.komoot.io",
+      "package_version": "0.1.0a1",
+      "calls": 0,
+      "samples_sha256": "a23a0bc1e6fc57f09fd3223f3f5b7826fa08c2492666e2ede5f385870278fe9c",
+      "thresholds_sha256": "18742e6e2f6a5553ff1324b12cc58cb119ce7193b7ba9e95c96a920bd6a7cf10",
+      "rights_ref": "https://www.openstreetmap.org/copyright",
+      "quota_ref": "local:50-attempts/protocol/UTC-day; numeric provider limit unpublished",
+      "purpose": "controlled_public_sample_verification",
+      "instance_owner": "komoot",
+      "instance_version": "unknown",
+      "terms_ref": "https://github.com/komoot/photon/blob/master/README.md",
+      "pricing_ref": "https://github.com/komoot/photon/blob/master/README.md#demo-server",
+      "currency": "EUR",
+      "effective_limits": {
+        "allowed_endpoints": [
+          "https://photon.komoot.io"
+        ],
+        "allowed_capabilities": [
+          "search",
+          "reverse"
+        ],
+        "max_calls_per_run": 5,
+        "max_concurrency": 1,
+        "max_area_m2": 10000000.0,
+        "max_geometry_vertices": 1000,
+        "max_items": 100,
+        "deadline_s": 40.0,
+        "max_response_bytes": 1000000,
+        "cost_ceiling": "0",
+        "currency": "EUR",
+        "pricing_ref": "https://github.com/komoot/photon/blob/master/README.md#demo-server",
+        "period_limits": {},
+        "cache_policy": "disabled"
+      },
+      "effective_settings": {
+        "protocol": "photon",
+        "instance_id": "photon-komoot-demo",
+        "endpoint": "https://photon.komoot.io",
+        "policy": {
+          "allowed_endpoints": [
+            "https://photon.komoot.io"
+          ],
+          "allowed_capabilities": [
+            "search",
+            "reverse"
+          ],
+          "max_calls_per_run": 5,
+          "max_concurrency": 1,
+          "max_area_m2": 10000000.0,
+          "max_geometry_vertices": 1000,
+          "max_items": 100,
+          "deadline_s": 40.0,
+          "max_response_bytes": 1000000,
+          "cost_ceiling": "0",
+          "currency": "EUR",
+          "pricing_ref": "https://github.com/komoot/photon/blob/master/README.md#demo-server",
+          "period_limits": {},
+          "cache_policy": "disabled"
+        },
+        "authentication_required": false,
+        "authentication_header": "Authorization",
+        "capability_flags": {
+          "search": true,
+          "reverse": true
+        },
+        "photon_capabilities": {
+          "api_version": "v1",
+          "supports_countrycode": true,
+          "supports_bbox": true,
+          "supported_languages": [
+            "de",
+            "en"
+          ],
+          "fallback_language": "de"
+        },
+        "cost_per_call": "0",
+        "terms_ref": "https://github.com/komoot/photon",
+        "rights_ref": "https://www.openstreetmap.org/copyright",
+        "attribution": "\u00a9 OpenStreetMap contributors",
+        "user_agent": "GeoIntelligenceCore-controlled-verification/2026-11-06 (+https://github.com/augustunbear/GeoIntelligenceCore)",
+        "daily_budget_requirement": "caller_shared_budget_required"
+      },
+      "settings_sha256": "60efbba0cf125114013841f106f87019e02a4c6f2d15e5857cf954a81f340cec",
+      "code_identity": {
+        "verified": true,
+        "source_commit": "46f64c8bae01e717ddab7dfb33c83286cd4ff5b4",
+        "code_sha256": "f19d31c1ac93e712d468e1d21d8f1bad330ac859599657aa43d0dd7d863280a4",
+        "dependencies": {
+          "pydantic": "2.14.2",
+          "httpx": "0.28.1",
+          "shapely": "2.2.0",
+          "pyproj": "3.8.0"
+        },
+        "runner_sha256": "fe9c02be832cdf250f67bc3b48255ea02be8ff9e4480e627d58b129fadadd2bc"
+      },
+      "configuration_sha256": "b15406089a50bb5f3baf3de4ce6ee43cc1bb7a31a4a4126d5c01916188a51d78",
+      "gates": {
+        "quality": "failed",
+        "latency": "passed",
+        "memory": "passed",
+        "budget": "failed"
+      },
+      "source_commit": "46f64c8bae01e717ddab7dfb33c83286cd4ff5b4"
+    }
+  ]
+}

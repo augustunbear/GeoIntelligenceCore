@@ -1,3 +1,15 @@
+# Current FF-04 execution checkpoint — 2026-11-06
+
+Main baseline `46f64c8bae01e717ddab7dfb33c83286cd4ff5b4` includes FF-01–FF-05 core PRs #24–#28; combined offline verification was 288 passed/3 live skips. Historical sections below retain their original branch-time context.
+
+The [first public-sample attempt](../verification/2026-11-06-first-batch.md) prepared/froze 3 cases and ran both existing source runners. Both failed before provider HTTP because this execution environment could not resolve the approved public hosts: **Photon 0 HTTP attempts, Overpass 0**. No provider payload/quality was observed. Raw runner failures remain unchanged; operational status is **environment blocked**, never source acceptance. Private labels/reference extracts remain outside git; redacted reports and hashes are linked above. ORS was not tested; sources remain disabled by this increment.
+
+Verification: frozen models/input SHA and clean identity checks passed; focused offline 74 passed, full offline 288 passed/3 live skips; separate opt-in source tests failed as recorded. Independent evidence review found no blocking or minor findings. A zero-budget DNS/issue-code replay is retained privately.
+
+Only next core task: rerun the frozen batch on an approved host with normal public DNS/HTTPS and one persistent quota ledger; then extend representative German strata before field acceptance. Do not replace security checks or repeat implementation of the existing runners. Consumer migration/merge/deployment status must be read from its own repository.
+
+Resume: `Check current main and the 2026-11-06 FF-04 attempt record. Recover the owner-delivered private sample bundle, verify frozen hashes and clean source/runtime identity, ensure normal public DNS plus durable same-host quota storage, then rerun each existing public-source test within the 5/run and 50/day zero-cost caps. Preserve failures; no automatic activation, endpoint rotation or target deployment.`
+
 # GeoIntelligenceCore project status
 
 Updated 2026-11-05. P01–P12 have been merged into `main`, most recently P12 PR #20 at `2b656b3df0a190040d7b54c1c85afa0ebd8c226d`. The library has offline core, geometry, bounded provider adapters, configuration/templates, evidence/export, comparison and packaged consumer examples. No package publication or live provider activation is recorded here. Consumer integration status must be checked in the consumer repository; this repository does not establish whether E07 has since completed.
