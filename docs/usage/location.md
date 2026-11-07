@@ -33,6 +33,12 @@ basic response. Do not label an entire result set as translated.
 
 Successful empty results return `no_results` and an empty candidate list.
 Network failures and malformed responses return `unavailable` with null data.
+If Photon repeats an OSM type/ID in one response, the entire response is
+`unavailable` with `invalid_response`, even if the repeated records are byte-for-byte
+identical or a local bounding filter would remove them. One OSM identity cannot
+represent two separately confirmable candidates. The resolver never silently
+deduplicates a response to make a quality gate pass. A distinct OSM type with
+the same numeric ID remains a distinct candidate.
 Candidates never confirm a `Location`; the caller must explicitly select one
 and call `confirm_location`, or provide a manual point. No automatic first match
 or silent substitution of old data occurs.

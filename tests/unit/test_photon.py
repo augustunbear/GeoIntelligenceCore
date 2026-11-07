@@ -137,6 +137,61 @@ def test_malformed_response_and_cancel_stale():
     assert len(calls) == 1
 
 
+@pytest.mark.parametrize('operation', ['search', 'reverse'])
+@pytest.mark.parametrize('conflicting', [False, True])
+def test_duplicate_osm_identity_fails_closed_without_discarding_source_evidence(operation, conflicting):
+    first = feature(25299100, 'Synthetic town hall', street='Example Street', housenumber='4')
+    first['properties']['osm_type'] = 'W'
+    second = json.loads(json.dumps(first))
+    if conflicting:
+        second['geometry']['coordinates'] = [11.59, 48.15]
+        second['properties']['name'] = 'Different indexed name'
+    resolver, _ = setup(httpx.Response(200, json={'features': [first, second]}))
+    request = (SearchRequest(text='Synthetic town hall') if operation == 'search'
+               else ReverseRequest(point=Point(longitude=11.58, latitude=48.14)))
+    result = run(getattr(resolver, operation)(request, CTX))
+    assert result.status == Status.unavailable
+    assert result.data is None
+    assert [issue.code for issue in result.issues] == ['invalid_response']
+
+
+def test_distinct_osm_types_with_same_numeric_id_remain_distinct_candidates():
+    node = feature(17, 'Synthetic node')
+    way = feature(17, 'Synthetic way')
+    way['properties']['osm_type'] = 'W'
+    resolver, _ = setup(httpx.Response(200, json={'features': [node, way]}))
+    result = run(resolver.search(SearchRequest(text='Synthetic'), CTX))
+    assert result.status == Status.ok
+    assert [candidate.id for candidate in result.data] == [
+        'photon:osm:N:17', 'photon:osm:W:17']
+
+
+def test_address_strata_keep_distinct_towns_and_missing_house_number_unverified():
+    towns = [feature(101, 'Neustadt', lon=10.1, lat=50.1, city='Neustadt'),
+             feature(102, 'Neustadt', lon=11.1, lat=51.1, city='Neustadt')]
+    street = feature(103, 'Synthetic Road', lon=10.2, lat=50.2,
+                     city='Neustadt', street='Synthetic Road')
+    resolver, seen = setup(httpx.Response(200, json={'features': [*towns, street]}))
+    result = run(resolver.search(SearchRequest(
+        text='Neustadt', near=Point(longitude=10.1, latitude=50.1)), CTX))
+    assert result.status == Status.ok
+    assert [candidate.id for candidate in result.data] == [
+        'photon:osm:N:101', 'photon:osm:N:102', 'photon:osm:N:103']
+    assert [candidate.precision for candidate in result.data] == [
+        'locality', 'locality', 'street']
+    assert result.data[2].address.house_number is None
+    assert seen[0].url.params['lon'] == '10.1'  # A bias, not a hard match.
+
+
+def test_duplicate_identity_outside_requested_bbox_still_invalidates_response():
+    first = feature(101, 'Outside', lon=13, lat=52)
+    resolver, _ = setup(httpx.Response(200, json={'features': [first, first]}))
+    result = run(resolver.search(SearchRequest(
+        text='Synthetic', bbox=(10, 48, 12, 50)), CTX))
+    assert result.status == Status.unavailable
+    assert result.data is None
+
+
 @pytest.mark.parametrize('endpoint,headers,expected_path', [
     ('https://public.example.org', {}, '/api'),
     ('https://paid.example.org/geocoding', {'Authorization': 'synthetic-key'}, '/geocoding/api'),

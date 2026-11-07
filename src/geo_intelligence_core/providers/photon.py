@@ -114,6 +114,11 @@ class PhotonResolver:
             if not isinstance(features, (list, tuple)) or len(features) > limit:
                 raise ValueError('invalid feature list')
             candidates = [self._candidate(feature, language) for feature in features]
+            # One OSM object is one candidate identity. Repeated features may
+            # disagree on name or point, so selecting one would hide bad source
+            # evidence and could make a measured quality gate pass incorrectly.
+            if len({candidate.id for candidate in candidates}) != len(candidates):
+                raise ValueError('duplicate OSM candidate identity')
             candidates = [candidate for candidate in candidates
                           if (not countries or candidate.address.country_code in countries)
                           and (not bbox or bbox[0] <= candidate.point.longitude <= bbox[2]

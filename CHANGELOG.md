@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — Photon duplicate identity guard
+
+- Reject a Photon response that repeats the same OSM candidate identity with
+  `unavailable` / `invalid_response`, preserving the frozen duplicate-ID quality
+  failure rather than silently choosing one feature. Cover search, reverse,
+  conflicting indexed records, same-name distinct towns and missing-number
+  address mapping with offline regressions. This is a fail-closed adapter change,
+  not a live quality pass or source activation.
+
 ## Unreleased — FF-04 bounded acceptance follow-up
 
 - Investigate six public German location subjects. Preserve the Photon suburb
