@@ -1,0 +1,43 @@
+[
+  {
+    "id": "de-address-a",
+    "operation": "search",
+    "request": {
+      "text": "Hauptstraße 1",
+      "language": "de",
+      "country_codes": ["DE"],
+      "near": {"longitude": 10.31238, "latitude": 49.98471},
+      "limit": 5
+    }
+  },
+  {
+    "id": "de-address-b",
+    "operation": "search",
+    "request": {
+      "text": "Hauptstraße 1",
+      "language": "de",
+      "country_codes": ["DE"],
+      "near": {"longitude": 9.65379, "latitude": 48.70346},
+      "limit": 5
+    }
+  },
+  {
+    "id": "de-address-c",
+    "operation": "search",
+    "request": {
+      "text": "Brandenburger Straße, Potsdam",
+      "language": "de",
+      "country_codes": ["DE"],
+      "near": {"longitude": 13.0535164, "latitude": 52.4002488},
+      "limit": 5
+    }
+  },
+  {
+    "id": "de-address-d",
+    "operation": "reverse",
+    "request": {
+      "point": {"longitude": 10.31238, "latitude": 49.98471},
+      "language": "de"
+    }
+  }
+]

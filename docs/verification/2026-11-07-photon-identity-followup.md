@@ -22,7 +22,10 @@ with the same place name, missing house number precision, and distinct OSM
 types with the same numeric ID. These synthetic fixtures test adapter behavior,
 not Photon accuracy. Earlier public samples with a city and near point do not
 prove same-name disambiguation; a named square does not prove a street address
-without a house number. Do not relabel them as completed strata.
+without a house number. Do not relabel them as completed strata. A separate
+[predeclared public address batch](2026-11-07-photon-address-controls.md) now
+contains two same-text civic addresses and a no-number street; it has not been
+measured and cannot close the six-strata requirement by itself.
 
 ## Acceptance still required
 

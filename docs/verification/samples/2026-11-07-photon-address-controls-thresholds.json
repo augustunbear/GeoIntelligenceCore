@@ -1,0 +1,44 @@
+{
+  "cases": {
+    "de-address-a": {
+      "status": "ok",
+      "candidate_ids": ["photon:osm:W:308128589"],
+      "candidate_points": {"photon:osm:W:308128589": [10.31238, 49.98471]},
+      "max_error_m": 100,
+      "precisions": {"photon:osm:W:308128589": ["house"]},
+      "min_candidates": 1,
+      "max_candidates": 20,
+      "first_id": "photon:osm:W:308128589"
+    },
+    "de-address-b": {
+      "status": "ok",
+      "candidate_ids": ["photon:osm:N:94190766"],
+      "candidate_points": {"photon:osm:N:94190766": [9.65379, 48.70346]},
+      "max_error_m": 100,
+      "precisions": {"photon:osm:N:94190766": ["house"]},
+      "min_candidates": 1,
+      "max_candidates": 20,
+      "first_id": "photon:osm:N:94190766"
+    },
+    "de-address-c": {
+      "status": "ok",
+      "candidate_ids": ["photon:osm:W:30825768"],
+      "candidate_points": {"photon:osm:W:30825768": [13.0535164, 52.4002488]},
+      "max_error_m": 100,
+      "precisions": {"photon:osm:W:30825768": ["street"]},
+      "min_candidates": 1,
+      "max_candidates": 20
+    },
+    "de-address-d": {
+      "status": "ok",
+      "candidate_ids": ["photon:osm:W:308128589"],
+      "candidate_points": {"photon:osm:W:308128589": [10.31238, 49.98471]},
+      "max_error_m": 100,
+      "precisions": {"photon:osm:W:308128589": ["house"]},
+      "min_candidates": 1,
+      "max_candidates": 20
+    }
+  },
+  "max_p95_s": 8,
+  "max_peak_bytes": 100000000
+}
