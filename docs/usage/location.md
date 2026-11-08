@@ -31,6 +31,12 @@ and records `language_fallback` plus `context.effective_conditions.language`.
 Translation availability for an individual feature is not verifiable from the
 basic response. Do not label an entire result set as translated.
 
+For a named OSM `highway` feature that Photon explicitly classifies as
+`type=street`, the name supplies `Address.street` when the separate `street`
+property is absent. This yields street precision without inventing a house
+number. Neither `type=street` alone nor `osm_key=highway` alone changes the
+precision; the provider's street layer and OSM key must agree.
+
 Successful empty results return `no_results` and an empty candidate list.
 Network failures and malformed responses return `unavailable` with null data.
 If Photon repeats an OSM type/ID in one response, the entire response is
