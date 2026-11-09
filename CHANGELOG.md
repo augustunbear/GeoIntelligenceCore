@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — selective MarketLens adaptation (2026-11-09)
+
+- Add opt-in Overpass form POST with bounded per-attempt retry/quotas and recorded HTTP method; preserve GET defaults.
+- Add Unicode comparison, explainable cross-source duplicate candidates and field-completeness helpers without fuzzy merges or coverage claims.
+- Add optional offline Playwright HTML extraction with isolated contexts, blocked network/scripts and bounded resources.
+- Add separately invoked Gemini explanations with approved minimal facts, citation/schema checks and mandatory unverified/review labels.
+- Include MIT upstream notices, optional Linux/Python 3.12 browser lock and real-Chromium CI job.
+- No V1 envelope change, provider activation, release or consumer deployment.
+
 ## Unreleased — Photon street-only precision
 
 - Map a named Photon highway feature with explicit `type=street` to
