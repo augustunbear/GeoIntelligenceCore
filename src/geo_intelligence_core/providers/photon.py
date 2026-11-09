@@ -158,7 +158,8 @@ class PhotonResolver:
         # A named highway feature is itself a street. Photon may omit the
         # separate `street` address field on such a feature; use its declared
         # street layer and OSM key without inventing a house number.
-        if (not address['street'] and name and props.get('type') == 'street'
+        if (not address['street'] and not address['house_number'] and name
+                and props.get('type') == 'street'
                 and props.get('osm_key') == 'highway'):
             address['street'] = name
         if address['country_code']:

@@ -33,9 +33,10 @@ basic response. Do not label an entire result set as translated.
 
 For a named OSM `highway` feature that Photon explicitly classifies as
 `type=street`, the name supplies `Address.street` when the separate `street`
-property is absent. This yields street precision without inventing a house
-number. Neither `type=street` alone nor `osm_key=highway` alone changes the
-precision; the provider's street layer and OSM key must agree.
+property and house number are both absent. This yields street precision without
+inventing a house number. Neither `type=street` alone nor `osm_key=highway`
+alone changes the precision; the provider's street layer and OSM key must
+agree.
 
 Successful empty results return `no_results` and an empty candidate list.
 Network failures and malformed responses return `unavailable` with null data.
