@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — Photon street-only precision
+
+- Map a named Photon highway feature with explicit `type=street` to
+  street-level address precision when it has no separate street property.
+  Preserve missing house numbers and avoid upgrading other feature types.
+  This is an offline adapter fix, not measured address quality or activation.
+
 ## Unreleased — Photon duplicate identity guard
 
 - Reject a Photon response that repeats the same OSM candidate identity with

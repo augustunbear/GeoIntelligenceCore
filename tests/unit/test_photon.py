@@ -183,6 +183,33 @@ def test_address_strata_keep_distinct_towns_and_missing_house_number_unverified(
     assert seen[0].url.params['lon'] == '10.1'  # A bias, not a hard match.
 
 
+@pytest.mark.parametrize('osm_key,layer,expected', [
+    ('highway', 'street', 'street'),
+    ('highway', 'house', 'locality'),
+    ('place', 'street', 'locality'),
+])
+def test_named_highway_street_without_house_number_uses_road_name(osm_key, layer, expected):
+    road = feature(30825768, 'Brandenburger Straße', city='Potsdam',
+                   osm_key=osm_key, type=layer)
+    road['properties']['osm_type'] = 'W'
+    resolver, _ = setup(httpx.Response(200, json={'features': [road]}))
+    result = run(resolver.search(SearchRequest(text='Brandenburger Straße, Potsdam'), CTX))
+    assert result.status == Status.ok
+    assert result.data[0].precision == expected
+    assert result.data[0].address.street == ('Brandenburger Straße' if expected == 'street' else None)
+    assert result.data[0].address.house_number is None
+
+
+def test_street_layer_does_not_promote_inconsistent_house_number():
+    road = feature(30825768, 'Brandenburger Straße', city='Potsdam',
+                   osm_key='highway', type='street', housenumber='99')
+    road['properties']['osm_type'] = 'W'
+    resolver, _ = setup(httpx.Response(200, json={'features': [road]}))
+    result = run(resolver.search(SearchRequest(text='Brandenburger Straße, Potsdam'), CTX))
+    assert result.status == Status.ok
+    assert result.data[0].precision != 'house'
+
+
 def test_duplicate_identity_outside_requested_bbox_still_invalidates_response():
     first = feature(101, 'Outside', lon=13, lat=52)
     resolver, _ = setup(httpx.Response(200, json={'features': [first, first]}))

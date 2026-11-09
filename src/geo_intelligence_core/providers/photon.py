@@ -155,6 +155,13 @@ class PhotonResolver:
         address = {target: props.get(source) for target, source in keys.items()}
         if any(value is not None and not isinstance(value, str) for value in address.values()):
             raise ValueError('invalid address')
+        # A named highway feature is itself a street. Photon may omit the
+        # separate `street` address field on such a feature; use its declared
+        # street layer and OSM key without inventing a house number.
+        if (not address['street'] and not address['house_number'] and name
+                and props.get('type') == 'street'
+                and props.get('osm_key') == 'highway'):
+            address['street'] = name
         if address['country_code']:
             address['country_code'] = address['country_code'].upper()
         address['native_names'] = names
