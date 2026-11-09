@@ -12,7 +12,9 @@ found four issues, fixed with RED-to-GREEN regressions: HTTP cleanup deadline,
 malformed AI envelopes, browser context-allocation cancellation and incomplete
 repeated-identity representative selection. Real Chromium launch was attempted
 but blocked by process-singleton socket `EPERM`; a separate Chromium CI job is
-included. No live AI request, provider activation, consumer pin/update, merge,
+included and passed: **6 real Chromium tests**, plus the full **342 passed / 4 skipped**
+CI suite at code commit `a4eb801`. See [verification](../verification/2026-11-09-marketlens-selective-port.md).
+No live AI request, provider activation, consumer pin/update, merge,
 release or deployment is implied. GET remains the compatible Overpass default.
 PR #41's field observations remain separate, not duplicated here.
 

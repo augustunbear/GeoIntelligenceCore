@@ -161,7 +161,9 @@ base dependencies. The browser CI job installs Chromium and exercises synthetic
 HTML, scripts, blocked requests and partial fields. Local Chromium launch was
 attempted but the managed environment denied Chromium's process-singleton
 socket (`EPERM`); lifecycle/limits/cancellation are tested offline. This does
-not constitute a live provider or AI acceptance result.
+not constitute a live provider or AI acceptance result. The dedicated GitHub
+CI job subsequently passed all 6 real Chromium tests; full CI passed 342 tests
+with 4 opt-in skips at code commit `a4eb801`.
 
 Upstream software notices: [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md).
 Official API references checked 2026-11-09:

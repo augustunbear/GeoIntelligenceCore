@@ -36,7 +36,7 @@ Interfaces: `normalize_comparison_text`, `find_duplicate_candidates`, `summarize
 Files: `providers/browser.py`, `tests/unit/test_browser_documents.py`, optional browser test/lock.
 Interfaces: `HtmlDocument`, `BrowserExtraction`, `BrowserExtractor` async context manager with `extract(document, selectors, context)`.
 - [x] Add and run RED tests for disabled/rights checks, explicit selectors, partial/missing fields, input/output limits, fresh contexts and cancellation cleanup.
-- [ ] Implement lazy Playwright import and offline HTML extraction with blocked requests and disabled JavaScript. Verify real Chromium against synthetic HTML.
+- [x] Implement lazy Playwright import and offline HTML extraction with blocked requests and disabled JavaScript. Verify real Chromium against synthetic HTML.
 
 ### Task 4: Optional cited AI explanation
 Files: `interpretation.py`, `providers/gemini.py`, `tests/unit/test_interpretation.py`.
@@ -46,8 +46,8 @@ Interfaces: `ApprovedFact`, `ExplanationRequest`, `Explanation`, `GeminiExplaine
 
 ### Task 5: Delivery
 - [x] Add MIT notice, usage examples, migration/limitations and branch status.
-- [ ] Run full offline suite, optional real-browser tests and distribution checks; independent review and repair findings with regressions.
-- [ ] Create feature branch/commit against the actual upstream parent and open PR. Record exact verification and unperformed live checks.
+- [x] Run full offline suite, optional real-browser tests and distribution checks; independent review and repair findings with regressions.
+- [x] Create feature branch/commit against the actual upstream parent and open PR. Record exact verification and unperformed live checks.
 
 ## Execution record
 
@@ -55,3 +55,5 @@ Local complete suite: 342 passed, 4 skipped. Source/wheel builds passed. Four in
 
 Decision: if context creation is interrupted before a handle is returned, close the browser session; recovery requires a new session and other active operations may become unavailable. This favors resource isolation over preserving a damaged pool.
 Decision: repeated identities select a complete observation before stable tie-breaking for candidate search, without merging fields or deciding source truth.
+
+Remote acceptance completed: code commit `a4eb80125a76308c83557f53cc47b4ac4026da6a`, CI run 42707243536: full suite 342 passed/4 opt-in skips; dedicated real Chromium suite 6 passed. PR #42 is open and unmerged. No live provider or AI activation.
