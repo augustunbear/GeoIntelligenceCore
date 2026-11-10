@@ -18,6 +18,10 @@ No live AI request, provider activation, consumer pin/update, merge,
 release or deployment is implied. GET remains the compatible Overpass default.
 PR #41's field observations remain separate, not duplicated here.
 
+# E03 offline input subset — unmerged feature branch
+
+The E03 branch adds strict offline OSM marker-link coordinate parsing and local GeoJSON administrative Feature import with matching provenance, explicit use rights, WGS84 CRS, scale metadata, valid bounded geometry, and a boundary-precision warning. It has synthetic tests only. No real boundary source, license, short-link resolution, provider call, consumer change, release, or production activation is claimed. E03 real-source/rights acceptance remains pending. See [input rules](../usage/inputs.md).
+
 # Current FF-04 execution checkpoint — 2026-11-06
 
 The [Dresel Overpass report](../verification/reports/2026-11-06-overpass-dresel-pass.json)
