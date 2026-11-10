@@ -24,7 +24,7 @@ Keep the core industry-neutral; industry selection is optional. Industry profile
 
 - [免费优先试用增量计划](docs/superpowers/plans/2026-11-05-free-first-trial.md) — 当前执行入口 FF-01–FF-05；不重做 P01–P13，不单独部署核心
 
-## E03 offline inputs (feature branch)
+## E03 offline inputs
 
 Strict OpenStreetMap marker-link parsing and rights-checked local GeoJSON Feature import are available under `geo_intelligence_core.inputs`; region import requires the optional `geometry` extra. See [offline input rules](docs/usage/inputs.md). These are offline input checks only, not real boundary licensing, provider activation, or automatic location confirmation.
 
