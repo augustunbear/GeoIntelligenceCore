@@ -28,6 +28,15 @@ Keep the core industry-neutral; industry selection is optional. Industry profile
 
 Strict OpenStreetMap marker-link parsing and rights-checked local GeoJSON Feature import are available under `geo_intelligence_core.inputs`; region import requires the optional `geometry` extra. See [offline input rules](docs/usage/inputs.md). These are offline input checks only, not real boundary licensing, provider activation, or automatic location confirmation.
 
+## E01 offline observations (partial slice)
+
+`Observation` and `normalize_observation` validate supplied counts with explicit
+spatial scope, UTC interval, IANA timezone, person/visit semantics and evidence
+rights. Missing counts remain unknown, never zero. See [observation usage](docs/usage/observations.md).
+No collection, opening-hours evaluation, observation comparison, provider
+activation or consumer integration is included; E01 remains incomplete.
+
+
 ## Open-source selection baseline
 
 - [逐项开源选型](docs/research/OPEN_SOURCE_SELECTION.md) — all functional requirements mapped to selected tools, alternatives and source evidence
