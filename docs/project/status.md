@@ -16,13 +16,16 @@ provider activation, consumer changes, release, merge or deployment is implied.
 See [observation usage and limits](../usage/observations.md). Existing FF-04/FF-05
 checkpoints below retain their historical scope and are not changed by this work.
 
-Final Python 3.12 verification: **35 observation unit tests passed**, **74
-observation + existing contract tests passed**, and the **full suite passed 343
+Final Python 3.12 verification: **40 observation unit tests passed**, **79
+observation + existing contract tests passed**, and the **full suite passed 348
 tests with 3 opt-in live skips** (including wheel/extras/sdist installation).
 Independent review found one numeric timestamp-string coercion bypass; seconds
 and milliseconds string regressions reproduced it before the ISO-text validation
-fix. A further RED-to-GREEN regression prevents raw-input serializer warnings
-from unvalidated model instances. Restricted non-default rights/provenance and
+fix. A second independent review found nested unvalidated model instances could
+bypass field checks and extreme offset dates could raise uncaught UTC overflow;
+both were reproduced and fixed, with nested evidence-date coverage as well.
+A further RED-to-GREEN regression prevents raw-input serializer warnings from
+unvalidated model instances. Restricted non-default rights/provenance and
 schema roundtrip checks pass. No known actionable review finding remains in
 this slice; real collection, rights approval and field validation are absent.
 
