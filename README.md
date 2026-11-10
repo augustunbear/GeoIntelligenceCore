@@ -99,3 +99,12 @@ attempts per gateway, concurrency 1 and zero cost; shared daily budgets remain
 caller-owned. FF-03 implements explicit ORS custom-instance switching and
 synthetic instance-isolation checks; FF-04 measured runners are implemented.
 Live quality/activation remains blocked until approved measurements pass.
+
+
+## E04 caller-supplied transport facts
+
+`geo_intelligence_core.inputs.transport.import_transport` imports a bounded batch
+of explicit offline observations with purpose-bound evidence and expiry checks.
+Parking capacity and free-space counts stay separate; restrictions require a
+segment, direction and validity period. See the [transport contract and limits](docs/operations/enrichment-sources.md).
+This does not activate live sources or implement company enrichment.

@@ -64,6 +64,8 @@ def test_clean_install(distributions, extra, tmp_path):
     assert 'export roundtrip: ok' in result.stdout
     probe = subprocess.run([str(python), '-c',
         'import geo_intelligence_core, sys; '
+        'from geo_intelligence_core.inputs.transport import TransportFact, import_transport; '
+        'assert TransportFact.model_json_schema()["additionalProperties"] is False; '
         'assert "pyspark" not in sys.modules and "r5py" not in sys.modules; '
         'print(geo_intelligence_core.__version__)'],
         cwd=tmp_path, env=env, capture_output=True, text=True, timeout=10)
@@ -101,6 +103,8 @@ def test_sdist_clean_install(distributions, tmp_path):
         'import socket; '
         'socket.socket.connect = lambda *args: (_ for _ in ()).throw(AssertionError("network")); '
         'from geo_intelligence_core import Point, Status; '
+        'from geo_intelligence_core.inputs.transport import TransportFact, import_transport; '
+        'assert TransportFact.model_json_schema()["additionalProperties"] is False; '
         'assert Point(longitude=11, latitude=49).longitude == 11; '
         'assert Status.ok == "ok"'], cwd=tmp_path, env=env,
         capture_output=True, text=True, timeout=10)

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — E04 offline transport slice
+
+- Add bounded atomic caller-supplied transport facts import with purpose-bound
+  evidence, explicit validity, scoped segment/direction restrictions and separate
+  parking capacity/free-space observations. No live data or child-safety inference.
+- Company enrichment and real-source activation remain deferred.
+
 ## Unreleased — Photon street-only precision
 
 - Map a named Photon highway feature with explicit `type=street` to

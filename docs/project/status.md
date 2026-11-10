@@ -1,3 +1,10 @@
+## E04 offline transport slice — 2026-11-10
+
+Bounded atomic caller-supplied transport facts import is implemented with synthetic
+offline tests. [Contract and limits](../operations/enrichment-sources.md). Company
+enrichment, live transport data and real-source validation remain deferred. This
+does not change FF-04/FF-05 source activation or consumer settings.
+
 # Current FF-04 execution checkpoint — 2026-11-06
 
 The [Dresel Overpass report](../verification/reports/2026-11-06-overpass-dresel-pass.json)
