@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — E01 optional opening-hours continuation
+
+- Add conservative `evaluate_opening_hours` and immutable `OpeningHoursEvaluation`
+  with explicit offset-aware instant, IANA timezone, raw string and parser provenance.
+- Pin optional opening-hours-py 2.1.5, select MIT and record Linux wheel hash;
+  add CI and isolated core/temporal wheel installation checks.
+- Test overnight and Berlin DST. Holiday, solar, open-ended and quoted schedules,
+  invalid syntax/context and unavailable parsers return unknown, never closed.
+- No live activation, holiday coverage claim, attendance inference or release.
+
 ## Unreleased — E01 offline observation slice
 
 - Add provider-neutral `Observation`, additive JSON schema and local

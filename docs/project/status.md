@@ -10,8 +10,12 @@ retain their reason; invalid inputs return `invalid_input` and null data.
 
 This is only E01's offline observation contract/normalization slice. It neither
 collects data nor establishes rights, real quality, duration comparability or
-attendance. Opening-hours evaluation, temporal analysis integration and live
-sources remain unimplemented/unconfigured. E01 and A07 are not completed. No
+attendance. A separate optional opening-hours continuation now provides
+`evaluate_opening_hours` with the pinned 2.1.5 parser, explicit instant/timezone,
+parser provenance, overnight/DST tests and unknown on holiday selectors, solar,
+open-ended and quoted schedules. See [parser usage](../usage/opening-hours.md).
+Temporal analysis integration and live sources remain unimplemented/unconfigured.
+E01 and A07 are not completed. No
 provider activation, consumer changes, release, merge or deployment is implied.
 See [observation usage and limits](../usage/observations.md). Existing FF-04/FF-05
 checkpoints below retain their historical scope and are not changed by this work.
@@ -53,6 +57,18 @@ PR #41's field observations remain separate, not duplicated here.
 # E03 offline input subset — unmerged feature branch
 
 The E03 branch adds strict offline OSM marker-link coordinate parsing and local GeoJSON administrative Feature import with matching provenance, explicit use rights, WGS84 CRS, scale metadata, valid bounded geometry, and a boundary-precision warning. It has synthetic tests only. No real boundary source, license, short-link resolution, provider call, consumer change, release, or production activation is claimed. E03 real-source/rights acceptance remains pending. See [input rules](../usage/inputs.md).
+
+Opening-hours continuation verification on Python 3.12: **41 parser tests passed**,
+**42 focused tests passed with the system timezone path disabled** (including
+built-wheel metadata), and **392 full-suite tests passed with 3 opt-in live skips**.
+The full run includes six isolated wheel/extras installs and sdist installation.
+Both optional wheel hashes were verified offline, and sdist/wheel builds passed.
+Independent review found and reproduced Easter-selector and unused-parser
+provenance gaps; both were fixed with RED-to-GREEN regressions. The temporal
+extra now pins tzdata as an IANA fallback, tested without a system timezone DB.
+This is local offline verification, not remote CI, a Windows-native run, release
+or live-source acceptance.
+
 
 # Current FF-04 execution checkpoint — 2026-11-06
 

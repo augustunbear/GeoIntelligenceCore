@@ -11,6 +11,7 @@ requires-python = ">=3.12,<4"
 dependencies = ["pydantic>=2.14,<3"]
 
 [project.optional-dependencies]
+temporal = ["opening-hours-py==2.1.5", "tzdata==2026.6"]
 geometry = ["shapely==2.2.0", "pyproj==3.8.0"]
 providers = ["httpx==0.28.1"]
 browser = ["playwright==1.65.0"]

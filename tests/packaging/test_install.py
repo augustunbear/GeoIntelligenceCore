@@ -43,7 +43,7 @@ def distributions(tmp_path_factory):
     return wheels[0], sdists[0]
 
 
-@pytest.mark.parametrize('extra', ['', '[geometry]', '[providers]', '[geometry,providers]'])
+@pytest.mark.parametrize('extra', ['', '[geometry]', '[providers]', '[geometry,providers]', '[temporal]', '[geometry,providers,temporal]'])
 def test_clean_install(distributions, extra, tmp_path):
     assert sys.version_info[:2] == (3, 12)
     environment = tmp_path / 'venv'
@@ -71,6 +71,19 @@ def test_clean_install(distributions, extra, tmp_path):
         cwd=tmp_path, env=env, capture_output=True, text=True, timeout=10)
     assert probe.returncode == 0, probe.stderr
     assert probe.stdout.strip() == '0.1.0a1'
+    if 'temporal' in extra:
+        env['PYTHONTZPATH'] = ''  # Force packaged IANA fallback, including on Linux CI.
+    temporal_probe = subprocess.run([str(python), '-c',
+        'import socket, sys; '
+        'socket.socket.connect = lambda *args: (_ for _ in ()).throw(AssertionError("network")); '
+        'from datetime import datetime; '
+        'from geo_intelligence_core import evaluate_opening_hours; '
+        'assert "opening_hours" not in sys.modules; '
+        'r = evaluate_opening_hours("24/7", at=datetime.fromisoformat("2026-11-10T12:00:00+00:00"), timezone="Europe/Berlin"); '
+        f'assert r.data.state == {("open" if "temporal" in extra else "unknown")!r}'],
+        cwd=tmp_path, env=env, capture_output=True, text=True, timeout=10)
+    assert temporal_probe.returncode == 0, temporal_probe.stderr
+
 
 
 def test_no_bundled_secrets(distributions):
@@ -117,3 +130,14 @@ def test_schema_compat_saved_consumer_fixture():
     result = Result[Point](status=Status.ok, data=Point(longitude=11, latitude=49), context=context)
     assert result.model_dump(mode='json') == expected
     assert Result[Point].model_validate(expected) == result
+
+
+
+def test_temporal_extra_metadata(distributions):
+    wheel, _ = distributions
+    with zipfile.ZipFile(wheel) as archive:
+        name = next(name for name in archive.namelist() if name.endswith('.dist-info/METADATA'))
+        metadata = archive.read(name).decode()
+        assert 'Provides-Extra: temporal' in metadata
+        assert 'tzdata==2026.6' in metadata
+        assert 'opening-hours-py==2.1.5; extra == \'temporal\'' in metadata
