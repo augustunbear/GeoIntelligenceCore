@@ -4,7 +4,7 @@ Reusable, provider-neutral geospatial intelligence foundation for multiple produ
 
 ## Install and offline consumer example
 
-Requires Python 3.12. Build with `python -m build`, then install the wheel from `dist/` into a clean venv. Optional extras are `geo-intelligence-core[geometry]` and `geo-intelligence-core[providers]`. No key, database, JVM or network access is needed to import the base package or run `python examples/python/offline_analysis.py`. The example confirms synthetic locations, runs the three packaged templates with a mock places port, and checks a purpose-bound snapshot and export. See [consumer integration](docs/usage/consumer-integration.md) and [release candidate checks](docs/releases/0.1.0a1.md).
+Requires Python 3.12. Build with `python -m build`, then install the wheel from `dist/` into a clean venv. Optional extras are `geo-intelligence-core[geometry]`, `[providers]`, `[browser]` and `[temporal]`. No key, database, JVM or network access is needed to import the base package or run `python examples/python/offline_analysis.py`. The example confirms synthetic locations, runs the three packaged templates with a mock places port, and checks a purpose-bound snapshot and export. See [consumer integration](docs/usage/consumer-integration.md) and [release candidate checks](docs/releases/0.1.0a1.md).
 
 ## Mission / 定位
 
@@ -24,7 +24,7 @@ Keep the core industry-neutral; industry selection is optional. Industry profile
 
 - [免费优先试用增量计划](docs/superpowers/plans/2026-11-05-free-first-trial.md) — 当前执行入口 FF-01–FF-05；不重做 P01–P13，不单独部署核心
 
-## E03 offline inputs (feature branch)
+## E03 offline inputs
 
 Strict OpenStreetMap marker-link parsing and rights-checked local GeoJSON Feature import are available under `geo_intelligence_core.inputs`; region import requires the optional `geometry` extra. See [offline input rules](docs/usage/inputs.md). These are offline input checks only, not real boundary licensing, provider activation, or automatic location confirmation.
 
@@ -33,8 +33,7 @@ Strict OpenStreetMap marker-link parsing and rights-checked local GeoJSON Featur
 `Observation` and `normalize_observation` validate supplied counts with explicit
 spatial scope, UTC interval, IANA timezone, person/visit semantics and evidence
 rights. Missing counts remain unknown, never zero. See [observation usage](docs/usage/observations.md).
-No collection, opening-hours evaluation, observation comparison, provider
-activation or consumer integration is included; E01 remains incomplete.
+No collection, observation comparison, provider activation or consumer integration is included. Optional opening-hours evaluation is a separate partial continuation; E01 remains incomplete.
 
 
 ## Open-source selection baseline
@@ -125,3 +124,17 @@ Live quality/activation remains blocked until approved measurements pass.
 uses the pinned optional `[temporal]` parser. See [usage and limitations](docs/usage/opening-hours.md).
 Holiday, solar, open-ended and quoted schedules remain unknown. This additive
 offline API does not activate providers, filter places or infer attendance.
+
+
+
+## E04 caller-supplied company records
+
+`geo_intelligence_core.inputs.company.import_company` validates explicitly supplied company-site assertions with purpose-bound rights and scoped workforce facts. It does not infer operating sites or activate live sources. See the [company contract and limits](docs/operations/enrichment-sources.md).
+
+## E04 caller-supplied transport facts
+
+`geo_intelligence_core.inputs.transport.import_transport` imports a bounded batch
+of explicit offline observations with purpose-bound evidence and expiry checks.
+Parking capacity and free-space counts stay separate; restrictions require a
+segment, direction and validity period. See the [transport contract and limits](docs/operations/enrichment-sources.md).
+This does not activate live sources. Company import is separately available as a caller-supplied offline slice.

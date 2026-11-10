@@ -1,7 +1,9 @@
-# E01 offline observation slice — 2026-11-10 (feature branch)
+> This source tree includes the offline changes reviewed in PRs #41–#48. The per-PR test counts below are historical isolated results, not live-source acceptance. The source tree is not a release or deployment.
 
-Based on verified GitHub main `77e888dc338bf592dfdb1ce3725fd5b7f76aebbd`
-(local reconstructed source baseline `3aec618`). A separate E01 branch adds
+# E01 offline observation slice — 2026-11-10
+
+First tested against GitHub main `77e888dc338bf592dfdb1ce3725fd5b7f76aebbd`
+(local reconstructed source baseline `3aec618`). The E01 slice adds
 `Observation`, `normalize_observation`, an additive schema and synthetic tests.
 The local operation preserves source rights/evidence, zero versus missing count,
 person versus visit, explicit direction/method/deduplication descriptions, and
@@ -54,7 +56,7 @@ No live AI request, provider activation, consumer pin/update, merge,
 release or deployment is implied. GET remains the compatible Overpass default.
 PR #41's field observations remain separate, not duplicated here.
 
-# E03 offline input subset — unmerged feature branch
+# E03 offline input subset
 
 The E03 branch adds strict offline OSM marker-link coordinate parsing and local GeoJSON administrative Feature import with matching provenance, explicit use rights, WGS84 CRS, scale metadata, valid bounded geometry, and a boundary-precision warning. It has synthetic tests only. No real boundary source, license, short-link resolution, provider call, consumer change, release, or production activation is claimed. E03 real-source/rights acceptance remains pending. See [input rules](../usage/inputs.md).
 
@@ -72,12 +74,11 @@ or live-source acceptance.
 
 # E02 synthetic history draft — 2026-11-10
 
-An isolated local feature branch adds an [offline history contract](../usage/history.md)
-on the reconstructed tree of main `77e888dc338bf592dfdb1ce3725fd5b7f76aebbd`.
+The [offline history contract](../usage/history.md) was first tested on the
+reconstructed tree of main `77e888dc338bf592dfdb1ce3725fd5b7f76aebbd`.
 It compares retained typed source records/metrics and method conditions, with
 explicit rights, integrity, completeness and redaction checks. It cannot report
-real-world closure, run a watch or notify anyone. It is an unmerged draft PR #45,
-not a release or deployment. Open PRs #41–#44 are not incorporated into this branch.
+real-world closure, run a watch or notify anyone. It is not a release or deployment.
 
 This is **partial synthetic E02 work**, not real E02 acceptance. Two legal real
 snapshots, manual-confirmation history and broader typed topics remain absent;
@@ -87,14 +88,22 @@ consumer/source activation stays under the existing FF-05 gates. See the
 ---
 
 
-# E04 offline COMPANY subset — unmerged draft PR #46
+# E04 offline COMPANY subset
 
 The partial E04 slice validates bounded caller-supplied company records against
 explicit purpose/use rights and source provenance. Additive models preserve roles
 and scoped unknown/exact/range workforce without operating-site or branch inferences.
 Synthetic tests do not establish real-source rights, coverage or field acceptance.
-Transport enrichment, providers, consumer changes and activation remain absent.
+The separate caller-supplied transport import is also available offline; live transport data, providers, consumer changes and activation remain absent.
 See [contract and limitations](../operations/enrichment-sources.md).
+
+
+## E04 offline transport slice — 2026-11-10
+
+Bounded atomic caller-supplied transport facts import is implemented with synthetic
+offline tests. [Contract and limits](../operations/enrichment-sources.md). Company
+record import is a separate offline slice; live transport data and real-source validation remain deferred. This
+does not change FF-04/FF-05 source activation or consumer settings.
 
 
 # Current FF-04 execution checkpoint — 2026-11-06

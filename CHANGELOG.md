@@ -1,24 +1,32 @@
 # Changelog
 
+## Unreleased — E04 offline transport slice
+
+- Add bounded atomic caller-supplied transport facts import with purpose-bound
+  evidence, explicit validity, scoped segment/direction restrictions and separate
+  parking capacity/free-space observations. No live data or child-safety inference.
+- Offline company import is a separate partial slice; real-source activation remains deferred.
+
+
 ## Unreleased — partial E04 offline COMPANY import
 
 - Add a bounded, atomic caller-supplied company-record importer with explicit
   purpose/use-rights gates and matching provenance. Preserve registered-address
   roles, unknown workforce, scoped entity/site counts and ranges without inference.
 - Add separate models and a schema without loosening existing CompanySite. Synthetic
-  tests only; no source activation, real field acceptance, transport import, consumer
+  tests only; no source activation, real field acceptance, live transport data, consumer
   change, release or deployment.
 
 
-## Unreleased — E02 synthetic offline history slice (draft PR)
+## Unreleased — E02 synthetic offline history slice
 
 - Add typed, immutable source-record/metric snapshot comparison and declarative
   WatchSpec conditions, with purpose/retained-evidence/rights/completeness guards.
   Query, location, method, coverage and metric-condition drift produces a method
   change instead of record deltas; missing records never imply real-world closure.
 - Add history schemas and synthetic food-service/retail/education regressions.
-  Manual corrections and unsupported topics fail explicitly. This unmerged,
-  unmerged slice does not activate providers or complete real E02 acceptance.
+  Manual corrections and unsupported topics fail explicitly. This offline
+  slice does not activate providers or complete real E02 acceptance.
 
 
 ## Unreleased — E01 optional opening-hours continuation
@@ -38,8 +46,9 @@
   aware UTC intervals, IANA timezone and full evidence/rights preservation.
 - Keep zero distinct from missing counts; missing counts return unknown with
   their reason, while invalid inputs return invalid_input with null data.
-- No opening-hours parser, collection, duration scaling/comparison, provider
-  activation, source acceptance, release or consumer change. E01 remains partial.
+- No collection, duration scaling/comparison, provider activation, source
+  acceptance, release or consumer change. Optional opening-hours evaluation is
+  covered by a separate continuation above; E01 remains partial.
 
 
 ## Unreleased — selective MarketLens adaptation (2026-11-09)
