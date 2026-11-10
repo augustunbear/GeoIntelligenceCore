@@ -5,6 +5,10 @@ from .evidence import apply_correction, snapshot
 from .export import export_result
 from .geometry import circle, combine, distance_m
 from .location import confirm_location
+from .inputs.map_links import parse_map_link
+from .inputs.regions import import_region
+from .place_quality import (DuplicateCandidate, PlaceQualitySummary, find_duplicate_candidates,
+                            normalize_comparison_text, summarize_place_quality)
 from .models.analysis import Analysis, Comparison, Correction, Metric, Snapshot
 from .models.common import Issue, Result, Status
 from .models.configuration import AnalyzeRequest, Profile, Template, TimeCondition, TopicSelection
@@ -30,5 +34,9 @@ __all__ = [
     'SourceKey', 'SpatialOperation', 'Status', 'Template', 'TimeCondition',
     'TopicSelection', 'TravelMatrix', 'UsagePolicy', 'analyze',
     'apply_correction', 'circle', 'combine', 'compare', 'confirm_location',
-    'distance_m', 'normalize_observation', 'export_result', 'load_profile', 'load_template', 'snapshot',
+    'distance_m', 'normalize_observation', 'export_result', 'import_region', 'load_profile', 'load_template',
+    'parse_map_link', 'snapshot',
+    'DuplicateCandidate', 'PlaceQualitySummary', 'find_duplicate_candidates',
+    'normalize_comparison_text', 'summarize_place_quality',
 ]
+
