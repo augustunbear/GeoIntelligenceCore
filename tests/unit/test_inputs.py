@@ -131,3 +131,18 @@ def test_vertex_limit_precedes_geometry_dependency(monkeypatch):
         raise AssertionError('dependency should not be loaded for oversized input')
     monkeypatch.setattr(regions, '_deps', no_geometry_dependency)
     assert import_region(doc, evidence()).status == Status.invalid_input
+
+
+@pytest.mark.parametrize('placement', ['foreign_member', 'coordinates'])
+def test_import_rejects_unknown_nested_geometry_without_recursing(placement):
+    doc = document()
+    nested = 0
+    for _ in range(600):
+        nested = [nested]
+    if placement == 'foreign_member':
+        doc['geometry']['unused'] = nested
+    else:
+        doc['geometry']['coordinates'] = nested
+    result = import_region(doc, evidence())
+    assert result.status == Status.invalid_input
+    assert result.data is None
