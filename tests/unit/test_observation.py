@@ -11,7 +11,9 @@ from pydantic import ValidationError
 from geo_intelligence_core import Observation, normalize_observation
 from geo_intelligence_core.models.common import Result, Status
 from geo_intelligence_core.models.evidence import Rights
+from geo_intelligence_core.models.evidence import Evidence
 from geo_intelligence_core.models.spatial import Region
+from geo_intelligence_core.models.location import Point
 
 
 def payload(source_evidence, **updates):
@@ -163,5 +165,45 @@ def test_unvalidated_model_instance_is_revalidated(synthetic_evidence):
         warnings.simplefilter('always')
         result = normalize_observation(unvalidated)
     assert not captured
+    assert result.status == Status.invalid_input
+    assert result.data is None
+
+
+def test_nested_unvalidated_point_instance_is_revalidated(synthetic_evidence):
+    point = Point.model_construct(longitude=999, latitude=49)
+    with pytest.raises(ValidationError):
+        Observation(**payload(synthetic_evidence, point=point))
+    result = normalize_observation(payload(synthetic_evidence, point=point))
+    assert result.status == Status.invalid_input
+    assert result.data is None
+
+
+def test_nested_unvalidated_evidence_rights_are_revalidated(synthetic_evidence):
+    bad_rights = Rights.model_construct(use='granted')
+    bad_evidence = Evidence.model_construct(**{
+        **synthetic_evidence.model_dump(), 'rights': bad_rights,
+    })
+    with pytest.raises(ValidationError):
+        Observation(**payload(bad_evidence))
+    assert normalize_observation(payload(bad_evidence)).status == Status.invalid_input
+
+
+@pytest.mark.parametrize('field,value', [
+    ('start', '0001-01-01T00:00:00+01:00'),
+    ('end', '9999-12-31T23:59:59-01:00'),
+])
+def test_out_of_range_utc_conversion_is_invalid_input(synthetic_evidence, field, value):
+    values = payload(synthetic_evidence, **{field: value})
+    with pytest.raises(ValidationError):
+        Observation(**values)
+    result = normalize_observation(values)
+    assert result.status == Status.invalid_input
+    assert result.data is None
+
+
+def test_out_of_range_nested_evidence_date_is_invalid_input(synthetic_evidence):
+    evidence = synthetic_evidence.model_dump()
+    evidence['retrieved_at'] = '0001-01-01T00:00:00+01:00'
+    result = normalize_observation(payload(synthetic_evidence, evidence=[evidence]))
     assert result.status == Status.invalid_input
     assert result.data is None

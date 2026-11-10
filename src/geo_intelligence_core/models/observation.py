@@ -1,14 +1,16 @@
 """Provider-neutral count observations, without rates or comparability claims."""
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import Field, StrictInt, field_validator, model_validator
+from pydantic import Field, StrictInt, TypeAdapter, field_validator, model_validator
 
 from .common import FrozenModel
 from .evidence import Evidence, utc
 from .location import Point
 from .spatial import Region
+
+_RAW = TypeAdapter(Any)
 
 
 class Observation(FrozenModel):
@@ -34,6 +36,16 @@ class Observation(FrozenModel):
     dedupe: str = Field(min_length=1)
     evidence: tuple[Evidence, ...] = Field(min_length=1)
 
+    @field_validator('point', 'region', 'evidence', mode='before')
+    @classmethod
+    def revalidate_nested_models(cls, value):
+        # Pydantic trusts existing model instances, including model_construct
+        # objects. Project them to raw fields so nested constraints run again.
+        try:
+            return _RAW.dump_python(value, mode='python', warnings=False)
+        except (ValueError, TypeError, RecursionError) as exc:
+            raise ValueError('invalid nested observation value') from exc
+
     @field_validator('id', 'direction', 'method', 'dedupe', 'missing_reason')
     @classmethod
     def nonblank_description(cls, value):
@@ -53,7 +65,10 @@ class Observation(FrozenModel):
     @field_validator('start', 'end')
     @classmethod
     def utc_instant(cls, value):
-        return utc(value)
+        try:
+            return utc(value)
+        except OverflowError as exc:
+            raise ValueError('observation instant outside supported UTC range') from exc
 
     @field_validator('timezone')
     @classmethod

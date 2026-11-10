@@ -22,7 +22,7 @@ def normalize_observation(observation: Observation) -> Result[Observation]:
         # Revalidate instances too: model_construct is not a validation boundary.
         values = observation.model_dump(warnings=False) if isinstance(observation, Observation) else observation
         normalized = Observation.model_validate(values)
-    except (ValidationError, ValueError):
+    except (ValidationError, ValueError, TypeError, OverflowError, RecursionError):
         return Result[Observation](status=Status.invalid_input, data=None,
             issues=(Issue(code='invalid_observation', message_key='observation.invalid'),),
             context=context)
