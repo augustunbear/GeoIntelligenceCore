@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — partial E04 offline COMPANY import
+
+- Add a bounded, atomic caller-supplied company-record importer with explicit
+  purpose/use-rights gates and matching provenance. Preserve registered-address
+  roles, unknown workforce, scoped entity/site counts and ranges without inference.
+- Add separate models and a schema without loosening existing CompanySite. Synthetic
+  tests only; no source activation, real field acceptance, transport import, consumer
+  change, release or deployment.
+
 ## Unreleased — Photon street-only precision
 
 - Map a named Photon highway feature with explicit `type=street` to
