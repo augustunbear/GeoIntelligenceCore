@@ -1,0 +1,40 @@
+{
+  "additionalProperties": false,
+  "description": "Consumer-owned watch conditions only; no scheduling or side effects.",
+  "properties": {
+    "topics": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Topics",
+      "type": "array"
+    },
+    "changes": {
+      "default": [
+        "source_record_missing",
+        "source_record_added",
+        "source_record_updated",
+        "conditions_changed",
+        "metric_changed"
+      ],
+      "items": {
+        "enum": [
+          "source_record_missing",
+          "source_record_added",
+          "source_record_updated",
+          "conditions_changed",
+          "metric_changed"
+        ],
+        "type": "string"
+      },
+      "title": "Changes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "topics"
+  ],
+  "title": "WatchSpec",
+  "type": "object"
+}

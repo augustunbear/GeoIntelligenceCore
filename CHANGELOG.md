@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — E02 synthetic offline history slice (local candidate)
+
+- Add typed, immutable source-record/metric snapshot comparison and declarative
+  WatchSpec conditions, with purpose/retained-evidence/rights/completeness guards.
+  Query, location, method, coverage and metric-condition drift produces a method
+  change instead of record deltas; missing records never imply real-world closure.
+- Add history schemas and synthetic food-service/retail/education regressions.
+  Manual corrections and unsupported topics fail explicitly. This local-only,
+  unmerged slice does not activate providers or complete real E02 acceptance.
+
 ## Unreleased — Photon street-only precision
 
 - Map a named Photon highway feature with explicit `type=street` to
