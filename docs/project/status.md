@@ -87,6 +87,16 @@ consumer/source activation stays under the existing FF-05 gates. See the
 ---
 
 
+# E04 offline COMPANY subset — unmerged draft PR #46
+
+The partial E04 slice validates bounded caller-supplied company records against
+explicit purpose/use rights and source provenance. Additive models preserve roles
+and scoped unknown/exact/range workforce without operating-site or branch inferences.
+Synthetic tests do not establish real-source rights, coverage or field acceptance.
+Transport enrichment, providers, consumer changes and activation remain absent.
+See [contract and limitations](../operations/enrichment-sources.md).
+
+
 # Current FF-04 execution checkpoint — 2026-11-06
 
 The [Dresel Overpass report](../verification/reports/2026-11-06-overpass-dresel-pass.json)
