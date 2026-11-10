@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased — E02 synthetic offline history slice (draft PR)
+
+- Add typed, immutable source-record/metric snapshot comparison and declarative
+  WatchSpec conditions, with purpose/retained-evidence/rights/completeness guards.
+  Query, location, method, coverage and metric-condition drift produces a method
+  change instead of record deltas; missing records never imply real-world closure.
+- Add history schemas and synthetic food-service/retail/education regressions.
+  Manual corrections and unsupported topics fail explicitly. This unmerged,
+  unmerged slice does not activate providers or complete real E02 acceptance.
+
+
 ## Unreleased — E01 optional opening-hours continuation
 
 - Add conservative `evaluate_opening_hours` and immutable `OpeningHoursEvaluation`

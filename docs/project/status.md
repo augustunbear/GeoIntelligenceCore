@@ -70,6 +70,23 @@ This is local offline verification, not remote CI, a Windows-native run, release
 or live-source acceptance.
 
 
+# E02 synthetic history draft — 2026-11-10
+
+An isolated local feature branch adds an [offline history contract](../usage/history.md)
+on the reconstructed tree of main `77e888dc338bf592dfdb1ce3725fd5b7f76aebbd`.
+It compares retained typed source records/metrics and method conditions, with
+explicit rights, integrity, completeness and redaction checks. It cannot report
+real-world closure, run a watch or notify anyone. It is an unmerged draft PR #45,
+not a release or deployment. Open PRs #41–#44 are not incorporated into this branch.
+
+This is **partial synthetic E02 work**, not real E02 acceptance. Two legal real
+snapshots, manual-confirmation history and broader typed topics remain absent;
+consumer/source activation stays under the existing FF-05 gates. See the
+[verification record](../verification/2026-11-10-e02-offline-history.md).
+
+---
+
+
 # Current FF-04 execution checkpoint — 2026-11-06
 
 The [Dresel Overpass report](../verification/reports/2026-11-06-overpass-dresel-pass.json)
