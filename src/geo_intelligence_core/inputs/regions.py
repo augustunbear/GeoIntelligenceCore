@@ -52,14 +52,17 @@ def import_region(document: dict, evidence: Evidence, *, purpose: str = "analysi
         if isinstance(scale, bool) or not isinstance(scale, (int, float)) or not 0 < scale <= 1e9:
             raise ValueError("scale_required")
         geometry = document.get("geometry")
-        if not isinstance(geometry, dict) or geometry.get("crs") is not None:
-            raise ValueError("geometry_crs_not_supported")
+        # Reject unrecognized nested data before Region recursively freezes it.
+        # A GeoJSON geometry for this importer has exactly these two fields.
+        if not isinstance(geometry, dict) or set(geometry) != {"type", "coordinates"}:
+            raise ValueError("geometry_fields_invalid")
+        vertex_count = _coordinates(geometry)
+        if vertex_count > _LIMITS.max_vertices:
+            raise _GeometryProblem(Status.invalid_input, "vertex_limit")
         region = Region(id=props["id"], version=props["version"], geometry=geometry,
                         method="administrative_import", source_ref=evidence.source_ref)
         # Geodesic signed areas can cancel for world-spanning rings. Restrict
         # imports to local extents before using area as a resource bound.
-        if _coordinates(region.geometry) > _LIMITS.max_vertices:
-            raise _GeometryProblem(Status.invalid_input, "vertex_limit")
         polygons = (region.geometry["coordinates"],) if region.geometry["type"] == "Polygon" else region.geometry["coordinates"]
         points = [point for polygon in polygons for ring in polygon for point in ring]
         longitudes = [point[0] for point in points]
@@ -74,5 +77,5 @@ def import_region(document: dict, evidence: Evidence, *, purpose: str = "analysi
         })
     except _GeometryProblem as exc:
         return _result(exc.status, evidence=evidence, code=exc.code)
-    except (ValueError, TypeError, KeyError, OverflowError):
+    except (ValueError, TypeError, KeyError, IndexError, OverflowError, RecursionError):
         return _result(Status.invalid_input, evidence=evidence, code="invalid_region")
