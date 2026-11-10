@@ -162,7 +162,8 @@ class _RunBudget:
 def build_trial_provider(settings: TrialSettings, *, budget: Budget,
                          headers: dict[str, str] | None = None,
                          trusted_proxy_url: str | None = None,
-                         ca_bundle: str | None = None) -> LocationResolver | PlaceProvider | RoutingProvider:
+                         ca_bundle: str | None = None,
+                         overpass_request_method: Literal['GET', 'POST'] = 'GET') -> LocationResolver | PlaceProvider | RoutingProvider:
     """Build one existing adapter with a dedicated gateway; never perform I/O.
 
     Missing required authentication leaves the adapter unconfigured. A new
@@ -171,6 +172,8 @@ def build_trial_provider(settings: TrialSettings, *, budget: Budget,
     """
     # Revalidate rather than trusting model_construct or the factory caller.
     settings = TrialSettings.model_validate(settings.model_dump())
+    if overpass_request_method not in ('GET', 'POST') or (settings.protocol != 'overpass' and overpass_request_method != 'GET'):
+        raise ValueError('invalid Overpass request method')
     runtime_headers = dict(headers or {})
     if (any(not isinstance(k, str) or not isinstance(v, str) or
             not re.fullmatch(r"[!#$%&'*+.^_`|~0-9A-Za-z-]+", k) or
@@ -196,5 +199,6 @@ def build_trial_provider(settings: TrialSettings, *, budget: Budget,
     if settings.protocol == 'photon':
         return PhotonResolver(gateway, provider_id=cfg.id, capabilities=settings.photon_capabilities)
     if settings.protocol == 'overpass':
-        return OverpassPlaceProvider(gateway, provider_id=cfg.id)
+        return OverpassPlaceProvider(gateway, provider_id=cfg.id, request_method=overpass_request_method)
     return OrsRoutingProvider(gateway, provider_id=cfg.id)
+

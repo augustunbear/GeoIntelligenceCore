@@ -1,3 +1,23 @@
+# Selective MarketLens adaptation — 2026-11-09 feature branch
+
+Built against main `77e888d` and MarketLens `e1f86ba`: optional form POST and
+bounded transient retries, comparison/quality helpers, optional offline
+Playwright HTML extraction, and separately invoked cited Gemini explanations.
+See [usage and limitations](../usage/marketlens-adaptations.md) and
+[implementation plan](../superpowers/plans/2026-11-09-marketlens-selective-port.md).
+
+Local verification: **342 passed, 4 skipped** (three live providers and one
+opt-in real Chromium check); source/wheel builds passed. Independent review
+found four issues, fixed with RED-to-GREEN regressions: HTTP cleanup deadline,
+malformed AI envelopes, browser context-allocation cancellation and incomplete
+repeated-identity representative selection. Real Chromium launch was attempted
+but blocked by process-singleton socket `EPERM`; a separate Chromium CI job is
+included and passed: **6 real Chromium tests**, plus the full **342 passed / 4 skipped**
+CI suite at code commit `a4eb801`. See [verification](../verification/2026-11-09-marketlens-selective-port.md).
+No live AI request, provider activation, consumer pin/update, merge,
+release or deployment is implied. GET remains the compatible Overpass default.
+PR #41's field observations remain separate, not duplicated here.
+
 # Current FF-04 execution checkpoint — 2026-11-06
 
 The [Dresel Overpass report](../verification/reports/2026-11-06-overpass-dresel-pass.json)
@@ -219,3 +239,4 @@ verified before upload/merge. Consumer #38 remains technically blocked by the
 uncompleted target schema compatibility and publication-order verification.
 
 Combined FF-01–FF-04 tree after conflict resolution: **288 passed, 3 live skips**.
+

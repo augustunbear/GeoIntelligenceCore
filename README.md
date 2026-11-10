@@ -33,6 +33,9 @@ Keep the core industry-neutral; industry selection is optional. Industry profile
 
 ## Repository documentation
 
+- [Selective MarketLens adaptations](docs/usage/marketlens-adaptations.md) — opt-in Overpass form POST, comparison/quality helpers, optional offline Playwright extraction and separately invoked Gemini explanations; no live activation.
+- [Third-party notices](THIRD_PARTY_NOTICES.md) — selected MIT license and upstream provenance.
+
 - [AGENTS.md](AGENTS.md) — contribution and assistant workflow rules
 - [Architecture](docs/architecture/ARCHITECTURE.md) — bounded contexts, package/service delivery and deployment evolution
 - [ADR-0001](docs/architecture/adr/ADR-0001-independent-shared-repository.md) — confirmed independent repository decision
@@ -99,3 +102,4 @@ attempts per gateway, concurrency 1 and zero cost; shared daily budgets remain
 caller-owned. FF-03 implements explicit ORS custom-instance switching and
 synthetic instance-isolation checks; FF-04 measured runners are implemented.
 Live quality/activation remains blocked until approved measurements pass.
+
