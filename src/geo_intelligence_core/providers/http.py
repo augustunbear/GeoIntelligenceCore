@@ -8,7 +8,7 @@ import json
 import socket
 import ssl
 import time
-from urllib.parse import urljoin, urlsplit, urlunsplit
+from urllib.parse import urlencode, urljoin, urlsplit, urlunsplit
 import httpx
 from geo_intelligence_core.models.common import Issue, Result, Status
 from geo_intelligence_core.models.policy import ProviderConfig, UsagePolicy
@@ -104,13 +104,16 @@ class HttpGateway:
                 return None
 
     async def request(self, provider_id: str, method: str, path: str,
-                      params: dict, context: RequestContext) -> Result[dict]:
+                      params: dict, context: RequestContext, *,
+                      form: bool = False, retry_transient: bool = False) -> Result[dict]:
         """Bound the entire operation, including DNS, queue wait and retries."""
         deadline = self.policy.deadline_s
         try:
             if deadline is None:
-                return await self._request_impl(provider_id, method, path, params, context)
-            return await asyncio.wait_for(self._request_impl(provider_id, method, path, params, context),
+                return await self._request_impl(provider_id, method, path, params, context,
+                                                form=form, retry_transient=retry_transient)
+            return await asyncio.wait_for(self._request_impl(provider_id, method, path, params, context,
+                                                             form=form, retry_transient=retry_transient),
                                           timeout=deadline)
         except TimeoutError:
             return Result[dict](status=Status.unavailable, data=None,
@@ -118,7 +121,8 @@ class HttpGateway:
                                 context=context)
 
     async def _request_impl(self, provider_id: str, method: str, path: str,
-                            params: dict, context: RequestContext) -> Result[dict]:
+                            params: dict, context: RequestContext, *,
+                            form: bool = False, retry_transient: bool = False) -> Result[dict]:
         def fail(status, code):
             return Result[dict](status=status, data=None,
                                 issues=[Issue(code=code, message_key=f'provider.{code}')], context=context)
@@ -133,6 +137,9 @@ class HttpGateway:
             return fail(Status.unconfigured, 'missing_hard_limit')
         if method not in ('GET', 'POST') or not isinstance(params, dict):
             return fail(Status.invalid_input, 'method_or_params')
+        if form and (method != 'POST' or any(not isinstance(k, str) or not isinstance(v, str)
+                                             for k, v in params.items())):
+            return fail(Status.invalid_input, 'invalid_form')
         if method == 'POST':
             try:
                 def contains_scope(value):
@@ -141,7 +148,7 @@ class HttpGateway:
                             isinstance(value, (tuple, list)) and any(contains_scope(v) for v in value))
                 if contains_scope(params):
                     return fail(Status.invalid_input, 'unsafe_path_or_params')
-                body = json.dumps(params, allow_nan=False)
+                body = urlencode(params) if form else json.dumps(params, allow_nan=False)
                 if len(body.encode('utf-8')) > p.max_response_bytes:
                     return fail(Status.invalid_input, 'request_too_large')
             except (TypeError, ValueError, OverflowError):
@@ -166,6 +173,7 @@ class HttpGateway:
             return fail(Status.unconfigured, 'unsafe_endpoint')
         end = self.clock() + p.deadline_s
         hops = 0
+        attempts = 0
         async with self._semaphore:
             async with httpx.AsyncClient(transport=self.transport,
                                          proxy=self.trusted_proxy_url,
@@ -177,6 +185,8 @@ class HttpGateway:
                                                                write=min(5.0, p.deadline_s),
                                                                pool=min(5.0, p.deadline_s))) as client:
                 while True:
+                    if attempts >= p.max_calls_per_run:
+                        return fail(Status.rate_limited, 'budget_exhausted')
                     remaining = end - self.clock()
                     if remaining <= 0:
                         return fail(Status.unavailable, 'deadline')
@@ -190,6 +200,7 @@ class HttpGateway:
                         return fail(Status.unavailable, 'budget_unavailable')
                     if not permitted:
                         return fail(Status.rate_limited, 'budget_exhausted')
+                    attempts += 1
                     try:
                         async with asyncio.timeout(remaining):
                             parsed = urlsplit(url)
@@ -202,7 +213,8 @@ class HttpGateway:
                                                            content=body if method == 'POST' else None,
                                                            headers=outbound_headers)
                             if method == 'POST':
-                                request.headers['Content-Type'] = 'application/json'
+                                request.headers['Content-Type'] = ('application/x-www-form-urlencoded;charset=UTF-8'
+                                                                   if form else 'application/json')
                             request.extensions['sni_hostname'] = parsed.hostname
                             response = await client.send(request, stream=True)
                             try:
@@ -224,8 +236,13 @@ class HttpGateway:
                                         return fail(Status.unavailable, 'unsafe_redirect')
                                     url, hops = target, hops + 1
                                     continue
-                                if response.status_code in (429, 503):
-                                    delay = self._delay(response.headers.get('Retry-After'))
+                                if response.status_code in (429, 503) or (retry_transient and response.status_code in (502, 504)):
+                                    if retry_transient and attempts >= 3:
+                                        return fail(Status.rate_limited if response.status_code == 429 else Status.unavailable,
+                                                    'retry_exhausted')
+                                    retry_after = response.headers.get('Retry-After')
+                                    delay = (self._delay(retry_after) if retry_after is not None else
+                                             min(2.0, .25 * 2 ** (attempts - 1)) if retry_transient else 0.0)
                                     status = Status.rate_limited if response.status_code == 429 else Status.unavailable
                                     if delay is None or delay >= end - self.clock():
                                         return fail(status, 'retry_deadline')
@@ -244,10 +261,22 @@ class HttpGateway:
                                         return fail(Status.unavailable, 'invalid_response')
                                     return Result[dict](status=Status.ok, data=data, context=context)
                             finally:
-                                await response.aclose()
+                                # Cancellation cleanup is part of the same deadline.
+                                # A stalled stream close must not hang the caller.
+                                try:
+                                    async with asyncio.timeout(max(0.0, end - self.clock())):
+                                        await response.aclose()
+                                except TimeoutError:
+                                    pass
                         if delay:
                             await asyncio.sleep(delay)
                     except (ResponseTooLarge, ValueError, json.JSONDecodeError):
                         return fail(Status.unavailable, 'invalid_response')
                     except (httpx.HTTPError, TimeoutError, OSError):
+                        if retry_transient and attempts < 3:
+                            delay = .25 * 2 ** (attempts - 1)
+                            if delay < end - self.clock():
+                                await asyncio.sleep(delay)
+                                continue
                         return fail(Status.unavailable, 'network_failure')
+

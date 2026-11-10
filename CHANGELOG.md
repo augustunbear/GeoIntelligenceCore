@@ -10,6 +10,37 @@
   Manual corrections and unsupported topics fail explicitly. This unmerged,
   unmerged slice does not activate providers or complete real E02 acceptance.
 
+
+## Unreleased — E01 optional opening-hours continuation
+
+- Add conservative `evaluate_opening_hours` and immutable `OpeningHoursEvaluation`
+  with explicit offset-aware instant, IANA timezone, raw string and parser provenance.
+- Pin optional opening-hours-py 2.1.5, select MIT and record Linux wheel hash;
+  add CI and isolated core/temporal wheel installation checks.
+- Test overnight and Berlin DST. Holiday, solar, open-ended and quoted schedules,
+  invalid syntax/context and unavailable parsers return unknown, never closed.
+- No live activation, holiday coverage claim, attendance inference or release.
+
+## Unreleased — E01 offline observation slice
+
+- Add provider-neutral `Observation`, additive JSON schema and local
+  `normalize_observation` with strict counts, explicit person/visit objects,
+  aware UTC intervals, IANA timezone and full evidence/rights preservation.
+- Keep zero distinct from missing counts; missing counts return unknown with
+  their reason, while invalid inputs return invalid_input with null data.
+- No opening-hours parser, collection, duration scaling/comparison, provider
+  activation, source acceptance, release or consumer change. E01 remains partial.
+
+
+## Unreleased — selective MarketLens adaptation (2026-11-09)
+
+- Add opt-in Overpass form POST with bounded per-attempt retry/quotas and recorded HTTP method; preserve GET defaults.
+- Add Unicode comparison, explainable cross-source duplicate candidates and field-completeness helpers without fuzzy merges or coverage claims.
+- Add optional offline Playwright HTML extraction with isolated contexts, blocked network/scripts and bounded resources.
+- Add separately invoked Gemini explanations with approved minimal facts, citation/schema checks and mandatory unverified/review labels.
+- Include MIT upstream notices, optional Linux/Python 3.12 browser lock and real-Chromium CI job.
+- No V1 envelope change, provider activation, release or consumer deployment.
+
 ## Unreleased — Photon street-only precision
 
 - Map a named Photon highway feature with explicit `type=street` to
@@ -149,3 +180,7 @@ This pre-release does not include search, provider adapters, geometry operations
   quality/latency/memory/budget reports. Live quality remains blocked pending inputs.
 - Record consumer adoption boundaries; existing SQL storage and case policy remain
   caller-owned. No deployment, live activation or release is implied.
+## Unreleased — E03 offline input subset
+
+- Parse explicit long-form OpenStreetMap marker coordinates offline with strict host, scheme, parameter and fragment checks. No short-link resolution or automatic location confirmation.
+- Import bounded local GeoJSON administrative Features only with matching source and period, WGS84 CRS, scale metadata, explicit purpose-bound use rights and valid geometry. Preserve Evidence and warn about boundary precision. No data acquisition or permission to retain/export is implied.
