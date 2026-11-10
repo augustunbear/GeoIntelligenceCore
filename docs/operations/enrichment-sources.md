@@ -43,6 +43,9 @@ return `no_results` with an empty tuple. Any malformed record, duplicate ID or
 source mismatch rejects the entire batch with `invalid_input` and null data.
 The output context records `company-import-v1` and the requested purpose.
 The additive JSON schema is `schemas/v1/company-import-result.json`.
+It describes structural shapes; cross-field rules such as exact-count versus
+range, legal-entity workforce references, nonblank addresses and batch rights
+must also be checked by the runtime importer.
 
 ## Acceptance still absent
 

@@ -8,7 +8,9 @@ from that commit in the separate `GeoIntelligenceCore-e04` worktree on
 `feat/e04-offline-company`. Open PRs #41–#45 were inspected before implementation.
 Their source changes were not modified or incorporated. Changelog/status additions
 are shared documentation that will need ordinary reconciliation on integration.
-No user desktop, consumer repository, provider or remote write was used.
+No user desktop, consumer repository or provider was used. The completed local
+candidate was subsequently pushed as draft PR #46 with explicit user approval;
+it remains unmerged and does not activate or deploy anything.
 
 ## Test and review evidence
 

@@ -1,4 +1,4 @@
-# E04 offline COMPANY subset — local unmerged work
+# E04 offline COMPANY subset — unmerged draft PR #46
 
 The partial E04 slice validates bounded caller-supplied company records against
 explicit purpose/use rights and source provenance. Additive models preserve roles
