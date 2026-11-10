@@ -1,3 +1,92 @@
+# E01 offline observation slice — 2026-11-10 (feature branch)
+
+Based on verified GitHub main `77e888dc338bf592dfdb1ce3725fd5b7f76aebbd`
+(local reconstructed source baseline `3aec618`). A separate E01 branch adds
+`Observation`, `normalize_observation`, an additive schema and synthetic tests.
+The local operation preserves source rights/evidence, zero versus missing count,
+person versus visit, explicit direction/method/deduplication descriptions, and
+UTC instants with a separate IANA zone. Missing counts return `unknown` and
+retain their reason; invalid inputs return `invalid_input` and null data.
+
+This is only E01's offline observation contract/normalization slice. It neither
+collects data nor establishes rights, real quality, duration comparability or
+attendance. A separate optional opening-hours continuation now provides
+`evaluate_opening_hours` with the pinned 2.1.5 parser, explicit instant/timezone,
+parser provenance, overnight/DST tests and unknown on holiday selectors, solar,
+open-ended and quoted schedules. See [parser usage](../usage/opening-hours.md).
+Temporal analysis integration and live sources remain unimplemented/unconfigured.
+E01 and A07 are not completed. No
+provider activation, consumer changes, release, merge or deployment is implied.
+See [observation usage and limits](../usage/observations.md). Existing FF-04/FF-05
+checkpoints below retain their historical scope and are not changed by this work.
+
+Final Python 3.12 verification: **40 observation unit tests passed**, **79
+observation + existing contract tests passed**, and the **full suite passed 348
+tests with 3 opt-in live skips** (including wheel/extras/sdist installation).
+Independent review found one numeric timestamp-string coercion bypass; seconds
+and milliseconds string regressions reproduced it before the ISO-text validation
+fix. A second independent review found nested unvalidated model instances could
+bypass field checks and extreme offset dates could raise uncaught UTC overflow;
+both were reproduced and fixed, with nested evidence-date coverage as well.
+A further RED-to-GREEN regression prevents raw-input serializer warnings from
+unvalidated model instances. Restricted non-default rights/provenance and
+schema roundtrip checks pass. No known actionable review finding remains in
+this slice; real collection, rights approval and field validation are absent.
+
+
+# Selective MarketLens adaptation — 2026-11-09 feature branch
+
+Built against main `77e888d` and MarketLens `e1f86ba`: optional form POST and
+bounded transient retries, comparison/quality helpers, optional offline
+Playwright HTML extraction, and separately invoked cited Gemini explanations.
+See [usage and limitations](../usage/marketlens-adaptations.md) and
+[implementation plan](../superpowers/plans/2026-11-09-marketlens-selective-port.md).
+
+Local verification: **342 passed, 4 skipped** (three live providers and one
+opt-in real Chromium check); source/wheel builds passed. Independent review
+found four issues, fixed with RED-to-GREEN regressions: HTTP cleanup deadline,
+malformed AI envelopes, browser context-allocation cancellation and incomplete
+repeated-identity representative selection. Real Chromium launch was attempted
+but blocked by process-singleton socket `EPERM`; a separate Chromium CI job is
+included and passed: **6 real Chromium tests**, plus the full **342 passed / 4 skipped**
+CI suite at code commit `a4eb801`. See [verification](../verification/2026-11-09-marketlens-selective-port.md).
+No live AI request, provider activation, consumer pin/update, merge,
+release or deployment is implied. GET remains the compatible Overpass default.
+PR #41's field observations remain separate, not duplicated here.
+
+# E03 offline input subset — unmerged feature branch
+
+The E03 branch adds strict offline OSM marker-link coordinate parsing and local GeoJSON administrative Feature import with matching provenance, explicit use rights, WGS84 CRS, scale metadata, valid bounded geometry, and a boundary-precision warning. It has synthetic tests only. No real boundary source, license, short-link resolution, provider call, consumer change, release, or production activation is claimed. E03 real-source/rights acceptance remains pending. See [input rules](../usage/inputs.md).
+
+Opening-hours continuation verification on Python 3.12: **41 parser tests passed**,
+**42 focused tests passed with the system timezone path disabled** (including
+built-wheel metadata), and **392 full-suite tests passed with 3 opt-in live skips**.
+The full run includes six isolated wheel/extras installs and sdist installation.
+Both optional wheel hashes were verified offline, and sdist/wheel builds passed.
+Independent review found and reproduced Easter-selector and unused-parser
+provenance gaps; both were fixed with RED-to-GREEN regressions. The temporal
+extra now pins tzdata as an IANA fallback, tested without a system timezone DB.
+This is local offline verification, not remote CI, a Windows-native run, release
+or live-source acceptance.
+
+
+# E02 synthetic history draft — 2026-11-10
+
+An isolated local feature branch adds an [offline history contract](../usage/history.md)
+on the reconstructed tree of main `77e888dc338bf592dfdb1ce3725fd5b7f76aebbd`.
+It compares retained typed source records/metrics and method conditions, with
+explicit rights, integrity, completeness and redaction checks. It cannot report
+real-world closure, run a watch or notify anyone. It is an unmerged draft PR #45,
+not a release or deployment. Open PRs #41–#44 are not incorporated into this branch.
+
+This is **partial synthetic E02 work**, not real E02 acceptance. Two legal real
+snapshots, manual-confirmation history and broader typed topics remain absent;
+consumer/source activation stays under the existing FF-05 gates. See the
+[verification record](../verification/2026-11-10-e02-offline-history.md).
+
+---
+
+
 # E04 offline COMPANY subset — unmerged draft PR #46
 
 The partial E04 slice validates bounded caller-supplied company records against
@@ -6,6 +95,7 @@ and scoped unknown/exact/range workforce without operating-site or branch infere
 Synthetic tests do not establish real-source rights, coverage or field acceptance.
 Transport enrichment, providers, consumer changes and activation remain absent.
 See [contract and limitations](../operations/enrichment-sources.md).
+
 
 # Current FF-04 execution checkpoint — 2026-11-06
 
@@ -228,3 +318,4 @@ verified before upload/merge. Consumer #38 remains technically blocked by the
 uncompleted target schema compatibility and publication-order verification.
 
 Combined FF-01–FF-04 tree after conflict resolution: **288 passed, 3 live skips**.
+
