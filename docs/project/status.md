@@ -1,10 +1,10 @@
-# Local E02 synthetic history candidate — 2026-11-10
+# E02 synthetic history draft — 2026-11-10
 
 An isolated local feature branch adds an [offline history contract](../usage/history.md)
 on the reconstructed tree of main `77e888dc338bf592dfdb1ce3725fd5b7f76aebbd`.
 It compares retained typed source records/metrics and method conditions, with
 explicit rights, integrity, completeness and redaction checks. It cannot report
-real-world closure, run a watch or notify anyone. It is unmerged, not pushed and
+real-world closure, run a watch or notify anyone. It is an unmerged draft PR #45,
 not a release or deployment. Open PRs #41–#44 are not incorporated into this branch.
 
 This is **partial synthetic E02 work**, not real E02 acceptance. Two legal real

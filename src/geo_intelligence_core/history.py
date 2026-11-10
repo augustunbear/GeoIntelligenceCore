@@ -1,6 +1,7 @@
 """Offline source-record history; no real-world inferences or scheduling."""
 import hashlib
 import json
+import re
 from urllib.parse import quote
 
 from pydantic import ValidationError
@@ -72,7 +73,9 @@ def _prepare(snap: Snapshot) -> dict[str, PlaceSet]:
                 places.retrieved_count < places.unique_count or
                 (topic.status == Status.no_results and places.unique_count != 0)):
             _fail(Status.invalid_input, 'history_invalid_places')
-        if not places.coverage:
+        # Normalized provider results default to "unknown". A record absence is
+        # comparable only after an explicit complete source-query attestation.
+        if not places.coverage or re.fullmatch(r'complete:[A-Za-z0-9][A-Za-z0-9._/-]{0,127}', places.coverage) is None:
             _fail(Status.partial, 'history_unknown_coverage')
         for place in places.places:
             if (not place.evidence_ids or not set(place.evidence_ids).issubset(ids) or
@@ -96,18 +99,36 @@ def _prepare(snap: Snapshot) -> dict[str, PlaceSet]:
     return topics
 
 
-def _conditions(snap: Snapshot, topics: dict[str, PlaceSet]) -> HistoryConditions:
+def _source_method(e):
+    return SourceMethod(**{field: getattr(e, field) for field in SourceMethod.model_fields})
+
+
+def _record_ref(name, key):
+    ref = ':'.join(quote(part, safe='') for part in (key.source_id, key.entity_type, key.entity_id))
+    return f'{quote(name, safe="")}/{ref}'
+
+
+def _conditions(snap: Snapshot, topics: dict[str, PlaceSet], shared_records, shared_metrics) -> HistoryConditions:
     analysis = snap.analysis
     context = analysis.request_context
     sources = {}
     for name, topic in sorted(analysis.topic_results.items()):
-        methods = {SourceMethod(**{field: getattr(e, field) for field in SourceMethod.model_fields})
-                   for e in topic.evidence}
+        methods = {_source_method(e) for e in topic.evidence}
         sources[name] = tuple(sorted(methods, key=lambda m: m.model_dump_json()))
+    evidence = {e.id: e for topic in analysis.topic_results.values() for e in topic.evidence}
+    fact_methods = {}
+    for name, keys in shared_records.items():
+        places = {p.source_key: p for p in topics[name].places}
+        for key in keys:
+            methods = {_source_method(evidence[eid]) for eid in places[key].evidence_ids}
+            fact_methods[_record_ref(name, key)] = tuple(sorted(methods, key=lambda m: m.model_dump_json()))
+    for name in shared_metrics:
+        methods = {_source_method(evidence[eid]) for eid in analysis.metrics[name].evidence_ids}
+        fact_methods[f'metrics/{quote(name, safe="")}'] = tuple(sorted(methods, key=lambda m: m.model_dump_json()))
     return HistoryConditions(location_versions=context.location_versions,
         effective_conditions=context.effective_conditions, profile_ref=context.profile_ref,
         template_ref=context.template_ref, method_version=context.method_version,
-        selected_topics=tuple(sorted(analysis.selected_topics)), sources=sources,
+        selected_topics=tuple(sorted(analysis.selected_topics)), sources=sources, fact_methods=fact_methods,
         coverage={name: topic.coverage for name, topic in topics.items()},
         metric_conditions=analysis.metric_conditions,
         metric_methods={name: MetricMethod(unit=metric.unit, nature=metric.nature)
@@ -140,7 +161,12 @@ def compare_snapshots(before: Snapshot, after: Snapshot) -> Result[tuple[Change,
     except _NotComparable as error:
         return Result[tuple[Change, ...]](status=error.status, data=None, context=context,
             issues=(Issue(code=error.code, message_key=error.code),))
-    old_conditions, new_conditions = _conditions(before, old_topics), _conditions(after, new_topics)
+    shared_records = {name: ({p.source_key for p in old_topics[name].places} &
+                             {p.source_key for p in new_topics[name].places})
+                      for name in old_topics.keys() & new_topics.keys()}
+    shared_metrics = before.analysis.metrics.keys() & after.analysis.metrics.keys()
+    old_conditions = _conditions(before, old_topics, shared_records, shared_metrics)
+    new_conditions = _conditions(after, new_topics, shared_records, shared_metrics)
     if old_conditions != new_conditions:
         change = Change(kind='method', change='conditions_changed', entity_ref='conditions',
             before=old_conditions, after=new_conditions,
@@ -156,9 +182,8 @@ def compare_snapshots(before: Snapshot, after: Snapshot) -> Result[tuple[Change,
                 continue
             label = 'source_record_added' if previous is None else 'source_record_missing' if current is None else 'source_record_updated'
             ids = {eid for record in (previous, current) if record for eid in record.evidence_ids}
-            ref = ':'.join(quote(part, safe='') for part in (key.source_id, key.entity_type, key.entity_id))
             changes.append(Change(kind='source_record', change=label,
-                entity_ref=f'{quote(name, safe="")}/{ref}',
+                entity_ref=_record_ref(name, key),
                 before=previous, after=current, evidence_ids=tuple(sorted(ids))))
     for name, metric in sorted(before.analysis.metrics.items()):
         current = after.analysis.metrics[name]

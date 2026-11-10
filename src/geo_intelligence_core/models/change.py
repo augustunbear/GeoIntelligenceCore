@@ -28,6 +28,7 @@ class HistoryConditions(FrozenModel):
     method_version: str
     selected_topics: tuple[str, ...]
     sources: dict[str, tuple[SourceMethod, ...]]
+    fact_methods: dict[str, tuple[SourceMethod, ...]] = Field(default_factory=dict)
     coverage: dict[str, str | None]
     metric_conditions: dict[str, MetricConditions] = Field(default_factory=dict)
     metric_methods: dict[str, MetricMethod] = Field(default_factory=dict)

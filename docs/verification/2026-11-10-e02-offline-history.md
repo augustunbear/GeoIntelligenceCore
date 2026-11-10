@@ -11,8 +11,9 @@ The baseline represents main's source tree with pre-existing workspace artifacts
 GitHub's original commit history is not reconstructed. No user desktop was used.
 
 Only additive history modules, schemas, synthetic tests and relevant documents
-changed. No remote write, PR creation, merge, provider call, activation, consumer
-change, deployment or release was performed. This is a local unmerged candidate.
+changed. The initial local candidate was subsequently pushed as draft PR #45
+with explicit user approval. No merge, provider call, activation, consumer
+change, deployment or release was performed.
 
 ## Evidence
 
@@ -24,11 +25,13 @@ change, deployment or release was performed. This is a local unmerged candidate.
   purpose/hash/evidence, incomplete/redacted/null inputs, typed metrics and
   declarative-watch validation failures before implementation.
 - Focused history and additive schema/JSON-array round-trip tests:
-  **41 passed**. This includes synthetic food-service, retail and education
+  **49 passed**. This includes synthetic food-service, retail and education
   profiles. No real-data acceptance is claimed.
-- Full final Python 3.12 suite: **349 passed, 3 skipped** in 89.47 s.
+- Initial full Python 3.12 suite: **349 passed, 3 skipped** in 89.47 s.
   This includes wheel/sdist builds, clean base/geometry/providers/combined-extra
   installs, archive scans and the existing offline consumer example.
+- Full suite after the draft-review fixes: **357 passed, 3 opt-in live skips**
+  in 109.58 s, including the same packaging and consumer checks.
 - A separate blocked-network probe in the clean base-wheel venv imported
   `history.compare_snapshots` and `models.change.WatchSpec` without loading
   Shapely, pyproj, HTTPX or Playwright. Existing root imports remain unchanged.
@@ -55,6 +58,16 @@ A fresh reviewer reproduced two P2 findings:
 Both fixes are covered by RED-to-GREEN regressions. Other hardening tests reject
 inconsistent Change shapes, foreign topic contexts and untrusted failure-context
 leakage. The reviewer confirmed ordinary Snapshot JSON round-trip works.
+
+A separate review of the published draft reproduced two more P2 fail-open cases:
+the production `unknown` coverage marker could pass the nonempty gate and imply
+a source record was missing, and a per-record/metric evidence-method switch was
+hidden by an unchanged topic-wide method set. `complete:<coverage-ref>` is now
+required as an explicit source-query completeness attestation; all other coverage
+values return `partial` without changes. Shared records and metrics now compare
+their individually resolved source methods before factual differences are emitted.
+Both issues were reproduced in failing tests, then corrected. This attestation
+does not prove real-world coverage; no current provider issues it automatically.
 
 ## Scope decisions and remaining acceptance
 

@@ -296,6 +296,16 @@
           "title": "Sources",
           "type": "object"
         },
+        "fact_methods": {
+          "additionalProperties": {
+            "items": {
+              "$ref": "#/$defs/SourceMethod"
+            },
+            "type": "array"
+          },
+          "title": "Fact Methods",
+          "type": "object"
+        },
         "coverage": {
           "additionalProperties": {
             "anyOf": [

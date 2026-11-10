@@ -1,6 +1,8 @@
 """Synthetic offline history contracts; not real E02 source acceptance."""
 from datetime import datetime, timezone
 
+import pytest
+
 from geo_intelligence_core.evidence import snapshot
 from geo_intelligence_core.models.analysis import Analysis
 from geo_intelligence_core.models.common import Result, Status
@@ -22,7 +24,7 @@ def place(id, **updates):
         point=Point(longitude=11, latitude=49), evidence_ids=('e1',)).model_copy(update=updates)
 
 
-def analysis(records=(), *, context=None, ev=None, status=Status.ok, coverage='synthetic-complete'):
+def analysis(records=(), *, context=None, ev=None, status=Status.ok, coverage='complete:synthetic-area-v1'):
     context = context or RequestContext(request_id='run', location_versions={'site': 1},
         method_version='analysis-v1', effective_conditions={'query': 'synthetic-500m'})
     return Analysis(request_context=context, selected_topics=('places',), topic_results={
@@ -82,8 +84,25 @@ def test_method_and_location_changes_suppress_record_deltas():
         assert (result.data[0].kind, result.data[0].change) == ('method', 'conditions_changed')
     source_change = compare(snap((place('1'),)), snap((place('2'),), ev=evidence(method_version='v2')))
     assert [c.kind for c in source_change.data] == ['method']
-    coverage_change = compare(snap((place('1'),)), snap((place('2'),), coverage='different-area'))
+    coverage_change = compare(snap((place('1'),)), snap((place('2'),), coverage='complete:different-area'))
     assert [c.kind for c in coverage_change.data] == ['method']
+
+
+@pytest.mark.parametrize('change_name', [False, True])
+def test_record_evidence_method_switch_is_not_a_fact_update(change_name):
+    first = evidence('e1', source_ref='synthetic-query-a', method_version='v1')
+    second = evidence('e2', source_ref='synthetic-query-b', method_version='v2')
+    def run(evidence_id, name):
+        record = place('1', evidence_ids=(evidence_id,), native_names={'de': name})
+        base = analysis((record,))
+        topic = base.topic_results['places'].model_copy(update={'evidence': (first, second)})
+        return snapshot(base.model_copy(update={'topic_results': {'places': topic}}), 'planning').data
+    old = run('e1', 'Original')
+    new = run('e2', 'Changed' if change_name else 'Original')
+    result = compare(old, new)
+    assert result.status == Status.ok
+    assert len(result.data) == 1
+    assert (result.data[0].kind, result.data[0].change) == ('method', 'conditions_changed')
 
 
 def test_request_ids_and_retrieval_times_are_not_query_changes():
@@ -93,7 +112,6 @@ def test_request_ids_and_retrieval_times_are_not_query_changes():
     assert compare(snapshot(base, 'planning').data, snapshot(changed, 'planning').data).data == ()
 
 
-import pytest
 from pydantic import ValidationError
 from geo_intelligence_core.models.analysis import Metric, MetricConditions, Snapshot
 
@@ -146,6 +164,11 @@ def test_explicit_no_results_is_comparable_but_null_is_not():
 
 @pytest.mark.parametrize('updates', [
     {'coverage': None},
+    {'coverage': 'unknown'},
+    {'coverage': 'partial'},
+    {'coverage': 'synthetic-complete'},
+    {'coverage': 'complete:'},
+    {'coverage': ' complete:synthetic-area-v1'},
 ])
 def test_unknown_coverage_cannot_be_compared(updates):
     result = compare(snap((place('1'),)), snap((place('2'),), **updates))
@@ -220,6 +243,24 @@ def test_metric_units_nature_and_incomplete_conditions_suppress_numeric_comparis
         assert result.status == Status.ok and [c.kind for c in result.data] == ['method']
     result = compare(metric_snapshot(3), metric_snapshot(4, conditions=MetricConditions()))
     assert result.status == Status.partial and result.data is None
+
+
+def test_metric_evidence_method_switch_suppresses_numeric_delta():
+    first = evidence('e1', source_ref='synthetic-query-a', method_version='v1')
+    second = evidence('e2', source_ref='synthetic-query-b', method_version='v2')
+    def run(evidence_id, value):
+        base = metric_snapshot(value)
+        topic = base.analysis.topic_results['population_reference'].model_copy(
+            update={'evidence': (first, second)})
+        metric = base.analysis.metrics['population'].model_copy(update={'evidence_ids': (evidence_id,)})
+        analysis = base.analysis.model_copy(update={
+            'topic_results': {'population_reference': topic}, 'metrics': {'population': metric}})
+        return rehash(base.model_copy(update={
+            'analysis': analysis, 'retained_evidence_ids': ('e1', 'e2')}))
+    result = compare(run('e1', 3), run('e2', 4))
+    assert result.status == Status.ok
+    assert len(result.data) == 1
+    assert (result.data[0].kind, result.data[0].change) == ('method', 'conditions_changed')
 
 
 def test_watch_spec_is_only_typed_declarative_conditions():

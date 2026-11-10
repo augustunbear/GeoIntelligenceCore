@@ -37,8 +37,15 @@ explicit issue/status, never a successful empty history.
 ## Supported facts
 
 - PlaceSet topics, including a complete empty PlaceSet with `no_results`. Source
-  identities must be unique; counts, coverage and per-record evidence must be
-  present and consistent. Record identities are not matched by name or address.
+  identities must be unique; counts and per-record evidence must be present and
+  consistent. `PlaceSet.coverage` must be an explicit `complete:<coverage-ref>`
+  attestation, where the reference is 1–128 ASCII letters, digits, dots,
+  underscores, slashes or hyphens and starts with a letter or digit. The
+  caller/source must establish that the *retained query result for that scope*
+  is complete before making this attestation. It does not assert exhaustive
+  real-world coverage. The existing provider default `unknown`, or any other
+  string, returns `partial` without a change payload. Record identities are
+  not matched by name or address.
 - Typed `Analysis.metrics` with complete `MetricConditions`, explicit units,
   nature, non-null values and retained evidence. A metrics-only analysis can use
   exactly one selected, identically named topic as its null-data evidence
@@ -56,7 +63,8 @@ an interpreted operating-status change. Every change remains `unverified`.
 `method` / `conditions_changed` carries typed HistoryConditions and suppresses all
 record deltas for that comparison. Conditions include location versions, effective
 query parameters, profile/template/method versions, selected topics, source
-identity/query reference/method/reference and valid periods, coverage, metric
+identity/query reference/method/reference and valid periods, coverage, methods
+resolved to each shared record or metric, metric
 conditions, units and nature. Request IDs, retrieval timestamps, evidence IDs,
 dictionary key order, record order and category order do not themselves create
 fact changes. Entity-reference components are percent-encoded before joining with
