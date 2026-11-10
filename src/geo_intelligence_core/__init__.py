@@ -17,6 +17,7 @@ from .models.spatial import (Catchment, CatchmentRequest, CircleRequest, Geometr
                              MatrixRequest, Region, Route, RouteRequest, SpatialOperation, TravelMatrix)
 from .models.observation import Observation
 from .temporal import normalize_observation
+from .opening_hours import OpeningHoursEvaluation, evaluate_opening_hours
 from .ports import ProviderRegistry
 
 __version__ = "0.1.0a1"
@@ -25,10 +26,10 @@ __all__ = [
     'Catchment', 'CatchmentRequest', 'CircleRequest', 'CompanySite',
     'ConfirmRequest', 'Confirmation', 'Correction', 'Entrance', 'Evidence',
     'GeometryLimits', 'Issue', 'Location', 'MatrixRequest', 'Metric', 'Permission', 'Place', 'PlaceQuery',
-    'Observation', 'PlaceSet', 'Point', 'Profile', 'ProviderRegistry', 'Quality', 'Region',
+    'Observation', 'OpeningHoursEvaluation', 'PlaceSet', 'Point', 'Profile', 'ProviderRegistry', 'Quality', 'Region',
     'RequestContext', 'Result', 'Rights', 'Route', 'RouteRequest', 'Snapshot',
     'SourceKey', 'SpatialOperation', 'Status', 'Template', 'TimeCondition',
     'TopicSelection', 'TravelMatrix', 'UsagePolicy', 'analyze',
     'apply_correction', 'circle', 'combine', 'compare', 'confirm_location',
-    'distance_m', 'normalize_observation', 'export_result', 'load_profile', 'load_template', 'snapshot',
+    'distance_m', 'evaluate_opening_hours', 'normalize_observation', 'export_result', 'load_profile', 'load_template', 'snapshot',
 ]

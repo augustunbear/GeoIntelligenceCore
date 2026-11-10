@@ -1,0 +1,11 @@
+# Optional parser only; install alongside core-py312.lock.
+# Audited CPython 3.12 Linux x86_64 CI wheel from PyPI, plus the universal IANA fallback wheel.
+# Other platforms use the pinned [temporal] extra, not this platform lock.
+# Regenerate: pip download --no-deps --only-binary=:all: opening-hours-py==2.1.5
+# Also: pip download --no-deps --only-binary=:all: tzdata==2026.6
+# Then: python -m pip hash opening_hours_py-2.1.5-*.whl
+--only-binary=opening-hours-py
+opening-hours-py==2.1.5 \
+    --hash=sha256:9e3e08babe6049777d8b1dfdc4e7ee955e9e9755c4b8112571cfc2d7d43a8f2b
+tzdata==2026.6 \
+    --hash=sha256:0a10eec6e13ef16b627fabed9a5f2ba61a62b1c67f327305f4e7e412a70b4aec

@@ -107,3 +107,11 @@ attempts per gateway, concurrency 1 and zero cost; shared daily budgets remain
 caller-owned. FF-03 implements explicit ORS custom-instance switching and
 synthetic instance-isolation checks; FF-04 measured runners are implemented.
 Live quality/activation remains blocked until approved measurements pass.
+
+
+## Optional E01 opening-hours continuation
+
+`evaluate_opening_hours(hours_raw, at=aware_datetime, timezone='Europe/Berlin')`
+uses the pinned optional `[temporal]` parser. See [usage and limitations](docs/usage/opening-hours.md).
+Holiday, solar, open-ended and quoted schedules remain unknown. This additive
+offline API does not activate providers, filter places or infer attendance.

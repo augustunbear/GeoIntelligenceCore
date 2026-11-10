@@ -3,8 +3,10 @@
 `Observation` and `normalize_observation` are available from
 `geo_intelligence_core`. These validate caller-supplied synthetic or independently
 obtained observations locally. No provider is configured or called. The
-observation slice does not implement opening-hours evaluation, collection,
-attendance estimation, time filtering in `analyze`, or observation comparison.
+observation slice does not implement collection, attendance estimation, time
+filtering in `analyze`, or observation comparison. A separate optional
+[`evaluate_opening_hours` API](opening-hours.md) now evaluates conservative
+non-holiday schedules offline; it does not change observation normalization.
 E01 is not complete and temporal A07/live source acceptance is not claimed.
 
 ## Input contract
