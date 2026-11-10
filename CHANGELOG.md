@@ -148,3 +148,7 @@ This pre-release does not include search, provider adapters, geometry operations
   quality/latency/memory/budget reports. Live quality remains blocked pending inputs.
 - Record consumer adoption boundaries; existing SQL storage and case policy remain
   caller-owned. No deployment, live activation or release is implied.
+## Unreleased — E03 offline input subset
+
+- Parse explicit long-form OpenStreetMap marker coordinates offline with strict host, scheme, parameter and fragment checks. No short-link resolution or automatic location confirmation.
+- Import bounded local GeoJSON administrative Features only with matching source and period, WGS84 CRS, scale metadata, explicit purpose-bound use rights and valid geometry. Preserve Evidence and warn about boundary precision. No data acquisition or permission to retain/export is implied.
