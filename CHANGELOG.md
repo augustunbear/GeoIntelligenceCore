@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — E01 offline observation slice
+
+- Add provider-neutral `Observation`, additive JSON schema and local
+  `normalize_observation` with strict counts, explicit person/visit objects,
+  aware UTC intervals, IANA timezone and full evidence/rights preservation.
+- Keep zero distinct from missing counts; missing counts return unknown with
+  their reason, while invalid inputs return invalid_input with null data.
+- No opening-hours parser, collection, duration scaling/comparison, provider
+  activation, source acceptance, release or consumer change. E01 remains partial.
+
 ## Unreleased — Photon street-only precision
 
 - Map a named Photon highway feature with explicit `type=street` to

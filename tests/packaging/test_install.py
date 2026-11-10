@@ -64,6 +64,8 @@ def test_clean_install(distributions, extra, tmp_path):
     assert 'export roundtrip: ok' in result.stdout
     probe = subprocess.run([str(python), '-c',
         'import geo_intelligence_core, sys; '
+        'from geo_intelligence_core import Observation, normalize_observation; '
+        'assert callable(normalize_observation) and Observation.model_fields["count"].default is None; '
         'assert "pyspark" not in sys.modules and "r5py" not in sys.modules; '
         'print(geo_intelligence_core.__version__)'],
         cwd=tmp_path, env=env, capture_output=True, text=True, timeout=10)

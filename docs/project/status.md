@@ -1,3 +1,31 @@
+# E01 offline observation slice — 2026-11-10 (feature branch)
+
+Based on verified GitHub main `77e888dc338bf592dfdb1ce3725fd5b7f76aebbd`
+(local reconstructed source baseline `3aec618`). A separate E01 branch adds
+`Observation`, `normalize_observation`, an additive schema and synthetic tests.
+The local operation preserves source rights/evidence, zero versus missing count,
+person versus visit, explicit direction/method/deduplication descriptions, and
+UTC instants with a separate IANA zone. Missing counts return `unknown` and
+retain their reason; invalid inputs return `invalid_input` and null data.
+
+This is only E01's offline observation contract/normalization slice. It neither
+collects data nor establishes rights, real quality, duration comparability or
+attendance. Opening-hours evaluation, temporal analysis integration and live
+sources remain unimplemented/unconfigured. E01 and A07 are not completed. No
+provider activation, consumer changes, release, merge or deployment is implied.
+See [observation usage and limits](../usage/observations.md). Existing FF-04/FF-05
+checkpoints below retain their historical scope and are not changed by this work.
+
+Final Python 3.12 verification: **35 observation unit tests passed**, **74
+observation + existing contract tests passed**, and the **full suite passed 343
+tests with 3 opt-in live skips** (including wheel/extras/sdist installation).
+Independent review found one numeric timestamp-string coercion bypass; seconds
+and milliseconds string regressions reproduced it before the ISO-text validation
+fix. A further RED-to-GREEN regression prevents raw-input serializer warnings
+from unvalidated model instances. Restricted non-default rights/provenance and
+schema roundtrip checks pass. No known actionable review finding remains in
+this slice; real collection, rights approval and field validation are absent.
+
 # Current FF-04 execution checkpoint — 2026-11-06
 
 The [Dresel Overpass report](../verification/reports/2026-11-06-overpass-dresel-pass.json)

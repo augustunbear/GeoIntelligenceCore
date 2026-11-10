@@ -24,6 +24,14 @@ Keep the core industry-neutral; industry selection is optional. Industry profile
 
 - [免费优先试用增量计划](docs/superpowers/plans/2026-11-05-free-first-trial.md) — 当前执行入口 FF-01–FF-05；不重做 P01–P13，不单独部署核心
 
+## E01 offline observations (partial slice)
+
+`Observation` and `normalize_observation` validate supplied counts with explicit
+spatial scope, UTC interval, IANA timezone, person/visit semantics and evidence
+rights. Missing counts remain unknown, never zero. See [observation usage](docs/usage/observations.md).
+No collection, opening-hours evaluation, observation comparison, provider
+activation or consumer integration is included; E01 remains incomplete.
+
 ## Open-source selection baseline
 
 - [逐项开源选型](docs/research/OPEN_SOURCE_SELECTION.md) — all functional requirements mapped to selected tools, alternatives and source evidence
