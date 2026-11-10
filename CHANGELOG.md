@@ -5,7 +5,60 @@
 - Add bounded atomic caller-supplied transport facts import with purpose-bound
   evidence, explicit validity, scoped segment/direction restrictions and separate
   parking capacity/free-space observations. No live data or child-safety inference.
-- Company enrichment and real-source activation remain deferred.
+- Offline company import is a separate partial slice; real-source activation remains deferred.
+
+
+## Unreleased — partial E04 offline COMPANY import
+
+- Add a bounded, atomic caller-supplied company-record importer with explicit
+  purpose/use-rights gates and matching provenance. Preserve registered-address
+  roles, unknown workforce, scoped entity/site counts and ranges without inference.
+- Add separate models and a schema without loosening existing CompanySite. Synthetic
+  tests only; no source activation, real field acceptance, live transport data, consumer
+  change, release or deployment.
+
+
+## Unreleased — E02 synthetic offline history slice (draft PR)
+
+- Add typed, immutable source-record/metric snapshot comparison and declarative
+  WatchSpec conditions, with purpose/retained-evidence/rights/completeness guards.
+  Query, location, method, coverage and metric-condition drift produces a method
+  change instead of record deltas; missing records never imply real-world closure.
+- Add history schemas and synthetic food-service/retail/education regressions.
+  Manual corrections and unsupported topics fail explicitly. This unmerged
+  slice does not activate providers or complete real E02 acceptance.
+
+
+## Unreleased — E01 optional opening-hours continuation
+
+- Add conservative `evaluate_opening_hours` and immutable `OpeningHoursEvaluation`
+  with explicit offset-aware instant, IANA timezone, raw string and parser provenance.
+- Pin optional opening-hours-py 2.1.5, select MIT and record Linux wheel hash;
+  add CI and isolated core/temporal wheel installation checks.
+- Test overnight and Berlin DST. Holiday, solar, open-ended and quoted schedules,
+  invalid syntax/context and unavailable parsers return unknown, never closed.
+- No live activation, holiday coverage claim, attendance inference or release.
+
+## Unreleased — E01 offline observation slice
+
+- Add provider-neutral `Observation`, additive JSON schema and local
+  `normalize_observation` with strict counts, explicit person/visit objects,
+  aware UTC intervals, IANA timezone and full evidence/rights preservation.
+- Keep zero distinct from missing counts; missing counts return unknown with
+  their reason, while invalid inputs return invalid_input with null data.
+- No collection, duration scaling/comparison, provider activation, source
+  acceptance, release or consumer change. Optional opening-hours evaluation is
+  covered by a separate continuation above; E01 remains partial.
+
+
+## Unreleased — selective MarketLens adaptation (2026-11-09)
+
+- Add opt-in Overpass form POST with bounded per-attempt retry/quotas and recorded HTTP method; preserve GET defaults.
+- Add Unicode comparison, explainable cross-source duplicate candidates and field-completeness helpers without fuzzy merges or coverage claims.
+- Add optional offline Playwright HTML extraction with isolated contexts, blocked network/scripts and bounded resources.
+- Add separately invoked Gemini explanations with approved minimal facts, citation/schema checks and mandatory unverified/review labels.
+- Include MIT upstream notices, optional Linux/Python 3.12 browser lock and real-Chromium CI job.
+- No V1 envelope change, provider activation, release or consumer deployment.
 
 ## Unreleased — Photon street-only precision
 
@@ -146,3 +199,7 @@ This pre-release does not include search, provider adapters, geometry operations
   quality/latency/memory/budget reports. Live quality remains blocked pending inputs.
 - Record consumer adoption boundaries; existing SQL storage and case policy remain
   caller-owned. No deployment, live activation or release is implied.
+## Unreleased — E03 offline input subset
+
+- Parse explicit long-form OpenStreetMap marker coordinates offline with strict host, scheme, parameter and fragment checks. No short-link resolution or automatic location confirmation.
+- Import bounded local GeoJSON administrative Features only with matching source and period, WGS84 CRS, scale metadata, explicit purpose-bound use rights and valid geometry. Preserve Evidence and warn about boundary precision. No data acquisition or permission to retain/export is implied.

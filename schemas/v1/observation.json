@@ -1,0 +1,468 @@
+{
+  "$defs": {
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_type": {
+          "minLength": 1,
+          "title": "Source Type",
+          "type": "string"
+        },
+        "source_ref": {
+          "minLength": 1,
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "reference_period": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference Period"
+        },
+        "valid_period": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid Period"
+        },
+        "method_version": {
+          "minLength": 1,
+          "title": "Method Version",
+          "type": "string"
+        },
+        "rights": {
+          "$ref": "#/$defs/Rights"
+        },
+        "quality": {
+          "$ref": "#/$defs/Quality"
+        }
+      },
+      "required": [
+        "id",
+        "source_id",
+        "source_type",
+        "source_ref",
+        "retrieved_at",
+        "method_version",
+        "rights",
+        "quality"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Permission": {
+      "enum": [
+        "allowed",
+        "denied",
+        "unknown"
+      ],
+      "title": "Permission",
+      "type": "string"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "properties": {
+        "longitude": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "ge": -180,
+          "le": 180,
+          "title": "Longitude"
+        },
+        "latitude": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "ge": -90,
+          "le": 90,
+          "title": "Latitude"
+        }
+      },
+      "required": [
+        "longitude",
+        "latitude"
+      ],
+      "title": "Point",
+      "type": "object"
+    },
+    "Quality": {
+      "additionalProperties": false,
+      "properties": {
+        "precision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Precision"
+        },
+        "coverage": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Coverage"
+        },
+        "freshness": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Freshness"
+        },
+        "source_reliability": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Reliability"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        },
+        "verification": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verification"
+        }
+      },
+      "title": "Quality",
+      "type": "object"
+    },
+    "Region": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "geometry": {
+          "additionalProperties": true,
+          "title": "Geometry",
+          "type": "object"
+        },
+        "method": {
+          "minLength": 1,
+          "title": "Method",
+          "type": "string"
+        },
+        "source_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Ref"
+        },
+        "boundary_rule": {
+          "default": "point_covers",
+          "enum": [
+            "point_covers",
+            "point_within",
+            "geometry_intersects"
+          ],
+          "title": "Boundary Rule",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "geometry",
+        "method"
+      ],
+      "title": "Region",
+      "type": "object"
+    },
+    "Rights": {
+      "additionalProperties": false,
+      "properties": {
+        "use": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "retain": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "cache": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "display": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "export": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "redistribute": {
+          "$ref": "#/$defs/Permission",
+          "default": "unknown"
+        },
+        "attribution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attribution"
+        },
+        "license_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License Url"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "checked_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Checked At"
+        },
+        "permitted_purpose": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Permitted Purpose"
+        }
+      },
+      "title": "Rights",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One source-described count over an explicit spatial and temporal scope.\n\nInstants are offset-aware and normalized to UTC; timezone is the IANA zone\nfor local display, not an instruction to reinterpret either instant.\nDirection, method and dedupe are source descriptions, not verified claims.\nUnknown deduplication must be stated explicitly, e.g. ``dedupe='unknown'``.",
+  "properties": {
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "point": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Point"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "region": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Region"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "start": {
+      "format": "date-time",
+      "title": "Start",
+      "type": "string"
+    },
+    "end": {
+      "format": "date-time",
+      "title": "End",
+      "type": "string"
+    },
+    "timezone": {
+      "minLength": 1,
+      "title": "Timezone",
+      "type": "string"
+    },
+    "direction": {
+      "minLength": 1,
+      "title": "Direction",
+      "type": "string"
+    },
+    "count_object": {
+      "enum": [
+        "person",
+        "visit"
+      ],
+      "title": "Count Object",
+      "type": "string"
+    },
+    "count": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Count"
+    },
+    "missing_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Missing Reason"
+    },
+    "method": {
+      "minLength": 1,
+      "title": "Method",
+      "type": "string"
+    },
+    "dedupe": {
+      "minLength": 1,
+      "title": "Dedupe",
+      "type": "string"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/Evidence"
+      },
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "start",
+    "end",
+    "timezone",
+    "direction",
+    "count_object",
+    "method",
+    "dedupe",
+    "evidence"
+  ],
+  "title": "Observation",
+  "type": "object"
+}

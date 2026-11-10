@@ -81,11 +81,17 @@ def _place(element, mapping, evidence_id):
 
 
 class OverpassPlaceProvider:
-    def __init__(self, gateway, *, provider_id="overpass", clock=lambda: datetime.now(timezone.utc)):
+    def __init__(self, gateway, *, provider_id="overpass", clock=lambda: datetime.now(timezone.utc),
+                 request_method="GET"):
+        if request_method not in ("GET", "POST"):
+            raise ValueError("Overpass request method must be GET or POST")
         self.gateway, self.provider_id, self.clock = gateway, provider_id, clock
+        self.request_method = request_method
 
     async def search(self, request: PlaceQuery, context: RequestContext) -> Result[PlaceSet]:
         context = instance_context(context, self.gateway, self.provider_id)
+        context = context.model_copy(update={'effective_conditions': {
+            **context.effective_conditions, 'provider_http_method': self.request_method}})
         def fail(status, code):
             return Result[PlaceSet](status=status, data=None,
                                     issues=(Issue(code=code, message_key=f"overpass.{code}"),), context=context)
@@ -132,7 +138,9 @@ class OverpassPlaceProvider:
             return fail(Status.unavailable, "geometry_extra_missing")
         except (ValueError, TypeError, KeyError, IndexError):
             return fail(Status.invalid_input, "invalid_region")
-        response = await self.gateway.request(self.provider_id, "GET", "/api/interpreter", {"data": query}, context)
+        options = {"form": True, "retry_transient": True} if self.request_method == "POST" else {}
+        response = await self.gateway.request(self.provider_id, self.request_method, "/api/interpreter",
+                                              {"data": query}, context, **options)
         if response.status != Status.ok or response.data is None:
             return Result[PlaceSet](status=response.status, data=None, issues=response.issues,
                                     evidence=response.evidence, context=context)
@@ -169,3 +177,4 @@ class OverpassPlaceProvider:
         status = Status.partial if issues else normalized.status
         return Result[PlaceSet](status=status, data=normalized.data, issues=tuple(issues),
                                 evidence=(evidence,), context=context)
+
