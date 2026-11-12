@@ -1,6 +1,6 @@
 """Explicit time inputs must not become implicit Unix timestamps."""
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from pydantic import ValidationError
@@ -40,3 +40,9 @@ def test_time_condition_keeps_aware_datetime():
     instant = datetime(2026, 11, 12, 11, 30, tzinfo=timezone.utc)
     assert TimeCondition(kind="arrive_by", instant=instant,
                          timezone="Europe/Berlin").instant == instant
+
+
+def test_time_condition_extreme_offset_is_validation_error():
+    underflow = datetime(1, 1, 1, tzinfo=timezone(timedelta(hours=14)))
+    with pytest.raises(ValidationError):
+        TimeCondition(kind="depart_at", instant=underflow, timezone="Europe/Berlin")

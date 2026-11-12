@@ -37,7 +37,10 @@ class TimeCondition(FrozenModel):
         for key in ('instant', 'start', 'end'):
             value = getattr(self, key)
             if value is not None:
-                object.__setattr__(self, key, utc(value))
+                try:
+                    object.__setattr__(self, key, utc(value))
+                except OverflowError as exc:
+                    raise ValueError('time outside supported UTC range') from exc
         if self.kind in ('depart_at', 'arrive_by') and self.instant is None:
             raise ValueError('instant required')
         if self.kind == 'interval' and (self.start is None or self.end is None or self.start >= self.end):

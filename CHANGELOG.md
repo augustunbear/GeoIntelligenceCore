@@ -4,7 +4,8 @@
 
 - Reject numeric Unix timestamps and numeric timestamp strings for
   `TimeCondition` instants and interval bounds. Preserve offset-aware ISO-8601
-  and `datetime` inputs; no temporal POI filter or live-source claim.
+  and `datetime` inputs. Extreme offset dates now return validation errors
+  instead of uncaught overflow; no temporal POI filter or live-source claim.
 
 ## Unreleased — E04 offline transport slice
 
