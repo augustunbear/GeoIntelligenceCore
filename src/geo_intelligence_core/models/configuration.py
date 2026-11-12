@@ -2,7 +2,7 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from typing import Literal
-from pydantic import Field, StrictBool, StrictInt, StrictFloat, model_validator
+from pydantic import Field, StrictBool, StrictInt, StrictFloat, field_validator, model_validator
 from .common import FrozenModel
 from .evidence import utc
 from .location import Location
@@ -18,6 +18,19 @@ class TimeCondition(FrozenModel):
     end: datetime | None = None
     timezone: str | None = None
     label: str | None = None
+
+    @field_validator('instant', 'start', 'end', mode='before')
+    @classmethod
+    def explicit_instant(cls, value):
+        if value is None or isinstance(value, datetime):
+            return value
+        if isinstance(value, str):
+            # Pydantic otherwise interprets numeric strings as Unix timestamps.
+            try:
+                return datetime.fromisoformat(value[:-1] + 'Z' if value.endswith('z') else value)
+            except ValueError as exc:
+                raise ValueError('time must be an ISO-8601 instant with offset') from exc
+        raise ValueError('time must be an ISO-8601 instant with offset')
 
     @model_validator(mode='after')
     def validate_time(self):

@@ -23,6 +23,9 @@ Models are immutable; updates return new values. IDs are opaque strings; caller 
 `Rights` has separate permissions for use, retain, cache, display, export and redistribute, each allowed/denied/unknown, attribution text, license/source URL, checked_at and permitted purpose. Unknown is not permission. Evidence `Quality` separates precision, coverage, freshness, source reliability, uncertainty, verification; no single confidence score.
 `Metric.nature` is measured/derived/estimated/unverified; numeric zero needs evidence and valid semantics. Suppressed, missing and unknown remain distinguishable through status/issue and nullable value.
 `TimeCondition.kind`: depart_at / arrive_by / interval / descriptive. Unsupported temporal filtering is reported; descriptive labels cannot change data.
+The `instant`, `start` and `end` inputs, when present, must be offset-aware
+`datetime` values or ISO-8601 text with an explicit offset. Numeric values and
+numeric timestamp strings are not interpreted as Unix seconds or milliseconds.
 `source_key`: (source_id, entity_type, entity_id), including OSM node/way/relation.
 `Region.boundary_rule`: point_covers (boundary included) / point_within (excluded) / geometry_intersects; geometry_intersects counts entities once and is not an area allocation algorithm.
 `Location.version` increments on confirmation changes; snapshots reference exact versions.

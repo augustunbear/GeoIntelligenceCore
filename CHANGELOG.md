@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — explicit time input hardening
+
+- Reject numeric Unix timestamps and numeric timestamp strings for
+  `TimeCondition` instants and interval bounds. Preserve offset-aware ISO-8601
+  and `datetime` inputs; no temporal POI filter or live-source claim.
+
 ## Unreleased — E04 offline transport slice
 
 - Add bounded atomic caller-supplied transport facts import with purpose-bound
