@@ -2,7 +2,7 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from typing import Literal
-from pydantic import Field, StrictBool, StrictInt, StrictFloat, model_validator
+from pydantic import Field, StrictBool, StrictInt, StrictFloat, field_validator, model_validator
 from .common import FrozenModel
 from .evidence import utc
 from .location import Location
@@ -19,12 +19,30 @@ class TimeCondition(FrozenModel):
     timezone: str | None = None
     label: str | None = None
 
+    @field_validator('instant', 'start', 'end', mode='before')
+    @classmethod
+    def explicit_instant(cls, value):
+        if value is None or isinstance(value, datetime):
+            return value
+        if isinstance(value, str):
+            # Exclude implicit Unix timestamps, then let Pydantic validate
+            # ISO syntax: datetime.fromisoformat normalizes malformed offsets.
+            try:
+                float(value)
+            except ValueError:
+                return value
+            raise ValueError('time must be an ISO-8601 instant with offset')
+        raise ValueError('time must be an ISO-8601 instant with offset')
+
     @model_validator(mode='after')
     def validate_time(self):
         for key in ('instant', 'start', 'end'):
             value = getattr(self, key)
             if value is not None:
-                object.__setattr__(self, key, utc(value))
+                try:
+                    object.__setattr__(self, key, utc(value))
+                except OverflowError as exc:
+                    raise ValueError('time outside supported UTC range') from exc
         if self.kind in ('depart_at', 'arrive_by') and self.instant is None:
             raise ValueError('instant required')
         if self.kind == 'interval' and (self.start is None or self.end is None or self.start >= self.end):

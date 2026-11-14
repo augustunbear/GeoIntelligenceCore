@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — explicit time input hardening
+
+- Reject numeric Unix timestamps and numeric timestamp strings for
+  `TimeCondition` instants and interval bounds. Preserve offset-aware ISO-8601
+  and `datetime` inputs. Extreme offset dates now return validation errors
+  instead of uncaught overflow. Malformed ISO offsets are rejected by the
+  datetime parser, rather than silently normalized; no temporal POI filter or
+  live-source claim.
+
 ## Unreleased — E04 offline transport slice
 
 - Add bounded atomic caller-supplied transport facts import with purpose-bound
