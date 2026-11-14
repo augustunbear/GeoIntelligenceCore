@@ -25,11 +25,13 @@ class TimeCondition(FrozenModel):
         if value is None or isinstance(value, datetime):
             return value
         if isinstance(value, str):
-            # Pydantic otherwise interprets numeric strings as Unix timestamps.
+            # Exclude implicit Unix timestamps, then let Pydantic validate
+            # ISO syntax: datetime.fromisoformat normalizes malformed offsets.
             try:
-                return datetime.fromisoformat(value[:-1] + 'Z' if value.endswith('z') else value)
-            except ValueError as exc:
-                raise ValueError('time must be an ISO-8601 instant with offset') from exc
+                float(value)
+            except ValueError:
+                return value
+            raise ValueError('time must be an ISO-8601 instant with offset')
         raise ValueError('time must be an ISO-8601 instant with offset')
 
     @model_validator(mode='after')
