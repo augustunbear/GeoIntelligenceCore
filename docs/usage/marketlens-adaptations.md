@@ -59,47 +59,9 @@ record; phone/website additionally contribute to six-field completeness.
 Empty denominators yield `None`. Address presence is not address precision.
 Coverage remains `unknown`, regardless of field completeness.
 
-## Optional Playwright document extraction
+## Browser extraction moved outside core
 
-Install `geo-intelligence-core[browser]` and then `python -m playwright install
-chromium`. Browser installation is explicit and never occurs during core import.
-
-```python
-from geo_intelligence_core.providers.browser import BrowserExtractor, HtmlDocument
-
-document = HtmlDocument(html=approved_html, evidence=source_evidence,
-                        purpose='document-extraction')
-async with BrowserExtractor(enabled=True, max_concurrency=1) as extractor:
-    result = await extractor.extract(document, {'name': 'h1', 'address': '.address'},
-                                     request_context)
-```
-
-`source_evidence.rights.use` must be allowed for exactly that purpose. The
-consumer acquires the HTML lawfully and retains responsibility for source
-rights. `source_ref` and retrieval time describe acquisition, not extraction.
-Output retains the evidence and a document hash. It is unverified extracted
-text, never automatic business/geographic truth.
-
-One browser is reused within a session; each document gets a fresh context,
-preventing cross-document cookies/state. Document scripts are disabled,
-service workers blocked, downloads disabled and all requests aborted. Output
-reports the number of aborted requests. Defaults: concurrency 1 (maximum 4),
-1 MB HTML, 20 selectors, 2,000 characters per field, 10 s extraction deadline
-including slot wait. Resource cleanup gets a separate maximum of 5 s per
-resource. If cancellation interrupts context creation, the whole browser
-session is closed because the context handle may be unreachable; other work
-in that session may become unavailable. Open a new session to retry.
-
-Missing fields are null/partial; ambiguous selectors or truncated values are
-partial, not silently complete. Selector errors and unavailable browsers return
-explicit failures. Exceptions never return source HTML. `browser_factory` can
-inject an existing launch policy/executable; the extractor owns and closes the
-returned browser. Keep the session open until all extraction tasks settle.
-
-This is a complete offline document extractor, not a live Google Maps crawler.
-It cannot render data that only appears after executing a site's JavaScript.
-MarketLens's Google selectors, consent clicking, proxy rotation and email
-crawling are not imported. Live web acquisition needs its own approved adapter.
+The historical optional Playwright document extractor and its tests are migrated to [GeoWebCollector](https://github.com/augustunbear/GeoWebCollector). GeoIntelligenceCore no longer provides `geo_intelligence_core.providers.browser` or the `[browser]` extra in this candidate branch. External collectors must provide rights-checked, provenance-rich structured facts through approved inputs. This is a compatibility-affecting change: consumers importing the old browser API must migrate explicitly. See ADR-0004.
 
 ## Optional Gemini factual explanations
 
@@ -152,9 +114,7 @@ migration or consumer upgrade. The source candidate remains unreleased
 historical, not a dependency manifest for this changed candidate.
 
 Offline regression: `python -m pytest -q`.
-Optional Chromium: `GEO_BROWSER_TESTS=1 python -m pytest -q
-tests/unit/test_browser_documents.py`. Set `GEO_CHROMIUM_PATH` only when using a
-system executable instead of Playwright's installed Chromium.
+Chromium-specific tests now belong to GeoWebCollector.
 
 Locked browser CI dependencies target Linux x86_64/Python 3.12 separately from
 base dependencies. The browser CI job installs Chromium and exercises synthetic
