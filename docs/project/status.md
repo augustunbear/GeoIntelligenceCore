@@ -328,3 +328,9 @@ uncompleted target schema compatibility and publication-order verification.
 
 Combined FF-01–FF-04 tree after conflict resolution: **288 passed, 3 live skips**.
 
+
+## Standalone Playground PR #53 (2026-11-17)
+
+The local-only registry now exercises explicit offline core functions and fixed-response Photon/Overpass/ORS adapters, with an opt-in live switch, service-side ORS environment key, same-host persistent UTC-day quota and fixed public endpoints. Synthetic examples remain distinct from live observations. Public root functions have a CI coverage assertion; `apply_correction` is marked unsuitable without consumer case authorization and reviewed evidence. The browser extractor remains on this branch pending the independent migration PR #52 and compatibility check. The Playground does not activate providers for a consumer or change V1 schemas.
+
+Local verification: 616 passed, 4 skipped on the full offline suite (pre-final UI and registry polish); targeted Playground suite 5 passed. Chromium cannot launch in this workspace due a host socket restriction; GeoWebCollector CI owns its real Chromium check. Public endpoint and ORS live calls are unverified in this workspace. Latest PR CI and merge status are authoritative on GitHub.
