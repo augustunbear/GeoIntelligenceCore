@@ -4,7 +4,7 @@ Reusable, provider-neutral geospatial intelligence foundation for multiple produ
 
 ## Install and offline consumer example
 
-Requires Python 3.12. Build with `python -m build`, then install the wheel from `dist/` into a clean venv. Optional extras are `geo-intelligence-core[geometry]`, `[providers]`, `[browser]` and `[temporal]`. No key, database, JVM or network access is needed to import the base package or run `python examples/python/offline_analysis.py`. The example confirms synthetic locations, runs the three packaged templates with a mock places port, and checks a purpose-bound snapshot and export. See [consumer integration](docs/usage/consumer-integration.md) and [release candidate checks](docs/releases/0.1.0a1.md).
+Requires Python 3.12. Build with `python -m build`, then install the wheel from `dist/` into a clean venv. Optional extras are `geo-intelligence-core[geometry]`, `[providers]` and `[temporal]`. No key, database, JVM or network access is needed to import the base package or run `python examples/python/offline_analysis.py`. The example confirms synthetic locations, runs the three packaged templates with a mock places port, and checks a purpose-bound snapshot and export. See [consumer integration](docs/usage/consumer-integration.md) and [release candidate checks](docs/releases/0.1.0a1.md).
 
 ## Mission / 定位
 
@@ -45,7 +45,7 @@ No collection, observation comparison, provider activation or consumer integrati
 
 ## Repository documentation
 
-- [Selective MarketLens adaptations](docs/usage/marketlens-adaptations.md) — opt-in Overpass form POST, comparison/quality helpers, optional offline Playwright extraction and separately invoked Gemini explanations; no live activation.
+- [Selective MarketLens adaptations](docs/usage/marketlens-adaptations.md) — opt-in Overpass form POST, comparison/quality helpers, external GeoWebCollector browser extraction and separately invoked Gemini explanations; no live activation.
 - [Third-party notices](THIRD_PARTY_NOTICES.md) — selected MIT license and upstream provenance.
 
 - [AGENTS.md](AGENTS.md) — contribution and assistant workflow rules
