@@ -13,7 +13,15 @@ import geo_intelligence_core as core
 
 # Only documented public functions, never classes or internal provider objects.
 EXCLUDE = {"load_profile", "load_template", "export_result", "import_region", "apply_correction", "snapshot"}
-SAFE_OPERATIONS = {"distance_m", "circle", "parse_map_link", "normalize_comparison_text", "summarize_place_quality", "find_duplicate_candidates", "evaluate_opening_hours", "normalize_observation"}
+SAFE_OPERATIONS = {"distance_m", "circle", "combine", "parse_map_link", "normalize_comparison_text", "summarize_place_quality", "find_duplicate_candidates", "evaluate_opening_hours", "normalize_observation"}
+EXAMPLES = {
+    "normalize_comparison_text": {"value": "Café Müller Nürnberg"},
+    "parse_map_link": {"url": "https://www.openstreetmap.org/?mlat=49.4521&mlon=11.0767"},
+    "distance_m": {"a": {"latitude": 49.4521, "longitude": 11.0767}, "b": {"latitude": 49.46, "longitude": 11.09}},
+    "circle": {"request": {"center": {"latitude": 49.4521, "longitude": 11.0767}, "radius_m": 500}, "limits": {"max_vertices": 1000, "max_area_m2": 100000000}},
+    "summarize_place_quality": {"records": []},
+    "find_duplicate_candidates": {"records": []},
+}
 def catalog():
     operations = {}
     for name in core.__all__:
@@ -22,7 +30,7 @@ def catalog():
             continue
         sig = inspect.signature(obj)
         operations[name] = {"description": (inspect.getdoc(obj) or "").splitlines()[0],
-                            "signature": str(sig), "available": name in SAFE_OPERATIONS, "example": {}}
+                            "signature": str(sig), "available": name in SAFE_OPERATIONS, "example": EXAMPLES.get(name, {})}
     return operations
 
 def execute(name, params):
