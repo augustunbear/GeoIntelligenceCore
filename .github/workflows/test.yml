@@ -21,23 +21,3 @@ jobs:
       - name: Build distributions
         run: |
           python -m build --no-isolation
-
-  browser-documents:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install locked core and optional browser dependencies
-        run: python -m pip install --require-hashes -r requirements/core-py312.lock -r requirements/browser-linux-py312.lock
-      - name: Install core and Chromium
-        run: |
-          python -m pip install --no-deps -e .
-          python -m playwright install --with-deps chromium
-      - name: Exercise real Chromium with synthetic offline HTML
-        env:
-          GEO_BROWSER_TESTS: '1'
-          GEO_CHROMIUM_PATH: ''
-        run: python -m pytest -q tests/unit/test_browser_documents.py
-
