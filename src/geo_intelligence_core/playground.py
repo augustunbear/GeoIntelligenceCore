@@ -5,6 +5,7 @@ import asyncio
 import inspect
 import json
 import os
+import re
 import sqlite3
 import time
 import threading
@@ -311,7 +312,18 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
     def _local(self):
         host=self.headers.get('Host',''); origin=self.headers.get('Origin')
-        return host in ('127.0.0.1:'+str(self.server.server_port),'localhost:'+str(self.server.server_port)) and (origin is None or origin=='http://'+host)
+        port=str(self.server.server_port)
+        if host in ('127.0.0.1:'+port,'localhost:'+port):
+            return origin is None or origin=='http://'+host
+        name=os.getenv('CODESPACE_NAME','')
+        domain=os.getenv('GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN','')
+        # Only this codespace's exact HTTPS forwarding host is accepted.
+        if (os.getenv('CODESPACES')!='true' or
+            not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*',name) or
+            not re.fullmatch(r'[a-z0-9]+(?:[.-][a-z0-9]+)*',domain)):
+            return False
+        expected=f'{name}-{port}.{domain}'
+        return host==expected and (origin is None or origin=='https://'+expected)
     def do_GET(self):
         if not self._local():self.send_error(403);return
         if self.path=='/': body=files('geo_intelligence_core').joinpath('playground.html').read_bytes(); mime='text/html; charset=utf-8'

@@ -143,7 +143,7 @@ This does not activate live sources. Company import is separately available as a
 
 [ADR-0004](docs/architecture/adr/ADR-0004-browser-automation-outside-core.md) places Playwright, website discovery and menu/page extraction outside GeoIntelligenceCore, in consumer applications or independent collectors. The former optional `[browser]` extra and extractor moved to GeoWebCollector in PR #52; code importing `geo_intelligence_core.providers.browser` must migrate explicitly. No browser is needed for ordinary geospatial analysis. Website-derived facts require explicit rights, provenance and verification status.
 
-## 本地 Playground
+## Playground：本地或私有 Codespaces
 
 安装 Python 3.12 后，在仓库根目录执行：
 
@@ -157,3 +157,11 @@ python -m geo_intelligence_core.playground
 默认 Provider 测试使用同一适配器的固定离线响应，不访问服务。想测试真实 Photon / Overpass / ORS 时，在**本机终端**设置 `GEO_PLAYGROUND_LIVE=1`；ORS 还需设置 `ORS_API_KEY` 环境变量，然后重启 Playground，在对应功能上勾选“本次调用真实服务”。不要把密钥填入网页。公开端点、超时与单次请求上限固定；路线端点最多相距 20 km、矩阵最多 5×5、等时线最多三档 30 分钟；本机 SQLite 配额文件默认位于 `~/.geo-playground-quota.sqlite3`，按来源每天最多 50 次尝试，失败也计入。实时结果仅是调用观察，不代表数据质量或商用权已获批准。公共端点不可用时仍可执行离线示例。
 
 新增功能时在 `playground.py` 的显式注册表增加名称、分类、参数模型/示例和受限执行适配器。CI 的公开函数覆盖测试会发现未登记的新公开函数。Playground 只监听 `127.0.0.1`；请勿将其暴露到公网或填入私人案件数据。出现“依赖不可用”时安装对应的 optional extra；出现 ORS 未配置时检查本机环境变量；出现额度耗尽请次日再试，不要删除配额文件规避限制。
+
+### 在线打开（GitHub Codespaces）
+
+1. 在本仓库 GitHub 页面点击 **Code → Codespaces → Create codespace on main**。首次创建会安装 Python 和可选依赖；启动时会自动运行 Playground。
+2. 在 Codespaces 的 **Ports** 面板找到 **8765**，确认 **Port Visibility = Private**，点击网址在浏览器打开。GitHub 登录账户可访问自己的私有转发端口；Codespace 停止后页面也会停止。
+3. 后续重新启动同一 Codespace 即可；如启动失败，可在终端运行 `bash .devcontainer/start-playground.sh` 并检查 `/tmp/geo-intelligence-playground.log`。首次安装及 Codespace 用量可能需要等待或计费，请查看 GitHub 账户额度。
+
+Codespaces 网址只在对应 Codespace 的环境中通过精确 Host/Origin 校验；服务器仍监听 `127.0.0.1`。**不要将端口改为 Public/Organization，也不要在在线实例输入真实客户数据。** 离线示例不需要密钥。若需调用真实 Photon/Overpass/ORS，请在 GitHub 的 Codespaces secrets 中设置 `GEO_PLAYGROUND_LIVE=1`；ORS 另设 `ORS_API_KEY`，为本仓库授权该 secret 后重启 Codespace，再在页面逐次勾选实时调用。不要把密钥放在代码、网址或网页参数中。额度文件位于 Codespace 的本地存储，删除或重建 Codespace 后不保留；免费公共服务和额度并非生产级保障。

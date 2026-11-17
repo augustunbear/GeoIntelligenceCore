@@ -1,4 +1,17 @@
-> This source tree includes the offline changes reviewed in PRs #41–#48. The per-PR test counts below are historical isolated results, not live-source acceptance. The source tree is not a release or deployment.
+> Earlier per-PR test counts below are historical isolated results, not live-source acceptance. This source tree is not a release or deployment.
+
+# Private Codespaces Playground access — 2026-11-17
+
+Based on remote main `02c6521`, the repository adds a Python 3.12 dev container,
+automatic local server startup, and private forwarding for port 8765. Host and
+Origin checks accept only this Codespace's exact HTTPS forwarding hostname
+(derived from GitHub-provided environment variables) or local loopback.
+The Playground still listens on loopback, uses offline examples by default and
+does not become a public or multi-user service. Operator must keep port visibility
+Private. No Codespace has been created or public provider measured in this workspace.
+Local verification: full Python suite 614 passed, 3 opt-in live skips;
+focused HTTP and registry suite 8 passed after final changes; startup script
+served `/api/operations` on loopback; shell and JSON syntax checks passed.
 
 # E01 offline observation slice — 2026-11-10
 
