@@ -138,3 +138,7 @@ of explicit offline observations with purpose-bound evidence and expiry checks.
 Parking capacity and free-space counts stay separate; restrictions require a
 segment, direction and validity period. See the [transport contract and limits](docs/operations/enrichment-sources.md).
 This does not activate live sources. Company import is separately available as a caller-supplied offline slice.
+
+## Local API Playground (experimental)
+
+Run `python -m geo_intelligence_core.playground` and open `http://127.0.0.1:8765`. Public operations are discoverable; only allowlisted safe operations execute. Others return an unsupported error pending explicit adapters. This development-only server must not be exposed publicly.
