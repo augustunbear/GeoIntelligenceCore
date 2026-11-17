@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — analysis provider provenance
+
+- Retain the selected provider's instance, endpoint and HTTP method on each
+  analyzed place topic. The aggregate request identity and scope remain
+  caller-owned; no provider is activated by this change.
+
 ## Unreleased — explicit time input hardening
 
 - Reject numeric Unix timestamps and numeric timestamp strings for
