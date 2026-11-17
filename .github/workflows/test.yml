@@ -21,6 +21,7 @@ jobs:
       - name: Build distributions
         run: |
           python -m build --no-isolation
+          python -c "import glob,zipfile; z=zipfile.ZipFile(glob.glob('dist/*.whl')[0]); assert all('geo_intelligence_core/'+n in z.namelist() for n in ('playground.py','playground.html','playground.js'))"
 
   browser-documents:
     runs-on: ubuntu-latest
