@@ -12,7 +12,7 @@ from pydantic import TypeAdapter
 import geo_intelligence_core as core
 
 # Only documented public functions, never classes or internal provider objects.
-EXCLUDE = {"load_profile", "load_template", "export_result"}
+EXCLUDE = {"load_profile", "load_template", "export_result", "import_region", "apply_correction", "snapshot"}
 def catalog():
     operations = {}
     for name in core.__all__:
@@ -36,7 +36,7 @@ def execute(name, params):
         raise ValueError("Unexpected parameter(s)")
     converted = {k: TypeAdapter(hints[k]).validate_python(v) if k in hints else v
                  for k, v in params.items()}
-    result = fn(**converted)
+    if name not in {"distance_m", "circle", "parse_map_link", "normalize_comparison_text", "summarize_place_quality", "find_duplicate_candidates", "evaluate_opening_hours", "normalize_observation"}:\n        raise ValueError("Operation is discoverable but not yet wired to a safe playground adapter")\n    result = fn(**converted)
     if inspect.isawaitable(result):
         raise ValueError("Async operations are not supported by this local runner")
     return json.loads(json.dumps(result, default=lambda o: o.model_dump(mode="json") if hasattr(o,"model_dump") else str(o)))
