@@ -19,3 +19,8 @@
 - Avoid breaking public schemas; bump version when necessary. Consumer security and case-level authorization remain consumer responsibility unless this repo operates an authenticated service.
 - Keep status accurate: documentation is not implementation, CI is not deployment, mock result is not live data.
 - Use feature branches and PR reviews for subsequent work; do not merge to main or deploy without explicit authorization.
+
+## Browser automation boundary (ADR-0004)
+- Playwright, browser-based website discovery, menu/page extraction and website-specific scraping belong outside GeoIntelligenceCore, in a separate collector or consumer. Do not introduce new browser automation into the core.
+- Accept externally acquired geospatial facts only through explicit rights-checked, provenance-rich contracts; website text is not automatically verified geospatial truth.
+- Existing optional browser code/extras require a separately reviewed compatibility-preserving migration; this documentation decision does not remove them.
