@@ -138,3 +138,7 @@ of explicit offline observations with purpose-bound evidence and expiry checks.
 Parking capacity and free-space counts stay separate; restrictions require a
 segment, direction and validity period. See the [transport contract and limits](docs/operations/enrichment-sources.md).
 This does not activate live sources. Company import is separately available as a caller-supplied offline slice.
+
+## Browser automation architecture decision
+
+[ADR-0004](docs/architecture/adr/ADR-0004-browser-automation-outside-core.md) places Playwright, website discovery and menu/page extraction outside GeoIntelligenceCore, in consumer applications or independent collectors. The existing optional `[browser]` extra and extractor are still present in this source candidate pending a separate compatibility-reviewed migration; they are **not** the intended long-term core boundary. No browser is needed for ordinary geospatial analysis. Website-derived facts require explicit rights, provenance and verification status.
