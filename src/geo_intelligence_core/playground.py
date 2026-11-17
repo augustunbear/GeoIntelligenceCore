@@ -18,7 +18,11 @@ from typing import get_type_hints
 from pydantic import TypeAdapter, ValidationError, create_model
 import geo_intelligence_core as core
 from .geometry import point_in_region
-from .places import normalize_places
+from .places import normalize_places, company_site
+from .inputs.company import import_company
+from .inputs.transport import import_transport
+from .history import compare_snapshots
+from .configuration import resolve_config
 from .models.places import PlaceQuery
 from .models.requests import SearchRequest, ReverseRequest, RequestContext
 from .models.spatial import RouteRequest, MatrixRequest, CatchmentRequest
@@ -53,6 +57,9 @@ DIRECT = {
  'find_duplicate_candidates': ('地点去重候选','数据处理',{'records':PLACES},core.find_duplicate_candidates,'offline',['geometry']),
  'summarize_place_quality': ('字段完整性与质量','数据处理',{'records':PLACES},core.summarize_place_quality,'offline',[]),
  'normalize_observation': ('计数观测验证','数据处理',{'observation':{'id':'sample','point':POINT,'start':'2026-11-17T09:00:00Z','end':'2026-11-17T10:00:00Z','timezone':'Europe/Berlin','direction':'northbound','count_object':'visit','count':0,'method':'synthetic','dedupe':'unknown','evidence':[EVIDENCE]}},core.normalize_observation,'offline',[]),
+ 'company_site': ('识别已提供的办公室地点','数据处理',{'place':{**PLACES[0],'categories':['office']}},company_site,'offline',[]),
+ 'import_company': ('导入已提供的公司场所','数据处理',{'records':[{'id':'site-1','source_id':'synthetic','source_ref':'playground','site_role':'branch','point':POINT}], 'evidence':EVIDENCE, 'purpose':'demo'},import_company,'offline',[]),
+ 'import_transport': ('导入已提供的交通事实','数据处理',{'records':[{'id':'parking-1','kind':'parking_capacity','value':80,'unit':'spaces','location':POINT,'valid_from':'2026-11-17T09:00:00Z','valid_until':'2026-11-17T14:00:00Z','measured_at':'2026-11-17T10:00:00Z','evidence_ids':['sample']}], 'evidence':[EVIDENCE], 'purpose':'demo', 'as_of':'2026-11-17T12:00:00Z'},import_transport,'offline',[]),
  'normalize_places': ('地点类别与区域标准化','数据处理',{'records':PLACES,'query':QUERY},normalize_places,'offline',['geometry']),
  'evaluate_opening_hours': ('营业时间解析','数据处理',{'hours_raw':'Mo-Fr 09:00-18:00','at':'2026-11-17T10:00:00Z','timezone':'Europe/Berlin'},core.evaluate_opening_hours,'offline',['temporal']),
  'load_profile': ('加载行业配置','分析与结果',{'ref':'food-service@1'},core.load_profile,'offline',[]),
@@ -85,6 +92,35 @@ def _analysis(params, action):
     if action == 'export_result':
         snap = core.snapshot(result.data, purpose='demo')
         return core.export_result(snap.data, format=params.get('format','json'), language=params.get('language','zh-CN'), purpose='demo')
+    if action == 'resolve_config':
+        from .models.configuration import AnalyzeRequest
+        from .models.policy import UsagePolicy
+        registry=core.ProviderRegistry(); registry.register('places',SyntheticPlaces())
+        return resolve_config(AnalyzeRequest(topics=[{'id':'places'}],explicit_parameters={'category_ids':params.get('category_ids',['restaurant'])},request_id='playground-config'),None,None,UsagePolicy(allowed_capabilities=['places'],max_calls_per_run=3),registry=registry)
+    if action == 'compare_snapshots':
+        from .models.analysis import Analysis
+        from .models.common import Result, Status
+        from .models.evidence import Evidence
+        from .models.places import Place, PlaceSet
+        context=RequestContext(request_id='synthetic-history',location_versions={'site':1},method_version='analysis-v1',effective_conditions={'query':'synthetic-500m'})
+        evidence=Evidence.model_validate(EVIDENCE)
+        def snap(ids):
+            places=[Place.model_validate({**PLACES[0],'source_key':{'source_id':'synthetic','entity_type':'site','entity_id':str(i)},'evidence_ids':['sample']}) for i in ids]
+            topic=Result(status=Status.ok,data=PlaceSet(places=places,retrieved_count=len(places),unique_count=len(places),coverage='complete:synthetic-area-v1'),evidence=[evidence],context=context)
+            return core.snapshot(Analysis(request_context=context,selected_topics=['places'],topic_results={'places':topic}),'demo').data
+        return compare_snapshots(snap([1,2]),snap([1]))
+    if action == 'apply_correction':
+        from .models.analysis import Analysis, Correction, Metric
+        from .models.common import Result, Status
+        from .models.evidence import Evidence
+        context=RequestContext(request_id='synthetic-correction',scope_token='synthetic-only')
+        evidence=Evidence.model_validate(EVIDENCE)
+        original=Analysis(request_context=context,selected_topics=['places'],topic_results={
+            'places':Result(status=Status.ok,data={'count':Metric(value=4,unit='items',nature='measured',evidence_ids=['sample'])},context=context,evidence=[evidence])})
+        value=params.get('value',7)
+        if type(value) is not int or value<0 or value>1_000_000: raise ValueError('value must be a bounded nonnegative integer')
+        correction=Correction(target_ref='places/count',action='correct',replacement={'value':value,'unit':'items','nature':'measured','evidence_ids':['sample']},evidence_ids=['sample'],reason='synthetic fixture',scope_token='synthetic-only',at='2026-11-17T00:00:00Z')
+        return core.apply_correction(original,correction,'synthetic-only')
     if action == 'compare':
         from .models.analysis import Analysis
         from .models.common import Result, Status
@@ -99,6 +135,9 @@ def _analysis(params, action):
 
 SPECIAL = {
  'analyze': ('离线分析执行','分析与结果',{'category_ids':['restaurant'],'template_ref':'venue-discovery@1'},'offline',['geometry']),
+ 'resolve_config': ('配置与能力预检','分析与结果',{'category_ids':['restaurant']},'offline',[]),
+ 'compare_snapshots': ('合成历史快照比较','分析与结果',{},'offline',[]),
+ 'apply_correction': ('合成案件的事实更正','分析与结果',{'value':7},'offline',[]),
  'compare': ('地点事实比较','分析与结果',{'metric_ids':['places.unique_count']},'offline',['geometry']),
  'snapshot': ('保留结果快照','分析与结果',{},'offline',['geometry']),
  'export_result': ('结果导出','分析与结果',{'format':'json','language':'zh-CN'},'offline',['geometry']),
@@ -113,7 +152,7 @@ LIVE = {
 }
 
 # An explicit exception with reason protects complex mutable correction workflows.
-EXCEPTIONS = {'apply_correction':'需消费者案件授权及人工核实更正证据；本地样本没有对应案件。'}
+EXCEPTIONS = {}
 
 def _schema(fn):
     sig = inspect.signature(fn)
@@ -130,7 +169,7 @@ def catalog():
           'mode':mode,'dependencies':deps,'api_key':False,'permission':'只处理本机提交的样本；请勿粘贴未经许可的数据。','available':True}
     for name,(title,cat,example,mode,deps) in SPECIAL.items():
         operations[name] = {'name':title,'category':cat,'description':'使用内置合成地点与授权样本执行真实核心分析。',
-          'schema':{'type':'object','additionalProperties':False,'properties':{k:{'type':'array' if isinstance(v,list) else 'string'} for k,v in example.items()}},
+          'schema':{'type':'object','additionalProperties':False,'properties':{k:{'type':'array' if isinstance(v,list) else 'integer' if isinstance(v,int) else 'string'} for k,v in example.items()}},
           'example':example,'status':'executable','reason':'合成样本；不代表真实周边数据。', 'mode':mode,'dependencies':deps,'api_key':False,'permission':'仅合成数据。','available':True}
     for name,(title,cat,example,protocol,method,model) in LIVE.items():
         operations[name] = {'name':title,'category':cat,'description':f'离线调用同一 {protocol} Provider 的固定响应；实时调用需服务端显式开启。',
@@ -208,6 +247,7 @@ def execute(name,params,*,live=False):
         if set(params)-set(sig.parameters): raise ValueError('多余参数')
         hints=get_type_hints(fn)
         parsed={key:TypeAdapter(hints[key]).validate_python(value) if key in hints else value for key,value in params.items()}
+        if name == 'import_transport': parsed['context']=RequestContext(request_id='playground-transport')
         sig.bind(**parsed)
         return _json(fn(**parsed))
     if name in SPECIAL:

@@ -25,12 +25,13 @@ def test_public_function_coverage_and_examples():
             if isinstance(result,dict) and 'status' in result:
                 assert result['status'] not in ('invalid_input','unavailable','unconfigured','unknown')
     assert ops['parse_map_link']['example']['url'].startswith('https://')
+    assert {'normalize_places','company_site','import_company','import_transport','resolve_config','compare_snapshots','apply_correction'} <= set(ops)
 
 
 def test_offline_execution_and_invalid():
     assert execute('parse_map_link',catalog()['parse_map_link']['example'])['status']=='ok'
     assert execute('normalize_comparison_text',{'value':'Café Müller'})=='cafe muller'
-    for name,params in [('__dict__',{}),('apply_correction',{}),('distance_m',{'a':{'longitude':181,'latitude':49},'b':{'longitude':11,'latitude':49}}),('distance_m',{'a':{},'b':{},'__class__':1})]:
+    for name,params in [('__dict__',{}),('apply_correction',{'value':-1}),('distance_m',{'a':{'longitude':181,'latitude':49},'b':{'longitude':11,'latitude':49}}),('distance_m',{'a':{},'b':{},'__class__':1})]:
         with pytest.raises((ValueError,TypeError)):
             execute(name,params)
 
@@ -65,7 +66,7 @@ def test_http_assets_origin_and_run(monkeypatch):
         assert b'playground.js' in call('GET','/')[1]
         assert b'copy-response' in call('GET','/playground.js')[1]
         ops=json.loads(call('GET','/api/operations')[1])['operations']
-        assert len(ops)>=20
+        assert len(ops)>=28
         headers={'Content-Type':'application/json'}
         payload=json.dumps({'operation':'distance_m','params':catalog()['distance_m']['example'],'live':False})
         status,body=call('POST','/api/run',payload,headers)
