@@ -13,6 +13,7 @@ import geo_intelligence_core as core
 
 # Only documented public functions, never classes or internal provider objects.
 EXCLUDE = {"load_profile", "load_template", "export_result", "import_region", "apply_correction", "snapshot"}
+SAFE_OPERATIONS = {"distance_m", "circle", "parse_map_link", "normalize_comparison_text", "summarize_place_quality", "find_duplicate_candidates", "evaluate_opening_hours", "normalize_observation"}
 def catalog():
     operations = {}
     for name in core.__all__:
@@ -37,7 +38,7 @@ def execute(name, params):
         raise ValueError("Unexpected parameter(s)")
     converted = {k: TypeAdapter(hints[k]).validate_python(v) if k in hints else v
                  for k, v in params.items()}
-    if name not in {"distance_m", "circle", "parse_map_link", "normalize_comparison_text", "summarize_place_quality", "find_duplicate_candidates", "evaluate_opening_hours", "normalize_observation"}:
+    if name not in SAFE_OPERATIONS:
         raise ValueError("Operation is discoverable but not yet wired to a safe playground adapter")
     result = fn(**converted)
     if inspect.isawaitable(result):
