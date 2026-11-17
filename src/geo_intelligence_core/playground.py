@@ -21,9 +21,8 @@ def catalog():
         if name in EXCLUDE or not inspect.isfunction(obj) or name.startswith("_"):
             continue
         sig = inspect.signature(obj)
-        operations[name] = {"description": (inspect.getdoc(obj) or "").split("
-")[0],
-                            "signature": str(sig), "example": {}}
+        operations[name] = {"description": (inspect.getdoc(obj) or "").splitlines()[0],
+                            "signature": str(sig), "available": name in SAFE_OPERATIONS, "example": {}}
     return operations
 
 def execute(name, params):
