@@ -61,3 +61,9 @@ Prototype -> offline-tested package -> contract-tested pre-release -> tagged rel
 
 ## Consumer integration
 RestaurantTrafficDiagnosis should retain `area_research` business orchestration, case/sources/diagnosis ownership and approval. It calls package APIs and converts neutral evidence to application evidence; no `restaurant_id` or customer scoring inside Geo core. GastroPreisRadar may share search and distances while retaining prices and their evidence model.
+
+## Browser automation boundary (ADR-0004; accepted 2026-11-17)
+
+Browser execution, Playwright, website discovery, menu/page extraction and website-specific scraping are outside the GeoIntelligenceCore boundary. Consumers or independent collectors may supply structured facts with explicit source, retrieval time, rights, attribution and verification status. Core geospatial provider adapters remain replaceable and must use permitted sources; Google Maps web scraping is not a substitute for an authorized API. AI webpage interpretation is likewise not a prerequisite for core geospatial analysis. See [ADR-0004](adr/ADR-0004-browser-automation-outside-core.md).
+
+The former optional `providers.browser` and `[browser]` extra moved to GeoWebCollector in PR #52. Existing consumers of that import must migrate explicitly.
