@@ -1,0 +1,12 @@
+{
+  "name": "GeoIntelligenceCore Playground",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
+  "forwardPorts": [8765],
+  "portsAttributes": {
+    "8765": {
+      "label": "GeoIntelligenceCore Playground"
+    }
+  },
+  "postCreateCommand": "python -m pip install -e '.[geometry,providers,temporal]'",
+  "postStartCommand": "bash .devcontainer/start-playground.sh"
+}

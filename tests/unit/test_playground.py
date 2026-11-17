@@ -79,6 +79,45 @@ def test_http_assets_origin_and_run(monkeypatch):
         server.shutdown();server.server_close();thread.join()
 
 
+def test_codespaces_private_forwarded_host(monkeypatch):
+    monkeypatch.undo()  # Restore loopback sockets disabled by the offline suite fixture.
+    server=ThreadingHTTPServer(('127.0.0.1',0),Handler)
+    thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+    def call(host,origin=None,method='GET'):
+        conn=http.client.HTTPConnection('127.0.0.1',server.server_port,timeout=5)
+        headers={'Host':host}
+        if origin is not None: headers['Origin']=origin
+        if method=='POST':
+            headers['Content-Type']='application/json'
+            body=json.dumps({'operation':'distance_m','params':catalog()['distance_m']['example']})
+            conn.request('POST','/api/run',body=body,headers=headers)
+        else:
+            conn.request('GET','/api/operations',headers=headers)
+        response=conn.getresponse();response.read();status=response.status;conn.close()
+        return status
+    host=f'example-space-{server.server_port}.app.github.dev'
+    try:
+        assert call(host)==403
+        monkeypatch.setenv('CODESPACES','true')
+        monkeypatch.setenv('CODESPACE_NAME','example-space')
+        monkeypatch.setenv('GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN','app.github.dev')
+        assert call(host)==200
+        assert call(host,'https://'+host)==200
+        assert call(host,'https://'+host,method='POST')==200
+        for invalid_host,origin in [(host,'http://'+host),(host,'https://evil.test'),
+                                    (host+'.evil.test',None),
+                                    (f'example-space-{server.server_port+1}.app.github.dev',None),
+                                    ('evil.app.github.dev',None)]:
+            assert call(invalid_host,origin)==403
+        monkeypatch.setenv('CODESPACE_NAME','example-space.evil.test')
+        assert call(host)==403
+        monkeypatch.delenv('CODESPACES')
+        assert call(host)==403
+        assert call(f'localhost:{server.server_port}')==200
+    finally:
+        server.shutdown();server.server_close();thread.join()
+
+
 def test_provider_method_coverage():
     from geo_intelligence_core.providers.photon import PhotonResolver
     from geo_intelligence_core.providers.overpass import OverpassPlaceProvider
