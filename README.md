@@ -4,7 +4,7 @@ Reusable, provider-neutral geospatial intelligence foundation for multiple produ
 
 ## Install and offline consumer example
 
-Requires Python 3.12. Build with `python -m build`, then install the wheel from `dist/` into a clean venv. Optional extras are `geo-intelligence-core[geometry]`, `[providers]`, `[browser]` and `[temporal]`. No key, database, JVM or network access is needed to import the base package or run `python examples/python/offline_analysis.py`. The example confirms synthetic locations, runs the three packaged templates with a mock places port, and checks a purpose-bound snapshot and export. See [consumer integration](docs/usage/consumer-integration.md) and [release candidate checks](docs/releases/0.1.0a1.md).
+Requires Python 3.12. Build with `python -m build`, then install the wheel from `dist/` into a clean venv. Optional extras are `geo-intelligence-core[geometry]`, `[providers]` and `[temporal]`. No key, database, JVM or network access is needed to import the base package or run `python examples/python/offline_analysis.py`. The example confirms synthetic locations, runs the three packaged templates with a mock places port, and checks a purpose-bound snapshot and export. See [consumer integration](docs/usage/consumer-integration.md) and [release candidate checks](docs/releases/0.1.0a1.md).
 
 ## Mission / 定位
 
@@ -45,7 +45,7 @@ No collection, observation comparison, provider activation or consumer integrati
 
 ## Repository documentation
 
-- [Selective MarketLens adaptations](docs/usage/marketlens-adaptations.md) — opt-in Overpass form POST, comparison/quality helpers, optional offline Playwright extraction and separately invoked Gemini explanations; no live activation.
+- [Selective MarketLens adaptations](docs/usage/marketlens-adaptations.md) — opt-in Overpass form POST, comparison/quality helpers, external GeoWebCollector browser extraction and separately invoked Gemini explanations; no live activation.
 - [Third-party notices](THIRD_PARTY_NOTICES.md) — selected MIT license and upstream provenance.
 
 - [AGENTS.md](AGENTS.md) — contribution and assistant workflow rules
@@ -141,7 +141,7 @@ This does not activate live sources. Company import is separately available as a
 
 ## Browser automation architecture decision
 
-[ADR-0004](docs/architecture/adr/ADR-0004-browser-automation-outside-core.md) places Playwright, website discovery and menu/page extraction outside GeoIntelligenceCore, in consumer applications or independent collectors. The existing optional `[browser]` extra and extractor are still present in this source candidate pending a separate compatibility-reviewed migration; they are **not** the intended long-term core boundary. No browser is needed for ordinary geospatial analysis. Website-derived facts require explicit rights, provenance and verification status.
+[ADR-0004](docs/architecture/adr/ADR-0004-browser-automation-outside-core.md) places Playwright, website discovery and menu/page extraction outside GeoIntelligenceCore, in consumer applications or independent collectors. The former optional `[browser]` extra and extractor moved to GeoWebCollector in PR #52; code importing `geo_intelligence_core.providers.browser` must migrate explicitly. No browser is needed for ordinary geospatial analysis. Website-derived facts require explicit rights, provenance and verification status.
 
 ## 本地 Playground
 

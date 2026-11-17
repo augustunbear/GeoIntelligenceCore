@@ -66,4 +66,4 @@ RestaurantTrafficDiagnosis should retain `area_research` business orchestration,
 
 Browser execution, Playwright, website discovery, menu/page extraction and website-specific scraping are outside the GeoIntelligenceCore boundary. Consumers or independent collectors may supply structured facts with explicit source, retrieval time, rights, attribution and verification status. Core geospatial provider adapters remain replaceable and must use permitted sources; Google Maps web scraping is not a substitute for an authorized API. AI webpage interpretation is likewise not a prerequisite for core geospatial analysis. See [ADR-0004](adr/ADR-0004-browser-automation-outside-core.md).
 
-The existing optional `providers.browser` and `[browser]` extra are historical implementation that still requires a separate compatibility-reviewed migration PR. This ADR does not claim code removal.
+The former optional `providers.browser` and `[browser]` extra moved to GeoWebCollector in PR #52. Existing consumers of that import must migrate explicitly.

@@ -1,7 +1,7 @@
 # ADR-0004: Browser automation outside GeoIntelligenceCore
 
 Date: 2026-11-17
-Status: Accepted (architecture decision; implementation migration pending)
+Status: Accepted; migration implemented in PR #52
 
 ## Context
 GeoIntelligenceCore is a reusable, provider-neutral geospatial Python package. The 2026-11-09 selective MarketLens adaptation introduced an optional Playwright HTML extractor under `geo_intelligence_core.providers.browser` and a `[browser]` extra. Although opt-in and offline, browser document extraction is not a geospatial capability. Keeping it here increases coupling to Chromium, web-page structure and website-specific acquisition rules.
@@ -28,4 +28,4 @@ GeoIntelligenceCore (location, POIs, geometry, catchments, comparison, quality)
 - No Playwright runtime, browser download or browser-specific API is a prerequisite for core install or geospatial analysis.
 - External collectors must not bypass evidence-rights checks or automatically turn page text into verified geospatial truth.
 - A follow-up implementation PR should inventory and migrate the existing optional browser API and tests, update extras, examples and notices, and run wheel/contract/consumer compatibility checks before any removal.
-- This documentation decision does not assert that code has been migrated, a package released, live providers activated, or consumer integrations updated.
+- The migration was implemented separately in PR #52 after GeoWebCollector PRs #1 and #2 passed CI. No package release, live provider activation or consumer integration is asserted.

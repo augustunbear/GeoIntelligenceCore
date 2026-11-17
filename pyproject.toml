@@ -14,7 +14,6 @@ dependencies = ["pydantic>=2.14,<3"]
 temporal = ["opening-hours-py==2.1.5", "tzdata==2026.6"]
 geometry = ["shapely==2.2.0", "pyproj==3.8.0"]
 providers = ["httpx==0.28.1"]
-browser = ["playwright==1.65.0"]
 test = ["pytest>=9,<10"]
 build = ["build==1.6.1", "hatchling==1.29.0"]
 

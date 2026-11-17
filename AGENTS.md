@@ -23,4 +23,4 @@
 ## Browser automation boundary (ADR-0004)
 - Playwright, browser-based website discovery, menu/page extraction and website-specific scraping belong outside GeoIntelligenceCore, in a separate collector or consumer. Do not introduce new browser automation into the core.
 - Accept externally acquired geospatial facts only through explicit rights-checked, provenance-rich contracts; website text is not automatically verified geospatial truth.
-- Existing optional browser code/extras require a separately reviewed compatibility-preserving migration; this documentation decision does not remove them.
+- The former optional browser code/extras moved to GeoWebCollector in PR #52; consumers pinned to old imports must migrate explicitly.
