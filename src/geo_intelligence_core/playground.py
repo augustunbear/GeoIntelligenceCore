@@ -239,6 +239,14 @@ async def _provider(name, params, live=False):
     from .models.common import Status
     title,cat,example,protocol,method,model = LIVE[name]
     request = model.model_validate(params)
+    if protocol == 'photon' and name == 'photon_search' and request.limit > 5:
+        raise ValueError('一次最多返回 5 个地点候选')
+    if name == 'ors_matrix' and (len(request.origins) > 5 or len(request.destinations) > 5 or len(request.origins)*len(request.destinations)>25):
+        raise ValueError('路线矩阵最多 5 × 5')
+    if name == 'ors_catchments' and (len(request.durations_s)>3 or any(v>1800 for v in request.durations_s)):
+        raise ValueError('等时线最多 3 档，每档不超过 1800 秒')
+    if name == 'ors_route' and core.distance_m(request.origin, request.destination)>20_000:
+        raise ValueError('测试路线端点最多相距 20 km')
     if live and os.getenv('GEO_PLAYGROUND_LIVE') != '1': raise ValueError('实时服务未在本机开启')
     key = os.getenv('ORS_API_KEY') if live and protocol=='ors' else None
     if live and protocol=='ors' and not key: raise ValueError('ORS_API_KEY 未配置')
@@ -278,6 +286,10 @@ def execute(name,params,*,live=False):
         parsed={key:TypeAdapter(hints[key]).validate_python(value) if key in hints else value for key,value in params.items()}
         if name == 'import_transport': parsed['context']=RequestContext(request_id='playground-transport')
         sig.bind(**parsed)
+        if name in ('circle','combine') and (parsed['limits'].max_vertices>1000 or parsed['limits'].max_area_m2>1_000_000_000):
+            raise ValueError('Playground 区域上限为 1000 顶点和 1000 km²')
+        if name == 'circle' and parsed['request'].radius_m>10_000:
+            raise ValueError('Playground 圆形半径最多 10 km')
         return _json(fn(**parsed))
     if name in SPECIAL:
         if set(params)-set(SPECIAL[name][2]): raise ValueError('多余参数')

@@ -88,3 +88,12 @@ def test_provider_method_coverage():
     for protocol,cls in [('photon',PhotonResolver),('overpass',OverpassPlaceProvider),('ors',OrsRoutingProvider)]:
         public={name for name,fn in inspect.getmembers(cls,inspect.iscoroutinefunction) if not name.startswith('_')}
         assert public == {method for source,method in registrations if source==protocol}
+
+
+def test_playground_hard_limits_reject_oversized_costs():
+    from geo_intelligence_core.playground import POINT
+    bad_matrix={**LIVE['ors_matrix'][2], 'origins':{str(i):POINT for i in range(6)}}
+    with pytest.raises(ValueError): execute('ors_matrix',bad_matrix)
+    with pytest.raises(ValueError): execute('ors_catchments',{**LIVE['ors_catchments'][2],'durations_s':[2000]})
+    with pytest.raises(ValueError): execute('photon_search',{'text':'Nürnberg','limit':10})
+    with pytest.raises(ValueError): execute('circle',{**catalog()['circle']['example'],'limits':{'max_area_m2':1_000_000_001.0,'max_vertices':500}})
