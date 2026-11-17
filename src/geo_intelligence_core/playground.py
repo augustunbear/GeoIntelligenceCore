@@ -20,7 +20,8 @@ def catalog():
         if name in EXCLUDE or not inspect.isfunction(obj) or name.startswith("_"):
             continue
         sig = inspect.signature(obj)
-        operations[name] = {"description": (inspect.getdoc(obj) or "").split("\n")[0],
+        operations[name] = {"description": (inspect.getdoc(obj) or "").split("
+")[0],
                             "signature": str(sig), "example": {}}
     return operations
 
@@ -36,7 +37,9 @@ def execute(name, params):
         raise ValueError("Unexpected parameter(s)")
     converted = {k: TypeAdapter(hints[k]).validate_python(v) if k in hints else v
                  for k, v in params.items()}
-    if name not in {"distance_m", "circle", "parse_map_link", "normalize_comparison_text", "summarize_place_quality", "find_duplicate_candidates", "evaluate_opening_hours", "normalize_observation"}:\n        raise ValueError("Operation is discoverable but not yet wired to a safe playground adapter")\n    result = fn(**converted)
+    if name not in {"distance_m", "circle", "parse_map_link", "normalize_comparison_text", "summarize_place_quality", "find_duplicate_candidates", "evaluate_opening_hours", "normalize_observation"}:
+        raise ValueError("Operation is discoverable but not yet wired to a safe playground adapter")
+    result = fn(**converted)
     if inspect.isawaitable(result):
         raise ValueError("Async operations are not supported by this local runner")
     return json.loads(json.dumps(result, default=lambda o: o.model_dump(mode="json") if hasattr(o,"model_dump") else str(o)))
