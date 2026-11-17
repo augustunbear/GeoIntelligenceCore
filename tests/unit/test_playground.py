@@ -18,6 +18,7 @@ def test_public_function_coverage_and_examples():
         assert info['status'] in {'executable','needs_configuration','unsupported','not_suitable'}
         assert info['reason'] and info['category'] and info['name']
         assert info['schema']['type']=='object'
+        if info['available']: assert all(field.get('description') for field in info['schema']['properties'].values())
         if info['available']:
             assert isinstance(info['example'],dict)
             assert set(info['example']) <= set(info['schema']['properties'])

@@ -161,19 +161,48 @@ def _schema(fn):
               for key, p in sig.parameters.items() if key != 'context'}
     return create_model('Playground_' + fn.__name__, **fields).model_json_schema()
 
+PARAM_HELP = {
+ 'a':'起点经纬度（longitude、latitude）','b':'终点经纬度（longitude、latitude）',
+ 'point':'WGS84 经纬度','region':'已知的 GeoJSON 区域','regions':'要合并或比较的区域列表',
+ 'operation':'union 合并、intersection 相交、difference 差集','limits':'面积与顶点数上限',
+ 'request':'对应功能的请求对象','url':'完整 OpenStreetMap 地图链接',
+ 'value':'文字或合成修正值','records':'已提供的结构化记录列表',
+ 'query':'区域、类别和映射版本','threshold':'疑似重复阈值','max_records':'记录数量上限',
+ 'hours_raw':'原始营业时间表达式','at':'带时区的 ISO-8601 测试时刻',
+ 'timezone':'地点的 IANA 时区','ref':'精确的资源名称和版本，如 food-service@1',
+ 'document':'一个已获授权的 GeoJSON Feature','evidence':'来源、时间与使用权证据',
+ 'purpose':'与证据使用权一致的用途','category_ids':'已知 POI 类别 ID',
+ 'template_ref':'分析模板及版本','profile_ref':'行业配置及版本',
+ 'format':'json、geojson 或 csv','language':'de、zh-CN 或 en',
+ 'metric_ids':'要比较的事实指标 ID','text':'地址或地点关键词',
+ 'limit':'候选数量上限','country_codes':'国家代码列表','bbox':'经纬度边界框',
+ 'near':'可选的邻近坐标','origin':'路线起点','destination':'路线终点',
+ 'origins':'矩阵起点 ID 到坐标','destinations':'矩阵终点 ID 到坐标',
+ 'mode':'walking、cycling 或 driving','time':'带时区的时刻；部分路网模式不支持',
+ 'time_kind':'depart_at 或 arrive_by','location':'已确认的合成地点',
+ 'entrance_id':'可选入口 ID','direction':'outbound 或 inbound',
+ 'durations_s':'等时线时长（秒）列表','mapping_version':'OSM 类别映射版本',
+ 'boundary_rule':'点与区域的边界判定','as_of':'带时区的事实验证时刻',
+}
+
+def _annotate_schema(schema):
+    for key, field in schema.get('properties', {}).items():
+        field.setdefault('description', PARAM_HELP.get(key, '对应接口的结构化输入'))
+    return schema
+
 def catalog():
     operations = {}
     for name,(title,cat,example,fn,mode,deps) in DIRECT.items():
         operations[name] = {'name':title,'category':cat,'description': (inspect.getdoc(fn) or title).splitlines()[0],
-          'schema':_schema(fn),'example':example,'status':'executable','reason':'真实本地实现，使用固定示例。',
+          'schema':_annotate_schema(_schema(fn)),'example':example,'status':'executable','reason':'真实本地实现，使用固定示例。',
           'mode':mode,'dependencies':deps,'api_key':False,'permission':'只处理本机提交的样本；请勿粘贴未经许可的数据。','available':True}
     for name,(title,cat,example,mode,deps) in SPECIAL.items():
         operations[name] = {'name':title,'category':cat,'description':'使用内置合成地点与授权样本执行真实核心分析。',
-          'schema':{'type':'object','additionalProperties':False,'properties':{k:{'type':'array' if isinstance(v,list) else 'integer' if isinstance(v,int) else 'string'} for k,v in example.items()}},
+          'schema':_annotate_schema({'type':'object','additionalProperties':False,'properties':{k:{'type':'array' if isinstance(v,list) else 'integer' if isinstance(v,int) else 'string'} for k,v in example.items()}}),
           'example':example,'status':'executable','reason':'合成样本；不代表真实周边数据。', 'mode':mode,'dependencies':deps,'api_key':False,'permission':'仅合成数据。','available':True}
     for name,(title,cat,example,protocol,method,model) in LIVE.items():
         operations[name] = {'name':title,'category':cat,'description':f'离线调用同一 {protocol} Provider 的固定响应；实时调用需服务端显式开启。',
-          'schema':model.model_json_schema(),'example':example,
+          'schema':_annotate_schema(model.model_json_schema()),'example':example,
           'status':'needs_configuration' if protocol=='ors' and not os.getenv('ORS_API_KEY') else 'executable',
           'reason':'实时需 GEO_PLAYGROUND_LIVE=1；ORS 还需服务端 ORS_API_KEY。',
           'mode':'live','dependencies':['providers']+(['geometry'] if protocol in ('overpass','ors') else []),
