@@ -328,3 +328,9 @@ uncompleted target schema compatibility and publication-order verification.
 
 Combined FF-01–FF-04 tree after conflict resolution: **288 passed, 3 live skips**.
 
+
+## Standalone Playground PR #53 (2026-11-17)
+
+The local-only registry now has 31 explicit entries, including synthetic corrections, company/transport input, config preflight and historical comparison, plus fixed-response Photon/Overpass/ORS adapters, with an opt-in live switch, service-side ORS environment key, same-host persistent UTC-day quota and fixed public endpoints. Synthetic examples remain distinct from live observations. Public root functions have a CI coverage assertion; `apply_correction` uses an isolated synthetic scope/evidence fixture; consumer case authorization and reviewed evidence remain required for real records. The browser extractor remains on this branch pending the independent migration PR #52 and compatibility check. The Playground does not activate providers for a consumer or change V1 schemas.
+
+Local verification: 617 passed, 4 opt-in skips on the full offline suite before the last fixed-sample additions; targeted Playground suite 6 passed after those additions. Final exact-head CI is required. Chromium cannot launch in this workspace due a host socket restriction; GeoWebCollector CI owns its real Chromium check. Public endpoint and ORS live calls are unverified in this workspace. Latest PR CI and merge status are authoritative on GitHub.

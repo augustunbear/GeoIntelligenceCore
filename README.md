@@ -138,3 +138,22 @@ of explicit offline observations with purpose-bound evidence and expiry checks.
 Parking capacity and free-space counts stay separate; restrictions require a
 segment, direction and validity period. See the [transport contract and limits](docs/operations/enrichment-sources.md).
 This does not activate live sources. Company import is separately available as a caller-supplied offline slice.
+
+## Local API Playground (experimental)
+
+Run `python -m geo_intelligence_core.playground` and open `http://127.0.0.1:8765`. Public operations are discoverable; only allowlisted safe operations execute. Others return an unsupported error pending explicit adapters. This development-only server must not be exposed publicly.
+
+## 本地 Playground
+
+安装 Python 3.12 后，在仓库根目录执行：
+
+```bash
+python -m pip install -e '.[geometry,providers,temporal]'
+python -m geo_intelligence_core.playground
+```
+
+浏览器打开 <http://127.0.0.1:8765>。按分类选择功能，修改自带的合成示例 JSON，点击“运行测试”；结果显示状态、耗时、来源和结构化数据，可复制请求与响应。地址确认、OSM 链接、距离与区域、POI、路网、数据质量、行业配置和分析/导出都有入口。`apply_correction` 使用固定合成案件与证据测试；真实案件更正仍由消费者授权和人工审核。
+
+默认 Provider 测试使用同一适配器的固定离线响应，不访问服务。想测试真实 Photon / Overpass / ORS 时，在**本机终端**设置 `GEO_PLAYGROUND_LIVE=1`；ORS 还需设置 `ORS_API_KEY` 环境变量，然后重启 Playground，在对应功能上勾选“本次调用真实服务”。不要把密钥填入网页。公开端点、超时与单次请求上限固定；路线端点最多相距 20 km、矩阵最多 5×5、等时线最多三档 30 分钟；本机 SQLite 配额文件默认位于 `~/.geo-playground-quota.sqlite3`，按来源每天最多 50 次尝试，失败也计入。实时结果仅是调用观察，不代表数据质量或商用权已获批准。公共端点不可用时仍可执行离线示例。
+
+新增功能时在 `playground.py` 的显式注册表增加名称、分类、参数模型/示例和受限执行适配器。CI 的公开函数覆盖测试会发现未登记的新公开函数。Playground 只监听 `127.0.0.1`；请勿将其暴露到公网或填入私人案件数据。出现“依赖不可用”时安装对应的 optional extra；出现 ORS 未配置时检查本机环境变量；出现额度耗尽请次日再试，不要删除配额文件规避限制。
