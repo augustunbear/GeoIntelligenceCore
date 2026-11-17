@@ -139,9 +139,9 @@ Parking capacity and free-space counts stay separate; restrictions require a
 segment, direction and validity period. See the [transport contract and limits](docs/operations/enrichment-sources.md).
 This does not activate live sources. Company import is separately available as a caller-supplied offline slice.
 
-## Local API Playground (experimental)
+## Browser automation architecture decision
 
-Run `python -m geo_intelligence_core.playground` and open `http://127.0.0.1:8765`. Public operations are discoverable; only allowlisted safe operations execute. Others return an unsupported error pending explicit adapters. This development-only server must not be exposed publicly.
+[ADR-0004](docs/architecture/adr/ADR-0004-browser-automation-outside-core.md) places Playwright, website discovery and menu/page extraction outside GeoIntelligenceCore, in consumer applications or independent collectors. The existing optional `[browser]` extra and extractor are still present in this source candidate pending a separate compatibility-reviewed migration; they are **not** the intended long-term core boundary. No browser is needed for ordinary geospatial analysis. Website-derived facts require explicit rights, provenance and verification status.
 
 ## 本地 Playground
 
