@@ -1,11 +1,15 @@
 """Scoped corrections and purpose-aware, immutable snapshots."""
 from datetime import datetime, timezone
+import json
+
+import pytest
 
 from geo_intelligence_core.models.analysis import Analysis, Correction, Metric
 from geo_intelligence_core.models.common import Result, Status
 from geo_intelligence_core.models.evidence import Evidence, Permission, Quality, Rights
 from geo_intelligence_core.models.requests import RequestContext
 from geo_intelligence_core.evidence import apply_correction, snapshot
+from geo_intelligence_core.export import export_result
 
 NOW = datetime(2026, 11, 4, tzinfo=timezone.utc)
 
@@ -70,6 +74,55 @@ def test_snapshot():
     upgraded = original.model_copy(update={'request_context': original.request_context.model_copy(update={'template_ref': 'template-v2'})})
     assert first.data.analysis.request_context.template_ref == 'template-v1'
     assert first.data.canonical_hash != snapshot(upgraded, 'planning').data.canonical_hash
+
+
+@pytest.mark.parametrize(
+    ("retain", "export", "retained", "exported"),
+    [
+        (Permission.allowed, Permission.allowed, True, True),
+        (Permission.allowed, Permission.denied, True, False),
+        (Permission.unknown, Permission.allowed, False, False),
+    ],
+)
+def test_serving_provenance_follows_topic_rights(retain, export, retained, exported):
+    original = analysis(ev=evidence(retain=retain, export=export))
+    topic = original.topic_results['places']
+    provenance = {
+        'provider_instance': 'overpass-synthetic',
+        'provider_endpoint': 'https://example.org/prefix',
+        'provider_http_method': 'POST',
+    }
+    enriched = topic.context.model_copy(update={
+        'effective_conditions': {**provenance, 'adapter_private': 'synthetic-marker'},
+    })
+    observed = original.model_copy(update={
+        'topic_results': {'places': topic.model_copy(update={'context': enriched})},
+    })
+
+    saved = snapshot(observed, 'planning').data
+    saved_context = saved.analysis.topic_results['places'].context
+    assert saved_context.scope_token is None
+    assert saved_context.effective_conditions == (provenance if retained else {})
+    assert saved.analysis.request_context.effective_conditions == {}
+    assert (saved.canonical_hash != snapshot(original, 'planning').data.canonical_hash) == retained
+
+    payload = json.loads(export_result(saved, 'json', 'en', 'planning').data)
+    exported_context = payload['analysis']['topic_results']['places']['context']
+    assert exported_context['effective_conditions'] == (provenance if exported else {})
+    assert exported_context['scope_token'] is None
+
+
+def test_snapshot_strips_serving_fields_from_the_aggregate_context():
+    original = analysis()
+    context = original.request_context.model_copy(update={'effective_conditions': {
+        'region_id': 'synthetic-region',
+        'provider_endpoint': 'https://example.org/?token=placeholder',
+        'provider_instance': 'wrong-level',
+    }})
+    original = original.model_copy(update={'request_context': context})
+    saved = snapshot(original, 'planning').data
+    assert saved.analysis.request_context.effective_conditions == {'region_id': 'synthetic-region'}
+    assert saved.analysis.topic_results['places'].context.effective_conditions == {'region_id': 'synthetic-region'}
 
 
 def test_snapshot_does_not_retain_unknown_or_denied_source():

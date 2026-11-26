@@ -100,3 +100,55 @@ def test_geometry_intersects_adapter_failure_keeps_topic_status():
     result = run(req, registry)
     assert result.status == Status.unsupported and provider.calls == 1
     assert result.data.topic_results['places'].data is None
+
+
+def test_topic_preserves_provider_instance_without_overwriting_request_scope():
+    class InstancePlaces:
+        async def search(self, query, context):
+            provider_context = context.model_copy(update={
+                'request_id': 'wrong-request', 'scope_token': 'wrong-scope',
+                'effective_conditions': {**context.effective_conditions,
+                                         'provider_instance': 'overpass-demo',
+                                         'provider_endpoint': 'https://example.org/api',
+                                         'provider_http_method': 'POST',
+                                         'region_id': 'wrong-region'},
+            })
+            return Result(status='ok', data=PlaceSet(places=[], retrieved_count=0, unique_count=0),
+                          context=provider_context)
+
+    registry = ProviderRegistry()
+    registry.register('places', InstancePlaces())
+    req = AnalyzeRequest(locations=[location()], regions=[region()], topics=[TopicSelection(id='places')],
+                         explicit_parameters={'category_ids': ['restaurant']},
+                         request_id='correct-request', scope_token='correct-scope')
+    result = run(req, registry)
+    assert result.status == Status.ok
+    topic_context = result.data.topic_results['places'].context
+    assert topic_context.effective_conditions['provider_instance'] == 'overpass-demo'
+    assert topic_context.effective_conditions['provider_endpoint'] == 'https://example.org/api'
+    assert topic_context.effective_conditions['provider_http_method'] == 'POST'
+    assert topic_context.request_id == 'correct-request'
+    assert topic_context.scope_token == 'correct-scope'
+    assert topic_context.effective_conditions['region_id'] == 'r'
+    assert 'provider_instance' not in result.context.effective_conditions
+
+
+def test_topic_rejects_an_endpoint_with_private_url_components():
+    class InstancePlaces:
+        async def search(self, query, context):
+            enriched = context.model_copy(update={'effective_conditions': {
+                'provider_instance': 'synthetic',
+                'provider_endpoint': 'https://user:placeholder@example.org/api?token=placeholder',
+            }})
+            return Result(status=Status.no_results, data=PlaceSet(places=[], retrieved_count=0, unique_count=0),
+                          context=enriched)
+
+    registry = ProviderRegistry()
+    registry.register('places', InstancePlaces())
+    request = AnalyzeRequest(regions=[region()], topics=[TopicSelection(id='places')],
+                             explicit_parameters={'category_ids': ['restaurant']})
+    result = run(request, registry)
+    topic = result.data.topic_results['places']
+    assert topic.status == Status.no_results
+    assert topic.context.effective_conditions['provider_instance'] == 'synthetic'
+    assert 'provider_endpoint' not in topic.context.effective_conditions

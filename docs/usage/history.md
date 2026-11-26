@@ -61,8 +61,12 @@ in the real world. Changed raw opening-hours text is a source-record update, not
 an interpreted operating-status change. Every change remains `unverified`.
 
 `method` / `conditions_changed` carries typed HistoryConditions and suppresses all
-record deltas for that comparison. Conditions include location versions, effective
-query parameters, profile/template/method versions, selected topics, source
+record deltas for that comparison. Conditions include location versions,
+caller query parameters (`effective_conditions`) and retained serving provenance
+(`topic_provenance`, keyed by topic and then by field). When both snapshots lack
+serving provenance, comparison uses the remaining conditions. If provenance is
+present on only one side, it counts as a conditions change. Other conditions include
+profile/template/method versions, selected topics, source
 identity/query reference/method/reference and valid periods, coverage, methods
 resolved to each shared record or metric, metric
 conditions, units and nature. Request IDs, retrieval timestamps, evidence IDs,

@@ -1,15 +1,23 @@
 """Synthetic offline history contracts; not real E02 source acceptance."""
+import asyncio
 from datetime import datetime, timezone
+from decimal import Decimal
 
 import pytest
 
+from geo_intelligence_core.analysis import analyze
 from geo_intelligence_core.evidence import snapshot
 from geo_intelligence_core.models.analysis import Analysis
 from geo_intelligence_core.models.common import Result, Status
+from geo_intelligence_core.models.configuration import AnalyzeRequest, TopicSelection
 from geo_intelligence_core.models.evidence import Evidence, Permission, Quality, Rights
-from geo_intelligence_core.models.location import Point
+from geo_intelligence_core.models.location import Confirmation, Location, Point
 from geo_intelligence_core.models.places import Place, PlaceSet, SourceKey
+from geo_intelligence_core.models.policy import UsagePolicy
 from geo_intelligence_core.models.requests import RequestContext
+from geo_intelligence_core.models.spatial import Region
+from geo_intelligence_core.ports import ProviderRegistry
+from geo_intelligence_core.providers.budget import InMemoryBudget
 
 
 def evidence(id='e1', **updates):
@@ -53,6 +61,140 @@ def test_same_query_missing_record_is_not_real_world_closure():
     assert change.evidence_ids == ('e1',) and change.verification == 'unverified'
     assert 'closed' not in result.model_dump_json()
     assert len(before.analysis.topic_results['places'].data['places']) == 2
+
+
+def test_history_preserves_facts_for_same_instance_and_flags_a_serving_method_switch():
+    class Provider:
+        def __init__(self, instance, method, record):
+            self.instance, self.method, self.record = instance, method, record
+
+        async def search(self, query, context):
+            enriched = context.model_copy(update={'effective_conditions': {
+                **context.effective_conditions, 'provider_instance': self.instance,
+                'provider_endpoint': 'https://example.org/api', 'provider_http_method': self.method,
+            }})
+            places = PlaceSet(places=(self.record,), retrieved_count=1, unique_count=1,
+                              coverage='complete:synthetic-area-v1')
+            return Result(status=Status.ok, data=places, evidence=(evidence(),), context=enriched)
+
+    request = AnalyzeRequest(
+        locations=(Location(id='site', version=1, point=Point(longitude=11, latitude=49),
+                            confirmation=Confirmation(method='manual', at=evidence().retrieved_at,
+                                                      evidence_ids=('e1',))),),
+        regions=(Region(id='site-area', version='1', method='fixture', geometry={
+            'type': 'Polygon', 'coordinates': [[[10, 48], [12, 48], [12, 50], [10, 50], [10, 48]]],
+        }),),
+        topics=(TopicSelection(id='places'),), explicit_parameters={'category_ids': ['restaurant']},
+        scope_token='synthetic-case',
+    )
+
+    def run(instance, method, record):
+        registry = ProviderRegistry()
+        registry.register('places', Provider(instance, method, record))
+        policy = UsagePolicy(allowed_capabilities=('places',), max_calls_per_run=1)
+        analyzed = asyncio.run(analyze(request, registry, policy, InMemoryBudget(1, Decimal(0))))
+        assert analyzed.status == Status.ok
+        return snapshot(analyzed.data, 'planning').data
+
+    before = run('synthetic-a', 'GET', place('1'))
+    same = run('synthetic-a', 'GET', place('2'))
+    changed = compare(before, same)
+    assert changed.status == Status.ok
+    assert {item.change for item in changed.data} == {'source_record_missing', 'source_record_added'}
+
+    for switched in (run('synthetic-b', 'GET', place('2')), run('synthetic-a', 'POST', place('2'))):
+        changed = compare(before, switched)
+        assert changed.status == Status.ok
+        assert [item.change for item in changed.data] == ['conditions_changed']
+
+
+def retained_with_provenance(record, caller_value, instances):
+    context = analysis().request_context.model_copy(update={
+        'effective_conditions': {'topic/places/provider_instance': caller_value},
+    })
+    source = analysis((record,), context=context)
+    topic = source.topic_results['places']
+    topics = {}
+    for name, instance in instances.items():
+        conditions = dict(context.effective_conditions)
+        if instance is not None:
+            conditions['provider_instance'] = instance
+        topics[name] = topic.model_copy(update={
+            'context': context.model_copy(update={'effective_conditions': conditions}),
+        })
+    result = snapshot(source.model_copy(update={
+        'selected_topics': tuple(topics), 'topic_results': topics,
+    }), 'planning')
+    assert result.status == Status.ok
+    return result.data
+
+
+def test_history_detects_caller_condition_change_with_same_named_topic_provenance():
+    old = retained_with_provenance(place('1'), 'caller-before', {'places': 'instance-a'})
+    new = retained_with_provenance(place('2'), 'caller-after', {'places': 'instance-a'})
+
+    result = compare(old, new)
+    assert result.status == Status.ok
+    assert [entry.change for entry in result.data] == ['conditions_changed']
+    change, = result.data
+    assert change.before.effective_conditions == {'topic/places/provider_instance': 'caller-before'}
+    assert change.after.effective_conditions == {'topic/places/provider_instance': 'caller-after'}
+    assert change.before.topic_provenance == change.after.topic_provenance == {
+        'places': {'provider_instance': 'instance-a'},
+    }
+
+
+@pytest.mark.parametrize('transport_instance', ('instance-b', 'instance-c', None))
+def test_history_compares_same_provenance_field_for_each_topic(transport_instance):
+    before = retained_with_provenance(
+        place('1'), 'caller', {'places': 'instance-a', 'transport_places': 'instance-b'},
+    )
+    after = retained_with_provenance(
+        place('2'), 'caller', {'transport_places': transport_instance, 'places': 'instance-a'},
+    )
+
+    result = compare(before, after)
+    assert result.status == Status.ok
+    if transport_instance == 'instance-b':
+        assert [entry.change for entry in result.data] == [
+            'source_record_missing', 'source_record_added',
+            'source_record_missing', 'source_record_added',
+        ]
+    else:
+        change, = result.data
+        assert change.change == 'conditions_changed'
+        assert change.before.topic_provenance == {
+            'places': {'provider_instance': 'instance-a'},
+            'transport_places': {'provider_instance': 'instance-b'},
+        }
+        expected = {'places': {'provider_instance': 'instance-a'}}
+        if transport_instance is not None:
+            expected['transport_places'] = {'provider_instance': transport_instance}
+        assert change.after.topic_provenance == expected
+
+
+def test_history_compares_legacy_snapshots_and_distinguishes_missing_provenance():
+    old = retained_with_provenance(place('1'), 'instance-a', {'places': None})
+    legacy = retained_with_provenance(place('2'), 'instance-a', {'places': None})
+    enriched = retained_with_provenance(place('2'), 'instance-a', {'places': 'instance-a'})
+    old = type(old).model_validate_json(old.model_dump_json())
+    legacy = type(legacy).model_validate_json(legacy.model_dump_json())
+
+    result = compare(old, legacy)
+    assert result.status == Status.ok
+    assert [entry.change for entry in result.data] == ['source_record_missing', 'source_record_added']
+
+    for before, after in ((old, enriched), (enriched, old)):
+        result = compare(before, after)
+        assert result.status == Status.ok
+        change, = result.data
+        assert change.change == 'conditions_changed'
+        assert change.before.model_dump(mode='json').get('topic_provenance') == (
+            None if before is old else {'places': {'provider_instance': 'instance-a'}}
+        )
+        assert change.after.model_dump(mode='json').get('topic_provenance') == (
+            None if after is old else {'places': {'provider_instance': 'instance-a'}}
+        )
 
 
 def test_added_and_changed_records_are_factual_and_deterministic():

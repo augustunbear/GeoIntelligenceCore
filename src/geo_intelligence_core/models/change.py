@@ -23,6 +23,7 @@ class MetricMethod(FrozenModel):
 class HistoryConditions(FrozenModel):
     location_versions: dict[str, int]
     effective_conditions: dict[str, str]
+    topic_provenance: dict[str, dict[str, str]] = Field(default_factory=dict, exclude_if=lambda value: not value)
     profile_ref: str | None
     template_ref: str | None
     method_version: str

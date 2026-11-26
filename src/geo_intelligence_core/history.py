@@ -10,7 +10,7 @@ from .models.analysis import Snapshot
 from .models.change import Change, HistoryConditions, MetricMethod, SourceMethod
 from .models.common import Issue, Result, Status
 from .models.places import PlaceSet
-from .models.requests import RequestContext
+from .models.requests import RequestContext, _serving_provenance
 
 
 class _NotComparable(Exception):
@@ -48,7 +48,10 @@ def _prepare(snap: Snapshot) -> dict[str, PlaceSet]:
     topics = {}
     null_topics = False
     for name, topic in analysis.topic_results.items():
-        if topic.context != context or topic.schema_version != '1.0':
+        expected_context = context.model_copy(update={'effective_conditions': {
+            **context.effective_conditions, **_serving_provenance(topic.context),
+        }})
+        if topic.context != expected_context or topic.schema_version != '1.0':
             _fail(Status.invalid_input, 'history_invalid_topic_context')
         if topic.status not in (Status.ok, Status.no_results):
             _fail(Status.partial, 'history_incomplete_topic')
@@ -112,7 +115,11 @@ def _conditions(snap: Snapshot, topics: dict[str, PlaceSet], shared_records, sha
     analysis = snap.analysis
     context = analysis.request_context
     sources = {}
+    topic_provenance = {}
     for name, topic in sorted(analysis.topic_results.items()):
+        provenance = _serving_provenance(topic.context)
+        if provenance:
+            topic_provenance[name] = provenance
         methods = {_source_method(e) for e in topic.evidence}
         sources[name] = tuple(sorted(methods, key=lambda m: m.model_dump_json()))
     evidence = {e.id: e for topic in analysis.topic_results.values() for e in topic.evidence}
@@ -126,7 +133,8 @@ def _conditions(snap: Snapshot, topics: dict[str, PlaceSet], shared_records, sha
         methods = {_source_method(evidence[eid]) for eid in analysis.metrics[name].evidence_ids}
         fact_methods[f'metrics/{quote(name, safe="")}'] = tuple(sorted(methods, key=lambda m: m.model_dump_json()))
     return HistoryConditions(location_versions=context.location_versions,
-        effective_conditions=context.effective_conditions, profile_ref=context.profile_ref,
+        effective_conditions=context.effective_conditions, topic_provenance=topic_provenance,
+        profile_ref=context.profile_ref,
         template_ref=context.template_ref, method_version=context.method_version,
         selected_topics=tuple(sorted(analysis.selected_topics)), sources=sources, fact_methods=fact_methods,
         coverage={name: topic.coverage for name, topic in topics.items()},

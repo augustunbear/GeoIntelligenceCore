@@ -6,7 +6,7 @@ import unicodedata
 from importlib import resources
 from typing import Literal
 
-from .evidence import _issue, _sanitize
+from .evidence import _issue, _retained_context, _sanitize
 from .models.analysis import Snapshot
 from .models.common import Result, Status
 
@@ -40,7 +40,7 @@ def _rows(topics):
 
 def export_result(snapshot: Snapshot, format: Literal['json', 'geojson', 'csv'],
                   language: Literal['de', 'zh-CN', 'en'], purpose: str) -> Result[str]:
-    context = snapshot.analysis.request_context.model_copy(update={'scope_token': None})
+    context = _retained_context(snapshot.analysis.request_context)
     if purpose == '' or purpose != snapshot.purpose or format not in ('json', 'geojson', 'csv') or language not in ('de', 'zh-CN', 'en'):
         return Result[str](status=Status.invalid_input, data=None, issues=(_issue('invalid_export'),), context=context)
     # The retained view records its purpose through the exact source rights. Recheck it

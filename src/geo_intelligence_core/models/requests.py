@@ -1,4 +1,7 @@
 """Manual location confirmation request and operation context."""
+import re
+from urllib.parse import unquote, urlsplit
+
 from pydantic import Field, model_validator
 from typing import Literal
 
@@ -40,6 +43,36 @@ class RequestContext(FrozenModel):
     template_ref: str | None = None
     method_version: str = "manual-v1"
     scope_token: str | None = None
+
+
+_SERVING_PROVENANCE_KEYS = frozenset(('provider_instance', 'provider_endpoint', 'provider_http_method'))
+
+
+def _serving_provenance(context: RequestContext) -> dict[str, str]:
+    """Keep public metadata from a provider context without trusting other fields."""
+    conditions = context.effective_conditions
+    fields = {}
+    instance = conditions.get('provider_instance', '')
+    if re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,127}', instance):
+        fields['provider_instance'] = instance
+    method = conditions.get('provider_http_method')
+    if method in ('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'):
+        fields['provider_http_method'] = method
+    endpoint = conditions.get('provider_endpoint')
+    if endpoint:
+        try:
+            url = urlsplit(endpoint)
+            decoded = unquote(endpoint)
+            if (url.scheme == 'https' and url.hostname and not url.hostname.endswith('.')
+                    and url.username is None and url.password is None and url.port in (None, 443)
+                    and '?' not in endpoint and '#' not in endpoint and '\\' not in decoded
+                    and not any(char.isspace() or ord(char) < 32 for char in endpoint)
+                    and not any(ord(char) < 32 or ord(char) == 127 for char in decoded)
+                    and not any(part in ('.', '..') for part in unquote(url.path).split('/'))):
+                fields['provider_endpoint'] = endpoint
+        except ValueError:
+            pass
+    return fields
 
 
 class SearchRequest(FrozenModel):
