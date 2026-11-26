@@ -115,10 +115,11 @@ def _conditions(snap: Snapshot, topics: dict[str, PlaceSet], shared_records, sha
     analysis = snap.analysis
     context = analysis.request_context
     sources = {}
-    effective_conditions = dict(context.effective_conditions)
+    topic_provenance = {}
     for name, topic in sorted(analysis.topic_results.items()):
-        for key, value in _serving_provenance(topic.context).items():
-            effective_conditions[f'topic/{quote(name, safe="")}/{key}'] = value
+        provenance = _serving_provenance(topic.context)
+        if provenance:
+            topic_provenance[name] = provenance
         methods = {_source_method(e) for e in topic.evidence}
         sources[name] = tuple(sorted(methods, key=lambda m: m.model_dump_json()))
     evidence = {e.id: e for topic in analysis.topic_results.values() for e in topic.evidence}
@@ -132,7 +133,8 @@ def _conditions(snap: Snapshot, topics: dict[str, PlaceSet], shared_records, sha
         methods = {_source_method(evidence[eid]) for eid in analysis.metrics[name].evidence_ids}
         fact_methods[f'metrics/{quote(name, safe="")}'] = tuple(sorted(methods, key=lambda m: m.model_dump_json()))
     return HistoryConditions(location_versions=context.location_versions,
-        effective_conditions=effective_conditions, profile_ref=context.profile_ref,
+        effective_conditions=context.effective_conditions, topic_provenance=topic_provenance,
+        profile_ref=context.profile_ref,
         template_ref=context.template_ref, method_version=context.method_version,
         selected_topics=tuple(sorted(analysis.selected_topics)), sources=sources, fact_methods=fact_methods,
         coverage={name: topic.coverage for name, topic in topics.items()},

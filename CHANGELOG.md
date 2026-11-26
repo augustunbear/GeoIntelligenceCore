@@ -6,6 +6,8 @@
   analyzed place topic. The aggregate request identity and scope remain
   caller-owned. Snapshots and JSON exports keep topic provenance when every
   contributing source grants the corresponding rights for the requested purpose.
+- History compares caller conditions and per-topic serving provenance separately,
+  even when caller condition names resemble provider metadata keys.
 
 ## Unreleased — explicit time input hardening
 

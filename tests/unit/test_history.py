@@ -108,6 +108,95 @@ def test_history_preserves_facts_for_same_instance_and_flags_a_serving_method_sw
         assert [item.change for item in changed.data] == ['conditions_changed']
 
 
+def retained_with_provenance(record, caller_value, instances):
+    context = analysis().request_context.model_copy(update={
+        'effective_conditions': {'topic/places/provider_instance': caller_value},
+    })
+    source = analysis((record,), context=context)
+    topic = source.topic_results['places']
+    topics = {}
+    for name, instance in instances.items():
+        conditions = dict(context.effective_conditions)
+        if instance is not None:
+            conditions['provider_instance'] = instance
+        topics[name] = topic.model_copy(update={
+            'context': context.model_copy(update={'effective_conditions': conditions}),
+        })
+    result = snapshot(source.model_copy(update={
+        'selected_topics': tuple(topics), 'topic_results': topics,
+    }), 'planning')
+    assert result.status == Status.ok
+    return result.data
+
+
+def test_history_detects_caller_condition_change_with_same_named_topic_provenance():
+    old = retained_with_provenance(place('1'), 'caller-before', {'places': 'instance-a'})
+    new = retained_with_provenance(place('2'), 'caller-after', {'places': 'instance-a'})
+
+    result = compare(old, new)
+    assert result.status == Status.ok
+    assert [entry.change for entry in result.data] == ['conditions_changed']
+    change, = result.data
+    assert change.before.effective_conditions == {'topic/places/provider_instance': 'caller-before'}
+    assert change.after.effective_conditions == {'topic/places/provider_instance': 'caller-after'}
+    assert change.before.topic_provenance == change.after.topic_provenance == {
+        'places': {'provider_instance': 'instance-a'},
+    }
+
+
+@pytest.mark.parametrize('transport_instance', ('instance-b', 'instance-c', None))
+def test_history_compares_same_provenance_field_for_each_topic(transport_instance):
+    before = retained_with_provenance(
+        place('1'), 'caller', {'places': 'instance-a', 'transport_places': 'instance-b'},
+    )
+    after = retained_with_provenance(
+        place('2'), 'caller', {'transport_places': transport_instance, 'places': 'instance-a'},
+    )
+
+    result = compare(before, after)
+    assert result.status == Status.ok
+    if transport_instance == 'instance-b':
+        assert [entry.change for entry in result.data] == [
+            'source_record_missing', 'source_record_added',
+            'source_record_missing', 'source_record_added',
+        ]
+    else:
+        change, = result.data
+        assert change.change == 'conditions_changed'
+        assert change.before.topic_provenance == {
+            'places': {'provider_instance': 'instance-a'},
+            'transport_places': {'provider_instance': 'instance-b'},
+        }
+        expected = {'places': {'provider_instance': 'instance-a'}}
+        if transport_instance is not None:
+            expected['transport_places'] = {'provider_instance': transport_instance}
+        assert change.after.topic_provenance == expected
+
+
+def test_history_compares_legacy_snapshots_and_distinguishes_missing_provenance():
+    old = retained_with_provenance(place('1'), 'instance-a', {'places': None})
+    legacy = retained_with_provenance(place('2'), 'instance-a', {'places': None})
+    enriched = retained_with_provenance(place('2'), 'instance-a', {'places': 'instance-a'})
+    old = type(old).model_validate_json(old.model_dump_json())
+    legacy = type(legacy).model_validate_json(legacy.model_dump_json())
+
+    result = compare(old, legacy)
+    assert result.status == Status.ok
+    assert [entry.change for entry in result.data] == ['source_record_missing', 'source_record_added']
+
+    for before, after in ((old, enriched), (enriched, old)):
+        result = compare(before, after)
+        assert result.status == Status.ok
+        change, = result.data
+        assert change.change == 'conditions_changed'
+        assert change.before.model_dump(mode='json').get('topic_provenance') == (
+            None if before is old else {'places': {'provider_instance': 'instance-a'}}
+        )
+        assert change.after.model_dump(mode='json').get('topic_provenance') == (
+            None if after is old else {'places': {'provider_instance': 'instance-a'}}
+        )
+
+
 def test_added_and_changed_records_are_factual_and_deterministic():
     original = place('1', native_names={'de': 'Alt'})
     updated = place('1', native_names={'de': 'Neu'})

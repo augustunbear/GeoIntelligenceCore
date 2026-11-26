@@ -253,6 +253,16 @@
           "title": "Effective Conditions",
           "type": "object"
         },
+        "topic_provenance": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "title": "Topic Provenance",
+          "type": "object"
+        },
         "profile_ref": {
           "anyOf": [
             {
