@@ -62,7 +62,9 @@ an interpreted operating-status change. Every change remains `unverified`.
 
 `method` / `conditions_changed` carries typed HistoryConditions and suppresses all
 record deltas for that comparison. Conditions include location versions, effective
-query parameters, profile/template/method versions, selected topics, source
+query parameters and retained per-topic serving provenance
+(`topic/<percent-encoded-topic>/<field>` in `effective_conditions`),
+profile/template/method versions, selected topics, source
 identity/query reference/method/reference and valid periods, coverage, methods
 resolved to each shared record or metric, metric
 conditions, units and nature. Request IDs, retrieval timestamps, evidence IDs,

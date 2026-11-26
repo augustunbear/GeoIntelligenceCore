@@ -1,15 +1,23 @@
 """Synthetic offline history contracts; not real E02 source acceptance."""
+import asyncio
 from datetime import datetime, timezone
+from decimal import Decimal
 
 import pytest
 
+from geo_intelligence_core.analysis import analyze
 from geo_intelligence_core.evidence import snapshot
 from geo_intelligence_core.models.analysis import Analysis
 from geo_intelligence_core.models.common import Result, Status
+from geo_intelligence_core.models.configuration import AnalyzeRequest, TopicSelection
 from geo_intelligence_core.models.evidence import Evidence, Permission, Quality, Rights
-from geo_intelligence_core.models.location import Point
+from geo_intelligence_core.models.location import Confirmation, Location, Point
 from geo_intelligence_core.models.places import Place, PlaceSet, SourceKey
+from geo_intelligence_core.models.policy import UsagePolicy
 from geo_intelligence_core.models.requests import RequestContext
+from geo_intelligence_core.models.spatial import Region
+from geo_intelligence_core.ports import ProviderRegistry
+from geo_intelligence_core.providers.budget import InMemoryBudget
 
 
 def evidence(id='e1', **updates):
@@ -53,6 +61,51 @@ def test_same_query_missing_record_is_not_real_world_closure():
     assert change.evidence_ids == ('e1',) and change.verification == 'unverified'
     assert 'closed' not in result.model_dump_json()
     assert len(before.analysis.topic_results['places'].data['places']) == 2
+
+
+def test_history_preserves_facts_for_same_instance_and_flags_a_serving_method_switch():
+    class Provider:
+        def __init__(self, instance, method, record):
+            self.instance, self.method, self.record = instance, method, record
+
+        async def search(self, query, context):
+            enriched = context.model_copy(update={'effective_conditions': {
+                **context.effective_conditions, 'provider_instance': self.instance,
+                'provider_endpoint': 'https://example.org/api', 'provider_http_method': self.method,
+            }})
+            places = PlaceSet(places=(self.record,), retrieved_count=1, unique_count=1,
+                              coverage='complete:synthetic-area-v1')
+            return Result(status=Status.ok, data=places, evidence=(evidence(),), context=enriched)
+
+    request = AnalyzeRequest(
+        locations=(Location(id='site', version=1, point=Point(longitude=11, latitude=49),
+                            confirmation=Confirmation(method='manual', at=evidence().retrieved_at,
+                                                      evidence_ids=('e1',))),),
+        regions=(Region(id='site-area', version='1', method='fixture', geometry={
+            'type': 'Polygon', 'coordinates': [[[10, 48], [12, 48], [12, 50], [10, 50], [10, 48]]],
+        }),),
+        topics=(TopicSelection(id='places'),), explicit_parameters={'category_ids': ['restaurant']},
+        scope_token='synthetic-case',
+    )
+
+    def run(instance, method, record):
+        registry = ProviderRegistry()
+        registry.register('places', Provider(instance, method, record))
+        policy = UsagePolicy(allowed_capabilities=('places',), max_calls_per_run=1)
+        analyzed = asyncio.run(analyze(request, registry, policy, InMemoryBudget(1, Decimal(0))))
+        assert analyzed.status == Status.ok
+        return snapshot(analyzed.data, 'planning').data
+
+    before = run('synthetic-a', 'GET', place('1'))
+    same = run('synthetic-a', 'GET', place('2'))
+    changed = compare(before, same)
+    assert changed.status == Status.ok
+    assert {item.change for item in changed.data} == {'source_record_missing', 'source_record_added'}
+
+    for switched in (run('synthetic-b', 'GET', place('2')), run('synthetic-a', 'POST', place('2'))):
+        changed = compare(before, switched)
+        assert changed.status == Status.ok
+        assert [item.change for item in changed.data] == ['conditions_changed']
 
 
 def test_added_and_changed_records_are_factual_and_deterministic():

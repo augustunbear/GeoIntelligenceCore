@@ -10,12 +10,11 @@ from .models.configuration import AnalyzeRequest, Profile, Template
 from .models.places import PlaceQuery, PlaceSet
 from .models.spatial import CircleRequest, GeometryLimits
 from .models.policy import UsagePolicy
-from .models.requests import RequestContext
+from .models.requests import RequestContext, _serving_provenance
 from .ports import Budget, ProviderRegistry
 
 _PLACE_TOPICS = frozenset({'places', 'transport_places', 'company_sites'})
 _SUPPORTED = _PLACE_TOPICS | {'population_reference', 'routes'}
-_PROVIDER_CONDITIONS = frozenset({'provider_instance', 'provider_endpoint', 'provider_http_method'})
 
 
 def _resource(kind, ref, model):
@@ -142,10 +141,8 @@ async def analyze(request: AnalyzeRequest, registry: ProviderRegistry, policy: U
                 issues.append(Issue(code='static_places_time_unverified', message_key='analysis.static_places_time_unverified'))
             # Keep the adapter's serving-instance provenance on this topic, without
             # allowing a port to replace the caller's request identity or scope.
-            provider_conditions = {key: value for key, value in response.context.effective_conditions.items()
-                                   if key in _PROVIDER_CONDITIONS}
             topic_context = context.model_copy(update={'effective_conditions': {
-                **context.effective_conditions, **provider_conditions}})
+                **context.effective_conditions, **_serving_provenance(response.context)}})
             results[topic] = Result[object](status=response.status, data=response.data, context=topic_context,
                                             evidence=response.evidence, issues=issues)
         except Exception:

@@ -10,6 +10,7 @@ from .models.analysis import Analysis, Correction, Metric, Snapshot
 from .models.common import Issue, Result, Status
 from .models.evidence import Evidence
 from .models.places import Place, PlaceSet
+from .models.requests import RequestContext, _SERVING_PROVENANCE_KEYS, _serving_provenance
 
 
 _DROP = object()
@@ -56,7 +57,15 @@ def _filter(value: Any, permitted: set[str], known: set[str], *, fallback: set[s
     return _DROP
 
 
+def _retained_context(context: RequestContext) -> RequestContext:
+    return context.model_copy(update={'scope_token': None, 'effective_conditions': {
+        key: value for key, value in context.effective_conditions.items()
+        if key not in _SERVING_PROVENANCE_KEYS
+    }})
+
+
 def _sanitize(analysis: Analysis, purpose: str, action: str) -> tuple[Analysis, tuple[str, ...], tuple[str, ...]]:
+    context = _retained_context(analysis.request_context)
     topics = {}
     retained = set()
     redactions = []
@@ -78,10 +87,14 @@ def _sanitize(analysis: Analysis, purpose: str, action: str) -> tuple[Analysis, 
         if filtered != original or len(allowed) != len(sources) or not same_scope:
             redactions.append(name)
         topic_evidence = tuple(e for e in topic.evidence if e.id in allowed)
+        topic_context = context
+        if allowed and len(allowed) == len(sources):
+            topic_context = context.model_copy(update={'effective_conditions': {
+                **context.effective_conditions, **_serving_provenance(topic.context),
+            }})
         topics[name] = topic.model_copy(update={'data': filtered, 'evidence': topic_evidence,
+                                                  'context': topic_context,
                                                   'status': Status.partial if filtered != original and topic.data is not None else topic.status})
-    context = analysis.request_context.model_copy(update={'scope_token': None})
-    topics = {name: topic.model_copy(update={'context': context}) for name, topic in topics.items()}
     corrections = []
     for item in analysis.corrections:
         valid_scope = (item.scope_token == analysis.request_context.scope_token if action == 'retain'

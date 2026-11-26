@@ -4,7 +4,8 @@
 
 - Retain the selected provider's instance, endpoint and HTTP method on each
   analyzed place topic. The aggregate request identity and scope remain
-  caller-owned; no provider is activated by this change.
+  caller-owned. Snapshots and JSON exports keep topic provenance when every
+  contributing source grants the corresponding rights for the requested purpose.
 
 ## Unreleased — explicit time input hardening
 
